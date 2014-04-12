@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly name="Cirrious.MvvmCross">
+  
+  <member name="M:Cirrious.MvvmCross.ViewModels.MvxNotifyPropertyChanged.RaisePropertyChanged``1(System.Linq.Expressions.Expression{System.Func{``0}})">
+    <attribute ctor="M:JetBrains.Annotations.NotifyPropertyChangedInvocatorAttribute.#ctor" />
+  </member>
+  
+</assembly>
+
+<!-- https://github.com/MvvmCross/MvvmCross/blob/v3.1/Cirrious/Cirrious.MvvmCross/ViewModels/MvxNotifyPropertyChanged.cs#L40 -->

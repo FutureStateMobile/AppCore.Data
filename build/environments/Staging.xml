@@ -1,0 +1,23 @@
+<environmentSettings>
+    <appName>FutureState.BreathingRoom</appName>
+    <filePathRoot>c:\inetpub</filePathRoot>
+    <siteProtcol>http</siteProtcol>
+    <siteHost>fsm-staging.cloudapp.net</siteHost>
+    <appPath>breathingroom</appPath>
+    <appPool>
+        <name>FutureState.BreathingRoom</name>
+        <!-- valid identityTypes are: [LocalSystem, LocalService, NetworkService, SpecificUser, ApplicationPoolIdentity] -->
+        <identityType>NetworkService</identityType>
+        <!-- Set this value to the User the Service will run under in the format DOMAIN\username -->
+        <!-- If Running as 'NetworkService' then 'NT AUTHORITY\Network Service' is used -->
+        <userName>NT AUTHORITY\Network Service</userName>
+        <!-- Leave blank unless using SpecificUser -->
+        <password></password>
+    </appPool>
+    <maxWorkerProcesses>5</maxWorkerProcesses>
+    <serverDatabase>
+        <name>staging_breathingroom</name>
+        <connectionString>Data Source=fsm-sqlserver.cloudapp.net;Connect Timeout=30;User Id=sqlserverbot;Password=P0w3rsh3!!r0ck5</connectionString>
+        <providerName>System.Data.SqlClient</providerName>
+    </serverDatabase>
+</environmentSettings>

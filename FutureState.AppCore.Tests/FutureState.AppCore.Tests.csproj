@@ -135,6 +135,7 @@
     <Compile Include="Helpers\Models\CourseModel.cs" />
     <Compile Include="Helpers\Models\StudentModel.cs" />
     <Compile Include="Helpers\Models\BookModel.cs" />
+    <Compile Include="Unit\JoinExpressionVisitorTests.cs" />
     <Compile Include="Unit\DbQueryTestBase.cs" />
     <Compile Include="Unit\DbQueryTests.cs" />
     <Compile Include="Integration\DbProviderTestBase.cs" />

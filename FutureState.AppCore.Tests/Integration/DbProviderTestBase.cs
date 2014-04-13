@@ -19,7 +19,7 @@ namespace FutureState.AppCore.Tests.Integration
             IDbProvider sqliteDbProvider = new Data.Sqlite.Windows.DbProvider( testDbName );
 
             yield return sqlDbProvider;
-            yield return sqliteDbProvider;
+            //yield return sqliteDbProvider;
         }
 
         protected string TraceObjectGraphInfo(IDbProvider dbProvider)

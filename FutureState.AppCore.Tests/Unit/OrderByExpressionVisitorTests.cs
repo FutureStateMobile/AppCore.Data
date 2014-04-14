@@ -14,7 +14,7 @@ namespace FutureState.AppCore.Tests.Unit
             return visitor;
         }
 
-        [Test, Ignore]
+        [Test]
         public void ShouldBuildTheOrderExpressionFeildList ()
         {
             // TODO : JOE TO IMPLEMENT THIS FOR ORDER BY EXPRESSIONS

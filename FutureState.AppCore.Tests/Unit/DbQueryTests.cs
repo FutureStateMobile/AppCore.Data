@@ -42,7 +42,7 @@ namespace FutureState.AppCore.Tests.Unit
             Assert.AreEqual(expectedQuery, actualQuery);
         }
 
-        [Test, TestCaseSource( "Repositories" ), Ignore]
+        [Test, TestCaseSource( "Repositories" )]
         public void ShouldBuildQueryWithOrderByAscClause ( IDbProvider dbProvider )
         {
             // TODO: Joe to implement
@@ -59,7 +59,7 @@ namespace FutureState.AppCore.Tests.Unit
             Assert.AreEqual( expectedQuery, actualQuery );
         }
 
-        [Test, TestCaseSource( "Repositories" ), Ignore]
+        [Test, TestCaseSource( "Repositories" )]
         public void ShouldBuildQueryWithOrderByDescClause ( IDbProvider dbProvider )
         {
             // TODO: Joe to implement

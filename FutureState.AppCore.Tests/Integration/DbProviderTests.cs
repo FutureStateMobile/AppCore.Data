@@ -202,8 +202,8 @@ namespace FutureState.AppCore.Tests.Integration
             // Execute
             var actualUsers = db.Query<StudentModel>()
                                 .Join<CourseModel>(JoinType.ManyToMany)
-                                .Where( ( u, c ) => c.Name == "Math 101" )
-                                .OrderBy( (u, c) => u.FirstName, OrderDirection.Descending )
+                                .Where( ( s, c ) => c.Name == "Math 101" )
+                                .OrderBy( (s, c) => s.FirstName, OrderDirection.Descending )
                                 .Select()
                                 .ToList();
 

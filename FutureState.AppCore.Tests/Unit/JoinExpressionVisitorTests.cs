@@ -11,12 +11,12 @@ namespace FutureState.AppCore.Tests.Unit
     {
         public static JoinExpressionVisitor JoinExpression<TModel, TJoinTo> ( JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression ) where TModel : class, new()
         {
-            var visitor = new Data.JoinExpressionVisitor().Visit(joinType, joinExpression );
+            var visitor = new JoinExpressionVisitor().Visit(joinType, joinExpression );
             return visitor;
         }
 
         [Test, Ignore]
-        public void ShouldBuildTheJoinExpression ()
+        public void ShouldBuildInnerJoinExpression ()
         {
             // Setup
             const string expectedString = "INNER JOIN Students.Id == Books.StudentId";
@@ -28,6 +28,21 @@ namespace FutureState.AppCore.Tests.Unit
             // Test
             Assert.AreEqual( expectedString, actualString );
         }
+        
+        [Test, Ignore]
+        public void ShouldBuildLeftJoinExpression ()
+        {
+            // Setup
+            const string expectedString = "LEFT JOIN Students.Id == Books.StudentId";
+            var actualExpression = JoinExpression<StudentModel, BookModel>( JoinType.Left, ( s, b ) => s.Id == b.StudentId );
+
+            // Execute
+            var actualString = actualExpression.JoinExpression;
+
+            // Test
+            Assert.AreEqual( expectedString, actualString );
+        }
+
 
     }
 }

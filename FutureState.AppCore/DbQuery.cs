@@ -114,7 +114,7 @@ namespace FutureState.AppCore.Data
             _parameters = new Dictionary<string, object>();
         }
 
-        // Called for OneToOne and OnToMany joins, we need to look at the express to build Join clause
+        // Called for OneToOne and OneToMany joins, we need to look at the express to build Join clause
         public DbQuery(IDbProvider dbProvider, JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression)
             : this(dbProvider, joinType)
         {

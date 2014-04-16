@@ -57,7 +57,7 @@ task UnitTest -Depends Compile -Description "Runs only Unit Tests" {
     $targetDll = Resolve-Path $buildOutputDir\$testAssembly.dll
     $xmlFile = "$buildArtifactsDir\UnitTest-Results.xml"
   
-    Exec { & $packagesDir\NUnit.Runners.$nUnitVersion\tools\nunit-console.exe /run:$testAssembly.Unit "$targetDll" /xml="$xmlFile" } "Unit Tests Failed"
+    Exec { & $packagesDir\NUnit.Runners.$nUnitVersion\tools\nunit-console.exe /fixture:$testAssembly.Unit $targetDll /xml:$xmlFile } "Unit Tests Failed"
 }
 
 task IntegrationTest -Depends Compile -Description "Runs only Integration tests" {
@@ -72,7 +72,7 @@ task IntegrationTest -Depends Compile -Description "Runs only Integration tests"
     Import-Module "$buildDir\modules\Update-XmlConfigFile.psm1"
     Update-ConfigValues "$($buildOutputDir)\$testAssembly.dll.config" $testAssemblyConfigXPath $($databaseSettings.connectionString) "connectionString"
   
-    Exec { & $packagesDir\NUnit.Runners.$nUnitVersion\tools\nunit-console.exe /run:$testAssembly.Integration "$targetDll" /xml="$xmlFile" } "Integration Tests Failed"
+    Exec { & $packagesDir\NUnit.Runners.$nUnitVersion\tools\nunit-console.exe /fixture:$testAssembly.Integration $targetDll /xml:$xmlFile } "Unit Tests Failed"
 }
 
 task SetPackageVersion -Description "Task which sets the proper version information for the Nuget package" {

@@ -272,20 +272,33 @@ namespace FutureState.AppCore.Data
             // If the key is being added as a DB Parameter, then we have to also add the Parameter key/value pair to the collection
             // Because we're working off of Model Objects that should only contain Properties or Fields,
             // there should only be two options. PropertyInfo or FieldInfo... let's extract the VALUE accordingly
-            if ((memberExpression.Member as PropertyInfo) != null)
+            if ( ( memberExpression.Member as PropertyInfo ) != null )
             {
-                var exp = (MemberExpression) memberExpression.Expression;
-                var constantExpression = (ConstantExpression) exp.Expression;
-                object fieldInfoValue = ((FieldInfo) exp.Member).GetValue(constantExpression.Value);
-                return ((PropertyInfo) memberExpression.Member).GetValue(fieldInfoValue, null);
+                var exp = memberExpression.Expression as MemberExpression;
+                if ( exp != null )
+                {
+                    var constantExpression = exp.Expression as ConstantExpression;
+                    var fieldInfo = exp.Member as FieldInfo;
+                    if ( fieldInfo != null && constantExpression != null )
+                    {
+                        var fieldInfoValue = ( (FieldInfo)exp.Member ).GetValue( constantExpression.Value );
+                        return ( (PropertyInfo)memberExpression.Member ).GetValue( fieldInfoValue, null );
+                    }
+                    var propInfo = exp.Member as PropertyInfo;
+                    if ( propInfo != null && constantExpression != null )
+                    {
+                        var fieldInfoValue = propInfo.GetValue( constantExpression.Value, null );
+                        return ( (PropertyInfo)memberExpression.Member ).GetValue( fieldInfoValue, null );
+                    }
+                }
             }
-            if ((memberExpression.Member as FieldInfo) != null)
+            if ( ( memberExpression.Member as FieldInfo ) != null )
             {
                 var fieldInfo = memberExpression.Member as FieldInfo;
                 var constantExpression = memberExpression.Expression as ConstantExpression;
-                if (fieldInfo != null & constantExpression != null)
+                if ( fieldInfo != null & constantExpression != null )
                 {
-                    return fieldInfo.GetValue(constantExpression.Value);
+                    return fieldInfo.GetValue( constantExpression.Value );
                 }
             }
 
@@ -297,36 +310,28 @@ namespace FutureState.AppCore.Data
             switch (expression.NodeType)
             {
                 case ExpressionType.Equal:
-                    _strings.Append("=");
-                    _strings.Append(" ");
+                    _strings.Append("= ");
                     break;
                 case ExpressionType.NotEqual:
-                    _strings.Append("<>");
-                    _strings.Append(" ");
+                    _strings.Append("<> ");
                     break;
                 case ExpressionType.OrElse:
-                    _strings.Append("OR");
-                    _strings.Append(" ");
+                    _strings.Append("OR ");
                     break;
                 case ExpressionType.AndAlso:
-                    _strings.Append("AND");
-                    _strings.Append(" ");
+                    _strings.Append("AND ");
                     break;
                 case ExpressionType.LessThan:
-                    _strings.Append("<");
-                    _strings.Append(" ");
+                    _strings.Append("< ");
                     break;
                 case ExpressionType.GreaterThan:
-                    _strings.Append(">");
-                    _strings.Append(" ");
+                    _strings.Append("> ");
                     break;
                 case ExpressionType.GreaterThanOrEqual:
-                    _strings.Append(">=");
-                    _strings.Append(" ");
+                    _strings.Append(">= ");
                     break;
                 case ExpressionType.LessThanOrEqual:
-                    _strings.Append("<=");
-                    _strings.Append(" ");
+                    _strings.Append("<= ");
                     break;
                 default:
                     throw new ExpressionBinaryOperatorNotSupportedException(expression);

@@ -9,13 +9,15 @@ namespace FutureState.AppCore.Tests.Unit
     [TestFixture]
     public class WhereExpressionVisitorTests
     {
-        public static AppCore.Data.WhereExpressionVisitor TestExpression<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new()
+        public static Data.WhereExpressionVisitor TestExpression<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new()
         {
-            var visitor = new AppCore.Data.WhereExpressionVisitor().Visit( expression );
+            var visitor = new Data.WhereExpressionVisitor().Visit( expression );
             return visitor;
         }
 
         delegate void TestMethod ( string searchString );
+
+        public StudentModel TestProperty { get; set; }
 
         [Test]
         public void ShouldVisitExpressionByGuidObject ()
@@ -45,6 +47,35 @@ namespace FutureState.AppCore.Tests.Unit
 
             // Execute
             var actualExpression = TestExpression<StudentModel>( u => u.CreatedDate == date );
+            var actualParameters = actualExpression.Parameters;
+            var actualString = actualExpression.WhereExpression;
+
+            // Test
+            Assert.AreEqual( expectedString, actualString );
+            CollectionAssert.AreEquivalent( expectedParameters, actualParameters );
+        }
+
+        [Test]
+        public void ShouldVisitExpressionOnPublicProperties ()
+        {
+            // Setup
+            TestProperty = new StudentModel
+                {
+                    Id = new Guid("91191CA1-74D7-4751-B6AA-11F060403FBA"),
+                    FirstName = "Bob",
+                    LastName = "Smith"
+                };
+
+            const string email = "john@doe.com";
+            const string expectedString = "[Email] = @Email1 AND [FirstName] = @FirstName1";
+            var expectedParameters = new Dictionary<string, object>
+                {
+                    { "@Email1", email },
+                    { "@FirstName1", "Bob" }
+                };
+
+            // Execute
+            var actualExpression = TestExpression<StudentModel>( u => u.Email.Equals( email ) && u.FirstName == TestProperty.FirstName );
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data", "FutureState.AppCore\FutureState.AppCore.Data.csproj", "{762F6EC1-C180-44F8-A470-015E2C2AC37C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data", "FutureState.AppCore.Data\FutureState.AppCore.Data.csproj", "{762F6EC1-C180-44F8-A470-015E2C2AC37C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.Sqlite", "FutureState.AppCore.Data.Sqlite\FutureState.AppCore.Data.Sqlite.csproj", "{A569AD5E-F470-499C-8E86-1A1F48C1D747}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.Sq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.SqlServer", "FutureState.AppCore.Data.SqlServer\FutureState.AppCore.Data.SqlServer.csproj", "{3784C127-1DD0-4811-A821-5B92D956C06B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Tests", "FutureState.AppCore.Tests\FutureState.AppCore.Tests.csproj", "{3603F34E-DDC0-434D-8440-381A1B96A0DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.Tests", "FutureState.AppCore.Data.Tests\FutureState.AppCore.Data.Tests.csproj", "{3603F34E-DDC0-434D-8440-381A1B96A0DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.Sqlite.Android", "FutureState.AppCore.Data.Sqlite.Android\FutureState.AppCore.Data.Sqlite.Android.csproj", "{8A346A49-1029-469D-BEEF-1AACE6F05DD8}"
 EndProject

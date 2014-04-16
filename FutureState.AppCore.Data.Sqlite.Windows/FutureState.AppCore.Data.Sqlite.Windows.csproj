@@ -71,7 +71,7 @@
       <Project>{A569AD5E-F470-499C-8E86-1A1F48C1D747}</Project>
       <Name>FutureState.AppCore.Data.Sqlite</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FutureState.AppCore\FutureState.AppCore.Data.csproj">
+    <ProjectReference Include="..\FutureState.AppCore.Data\FutureState.AppCore.Data.csproj">
       <Project>{762F6EC1-C180-44F8-A470-015E2C2AC37C}</Project>
       <Name>FutureState.AppCore.Data</Name>
     </ProjectReference>

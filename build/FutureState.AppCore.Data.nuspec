@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>FutureState.AppCore.Data</id>
+    <version>0.1.1</version>
+    <title>AppCore.Data</title>
+    <description>An Opinionated .NET ORM that is PCL and multi-database support.</description>
+    <summary>FutureState.AppCore.Data 0.1.1 Developer Build</summary>
+    <tags>mobile sqllite sqlserver orm</tags>
+    <authors>Keith Larsen, Chase Florell, Joe Kupres</authors>
+    <owners>FutureState Mobile Inc.</owners>
+    <projectUrl>http://code.fsmobile.ca/summary/?r=Mobi.FutureState.BreathingRoom.git</projectUrl>
+    <licenseUrl>http://www.futurestate.mobi/license</licenseUrl>
+  </metadata>
+  <files>
+    <file src="..\build-artifacts\output\**\*.*" target="website" exclude="..\build-artifacts\output\**\*.pdb;..\build-artifacts\output\de\;..\build-artifacts\output\en\;**\System.Windows.dll" />
+    <file src="deploy.ps1" target="deploy.ps1" />
+  </files>
+</package>

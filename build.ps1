@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Starts the build process for AudioBook.
+        Starts the build process for AppCore.Data.
 
     .Description
         This script invokes PSake passing it the build definition file located in the 'build' directory.

@@ -1,0 +1,49 @@
+{
+   "name": "FutureState.AppCore.Data",
+   "version": "0.1",
+   "description": "A Portable, cross-platform, light weight, opinionated ORM designed to work 
+across multiple Databases.",
+   "keywords": [
+       "pcl",
+       "mobile",
+       "sqlite",
+       "sql server",
+       "orm",
+       "ado",
+       "sqlserver"
+   ],
+   "maintainers": [
+       {
+           "name": "keith larsen",
+           "web": "https://github.com/keithnlarsen"
+       },
+       {
+           "name": "chase florell",
+           "web": "https://github.com/ChaseFlorell"
+       },
+       {
+           "name": "joe kupres",
+           "web": "https://github.com/JoeKupres"
+       }
+   ],
+   "contributors": [],
+   "bugs": {
+       "web": "https://github.com/FutureStateMobile/AppCore.Data/issues"
+   },
+   "licenses": [
+       {
+           "type": "",
+           "url": ""
+       }
+   ],
+   "repositories": [
+       {
+           "type": "git",
+           "url": "git://github.com/FutureStateMobile/AppCore.Data.git"
+       }
+   ],
+   "dependencies": {
+       "mono.data.sqlite": "1.0.61.0",
+       "System.Data": "2.0.5.0"
+   }
+}

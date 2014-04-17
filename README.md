@@ -86,4 +86,4 @@ We absolutely welcome contributions/suggestions/bug reports from you (the people
 We offer 2 license choices:
 
 1. [Microsoft Public License (Ms-PL)](http://www.microsoft.com/en-us/openness/licenses.aspx#MPL)
-2. Commercial Licenses are also available, please email from sales@futurestatemobile.com
+2. Commercial Licenses are also available, please email sales@futurestatemobile.com for more information.

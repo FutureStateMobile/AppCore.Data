@@ -14,27 +14,22 @@
     <tags>mobile sqllite sqlserver orm pcl ado</tags>
   </metadata>
   <files>
-  
     <!-- Android -->
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\MonoAndroid\FutureState.AppCore.Data.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.dll" target="lib\MonoAndroid\FutureState.AppCore.Data.Sqlite.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.Android.dll" target="lib\MonoAndroid\FutureState.AppCore.Data.Sqlite.Android.dll" />
-  
     <!-- Touch -->
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\MonoTouch\FutureState.AppCore.Data.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.dll" target="lib\MonoTouch\FutureState.AppCore.Data.Sqlite.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.Touch.dll" target="lib\MonoTouch\FutureState.AppCore.Data.Sqlite.Touch.dll" />
-    
-	<!-- Windows -->
-	<file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\net45\FutureState.AppCore.Data.dll" />
+    <!-- Windows -->
+    <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\net45\FutureState.AppCore.Data.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.dll" target="lib\net45\FutureState.AppCore.Data.Sqlite.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.Windows.dll" target="lib\net45\FutureState.AppCore.Data.Sqlite.Windows.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.SqlServer.dll" target="lib\net45\FutureState.AppCore.Data.SqlServer.dll" />
-    
-	<!-- PCL -->
-	<file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\FutureState.AppCore.Data.dll" />
-    
-	<!-- Deploy Script for Octopus -->
-	<file src="deploy.ps1" target="deploy.ps1" />
+    <!-- PCL -->
+    <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\FutureState.AppCore.Data.dll" />
+    <!-- Deploy Script for Octopus -->
+    <file src="deploy.ps1" target="deploy.ps1" />
   </files>
 </package>

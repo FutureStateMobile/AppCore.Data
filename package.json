@@ -31,8 +31,12 @@
    },
    "licenses": [
        {
-           "type": "",
-           "url": ""
+           "type": "Ms-PL",
+           "url": "http://www.microsoft.com/en-us/openness/licenses.aspx#MPL"
+       }
+       {
+           "type": "Commercial",
+           "email": "sales@futurestatemobile.com"
        }
    ],
    "repositories": [

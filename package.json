@@ -1,8 +1,7 @@
 {
    "name": "FutureState.AppCore.Data",
    "version": "0.1",
-   "description": "A Portable, cross-platform, light weight, opinionated ORM designed to work 
-across multiple Databases.",
+   "description": "A Portable, cross-platform, light weight, opinionated ORM designed to work across multiple Databases.",
    "keywords": [
        "pcl",
        "mobile",

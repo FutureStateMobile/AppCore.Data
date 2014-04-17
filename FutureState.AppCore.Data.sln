@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.Sqlite.Android", "FutureState.AppCore.Data.Sqlite.Android\FutureState.AppCore.Data.Sqlite.Android.csproj", "{8A346A49-1029-469D-BEEF-1AACE6F05DD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FutureState.AppCore.Data.Sqlite.Touch", "FutureState.AppCore.Data.Sqlite.Touch\FutureState.AppCore.Data.Sqlite.Touch.csproj", "{D3491400-F646-4FA9-9B33-46F4FC3A9789}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{8A346A49-1029-469D-BEEF-1AACE6F05DD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A346A49-1029-469D-BEEF-1AACE6F05DD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A346A49-1029-469D-BEEF-1AACE6F05DD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3491400-F646-4FA9-9B33-46F4FC3A9789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3491400-F646-4FA9-9B33-46F4FC3A9789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3491400-F646-4FA9-9B33-46F4FC3A9789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3491400-F646-4FA9-9B33-46F4FC3A9789}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,19 +7,27 @@
     <authors>Keith Larsen,Chase Florell,Joe Kupres</authors>
     <owners>FutureState Mobile Inc.</owners>
     <licenseUrl>http://www.futurestate.mobi/license</licenseUrl>
-    <projectUrl>http://code.fsmobile.ca/summary/?r=Mobi.FutureState.BreathingRoom.git</projectUrl>
+    <projectUrl>https://github.com/FutureStateMobile/AppCore.Data</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An Opinionated .NET ORM that is PCL and multi-database support.</description>
     <summary>FutureState.AppCore.Data 0.1.1 Developer Build</summary>
     <tags>mobile sqllite sqlserver orm pcl ado</tags>
   </metadata>
   <files>
+  
+    <!-- Android -->
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\MonoAndroid\FutureState.AppCore.Data.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.Android.dll" target="lib\MonoAndroid\FutureState.AppCore.Data.Sqlite.Android.dll" />
-    <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\net45\FutureState.AppCore.Data.dll" />
+    
+	<!-- Windows -->
+	<file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\net45\FutureState.AppCore.Data.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.Windows.dll" target="lib\net45\FutureState.AppCore.Data.Sqlite.Windows.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.SqlServer.dll" target="lib\net45\FutureState.AppCore.Data.SqlServer.dll" />
-    <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\FutureState.AppCore.Data.dll" />
-    <file src="deploy.ps1" target="deploy.ps1" />
+    
+	<!-- PCL -->
+	<file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\FutureState.AppCore.Data.dll" />
+    
+	<!-- Deploy Script for Octopus -->
+	<file src="deploy.ps1" target="deploy.ps1" />
   </files>
 </package>

@@ -83,4 +83,7 @@ We absolutely welcome contributions/suggestions/bug reports from you (the people
 
 ###License###
 
-we'll let you know asap. If you've already jumped on board with this project, please reach out to us first.
+We offer 2 license choices:
+
+1. [Microsoft Public License (Ms-PL)](http://www.microsoft.com/en-us/openness/licenses.aspx#MPL)
+2. Commercial Licenses are also available, please email sales@futurestatemobile.com for more information.

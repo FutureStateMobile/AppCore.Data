@@ -159,7 +159,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="bin\Debug\sqlite3.dll" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FutureState.AppCore.Data.Sqlite.Windows\FutureState.AppCore.Data.Sqlite.Windows.csproj">

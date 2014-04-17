@@ -9,7 +9,7 @@
     <licenseUrl>http://www.futurestate.mobi/license</licenseUrl>
     <projectUrl>https://github.com/FutureStateMobile/AppCore.Data</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>An Opinionated .NET ORM that is PCL and multi-database support.</description>
+    <description>An Opinionated .NET ORM that is portable (PCL) and has multi-database support.</description>
     <summary>FutureState.AppCore.Data 0.1.1 Developer Build</summary>
     <tags>mobile sqllite sqlserver orm pcl ado</tags>
   </metadata>

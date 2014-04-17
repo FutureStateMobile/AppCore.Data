@@ -79,7 +79,7 @@ Also, the project was built using Xamarin. We haven't had a chance to investigat
 
 ###Meta###
 
-We absolutely welcome contributions/suggestions/bug reports from you (the people using FAD). If you have any ideas on how to improve it, please post an [issue](https://github.com/FutureStateMobile/AppCore.Data/issues) with steps to reproduce, or better yet, submit a Pull Request.
+We absolutely welcome contributions/suggestions/bug reports from you (the people using this package). If you have any ideas on how to improve it, please post an [issue](https://github.com/FutureStateMobile/AppCore.Data/issues) with steps to reproduce, or better yet, submit a Pull Request.
 
 ###License###
 

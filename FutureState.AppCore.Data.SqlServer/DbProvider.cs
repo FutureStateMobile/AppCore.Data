@@ -20,7 +20,10 @@ namespace FutureState.AppCore.Data.SqlServer
             _useStatement = string.Format(Dialect.UseDatabase, databaseName);
         }
 
-        public override sealed IDialect Dialect { get { return new SqlServerDialect(); } }
+        public override sealed IDialect Dialect
+        {
+            get { return new SqlServerDialect(); }
+        }
 
         public override string LoadSqlFile(string fileName)
         {
@@ -67,8 +70,8 @@ namespace FutureState.AppCore.Data.SqlServer
         }
 
         public override TResult ExecuteReader<TResult>(string commandText,
-                                              IDictionary<string, object> parameters,
-                                              Func<IDbReader, TResult> readerMapper)
+                                                       IDictionary<string, object> parameters,
+                                                       Func<IDbReader, TResult> readerMapper)
         {
             return ExecuteReader(_useStatement, commandText, parameters, readerMapper);
         }

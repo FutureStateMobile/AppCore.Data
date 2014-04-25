@@ -7,7 +7,8 @@ namespace FutureState.AppCore.Data.Exceptions
     {
         private const string ExpressionNotSupported = "Unhandled expression type: '{0}'";
 
-        public ExpressionNotSupportedException(Expression expression) : base(string.Format(ExpressionNotSupported, expression.NodeType))
+        public ExpressionNotSupportedException(Expression expression)
+            : base(string.Format(ExpressionNotSupported, expression.NodeType))
         {
         }
     }

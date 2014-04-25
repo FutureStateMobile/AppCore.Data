@@ -8,21 +8,22 @@ namespace FutureState.AppCore.Data.Sqlite
         private readonly SqliteDataReader _reader;
         private Dictionary<string, int> _hashOfNames;
 
-        public DbReader ( SqliteDataReader reader )
+        public DbReader(SqliteDataReader reader)
         {
             _reader = reader;
         }
 
-        public void Close ()
+        public void Close()
         {
             _reader.Close();
         }
 
-        public bool NextResult ()
+        public bool NextResult()
         {
             return _reader.NextResult();
         }
-        public bool Read ()
+
+        public bool Read()
         {
             return _reader.Read();
         }
@@ -34,7 +35,7 @@ namespace FutureState.AppCore.Data.Sqlite
 
         public object this[string name]
         {
-            get { return HasName( name ) ? _reader[name] : null; }
+            get { return HasName(name) ? _reader[name] : null; }
         }
 
         public int Depth
@@ -52,17 +53,17 @@ namespace FutureState.AppCore.Data.Sqlite
             get { return _reader.RecordsAffected; }
         }
 
-        private bool HasName ( string name )
+        private bool HasName(string name)
         {
-            if ( _hashOfNames == null )
+            if (_hashOfNames == null)
             {
                 _hashOfNames = new Dictionary<string, int>();
-                for ( var i = 0;i < _reader.FieldCount;i++ )
+                for (var i = 0; i < _reader.FieldCount; i++)
                 {
-                    _hashOfNames.Add( _reader.GetName( i ), i );
+                    _hashOfNames.Add(_reader.GetName(i), i);
                 }
             }
-            return _hashOfNames.ContainsKey( name );
+            return _hashOfNames.ContainsKey(name);
         }
     }
 }

@@ -9,6 +9,30 @@ namespace FutureState.AppCore.Data.Tests.Unit
     public class DbMigrationTests
     {
         [Test]
+        public void ShouldAddADefaultValueToAField()
+        {
+            // Setup
+            const string expectedDDL = @"
+CREATE TABLE [Test] (
+[Id] int DEFAULT(7),
+[Foo] nvarchar(max) );";
+
+            var dialect = new SqlServerDialect();
+            var migration = new DbMigration(dialect);
+            var database = new Database("MyDatabase", dialect);
+
+            var testTable = database.AddTable("Test");
+            testTable.AddColumn("Id", typeof (int)).Default(7);
+            testTable.AddColumn("Foo", typeof (string));
+
+            // Execute
+            var actualDDL = migration.GenerateDDL(database);
+
+            // Assert
+            Assert.AreEqual(expectedDDL, actualDDL);
+        }
+
+        [Test]
         public void ShouldBuildProperDDLForANewSqlServerDatabase()
         {
             // Setup
@@ -28,22 +52,21 @@ CREATE TABLE [Courses] (
             var database = new Database("MyDatabase", dialect);
 
             var teacher = database.AddTable("Teachers");
-            teacher.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
-            teacher.AddColumn("TeacherName", typeof(String), 100).NotNullable();
+            teacher.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            teacher.AddColumn("TeacherName", typeof (String), 100).NotNullable();
 
             var course = database.AddTable("Courses");
-            course.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
-            course.AddColumn("CourseName", typeof(String), 100).NotNullable();
-            course.AddColumn("CourseDescription", typeof(String));
-            course.AddColumn("CourseTeacher", typeof(Guid)).ForeignKey("Teachers", "Id").NotNullable();
-            course.AddColumn("IsAvailable", typeof(bool)).NotNullable(false);
+            course.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            course.AddColumn("CourseName", typeof (String), 100).NotNullable();
+            course.AddColumn("CourseDescription", typeof (String));
+            course.AddColumn("CourseTeacher", typeof (Guid)).ForeignKey("Teachers", "Id").NotNullable();
+            course.AddColumn("IsAvailable", typeof (bool)).NotNullable(false);
 
             // Execute
             var actualDDL = migration.GenerateDDL(database);
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
-
         }
 
         [Test]
@@ -66,22 +89,21 @@ CREATE TABLE [Courses] (
             var database = new Database("MyDatabase", dialect);
 
             var teacher = database.AddTable("Teachers");
-            teacher.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
-            teacher.AddColumn("TeacherName", typeof(String), 100).NotNullable();
+            teacher.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            teacher.AddColumn("TeacherName", typeof (String), 100).NotNullable();
 
             var course = database.AddTable("Courses");
-            course.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
-            course.AddColumn("CourseName", typeof(String), 100).NotNullable();
-            course.AddColumn("CourseDescription", typeof(String));
-            course.AddColumn("CourseTeacher", typeof(Guid)).ForeignKey("Teachers", "Id").NotNullable();
-            course.AddColumn("IsAvailable", typeof(bool)).NotNullable(false);
+            course.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            course.AddColumn("CourseName", typeof (String), 100).NotNullable();
+            course.AddColumn("CourseDescription", typeof (String));
+            course.AddColumn("CourseTeacher", typeof (Guid)).ForeignKey("Teachers", "Id").NotNullable();
+            course.AddColumn("IsAvailable", typeof (bool)).NotNullable(false);
 
             // Execute
             var actualDDL = migration.GenerateDDL(database);
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
-
         }
 
         [Test]
@@ -99,15 +121,14 @@ CONSTRAINT PK_Roles_Permissions_Composite PRIMARY KEY NONCLUSTERED (RoleId, Perm
             var database = new Database("MyDatabase", dialect);
 
             var rolesPermissionsTable = database.AddTable("Roles_Permissions").CompositeKey("RoleId", "PermissionId");
-            rolesPermissionsTable.AddColumn("RoleId", typeof(Guid)).ForeignKey("Courses", "Id");
-            rolesPermissionsTable.AddColumn("PermissionId", typeof(Guid)).ForeignKey("Permissions", "Id");
+            rolesPermissionsTable.AddColumn("RoleId", typeof (Guid)).ForeignKey("Courses", "Id");
+            rolesPermissionsTable.AddColumn("PermissionId", typeof (Guid)).ForeignKey("Permissions", "Id");
 
             // Execute
             var actualDDL = migration.GenerateDDL(database);
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
-
         }
 
         [Test]
@@ -125,40 +146,14 @@ CONSTRAINT PK_RoleId_PermissionId_Composite UNIQUE NONCLUSTERED (RoleId, Permiss
             var database = new Database("MyDatabase", dialect);
 
             var rolesPermissionsTable = database.AddTable("Roles_Permissions").CompositeUnique("RoleId", "PermissionId");
-            rolesPermissionsTable.AddColumn("RoleId", typeof(Guid)).ForeignKey("Courses", "Id");
-            rolesPermissionsTable.AddColumn("PermissionId", typeof(Guid)).ForeignKey("Permissions", "Id");
+            rolesPermissionsTable.AddColumn("RoleId", typeof (Guid)).ForeignKey("Courses", "Id");
+            rolesPermissionsTable.AddColumn("PermissionId", typeof (Guid)).ForeignKey("Permissions", "Id");
 
             // Execute
             var actualDDL = migration.GenerateDDL(database);
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
-        }
-
-        [Test]
-        public void ShouldAddADefaultValueToAField()
-        {
-            // Setup
-            const string expectedDDL = @"
-CREATE TABLE [Test] (
-[Id] int DEFAULT(7),
-[Foo] nvarchar(max) );";
-
-            var dialect = new SqlServerDialect();
-            var migration = new DbMigration(dialect);
-            var database = new Database("MyDatabase", dialect);
-
-            var testTable = database.AddTable("Test");
-            testTable.AddColumn("Id", typeof(int)).Default(7);
-            testTable.AddColumn("Foo", typeof(string));
-
-            // Execute
-            var actualDDL = migration.GenerateDDL(database);
-
-            // Assert
-            Assert.AreEqual(expectedDDL, actualDDL);
-
-
         }
 
         [Test]
@@ -175,16 +170,14 @@ CREATE TABLE [Test] (
             var database = new Database("MyDatabase", dialect);
 
             var testTable = database.AddTable("Test");
-            testTable.AddColumn("Id", typeof(int)).NotNullable();
-            testTable.AddColumn("Foo", typeof(string));
+            testTable.AddColumn("Id", typeof (int)).NotNullable();
+            testTable.AddColumn("Foo", typeof (string));
 
             // Execute
             var actualDDL = migration.GenerateDDL(database);
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
-
-
         }
     }
 }

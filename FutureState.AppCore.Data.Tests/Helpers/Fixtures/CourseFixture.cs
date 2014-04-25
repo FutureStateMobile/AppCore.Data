@@ -21,39 +21,39 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
             };
 
         public static CourseModel SecondCourse = new CourseModel
-        {
-            Id = new Guid( SecondCourseId ),
-            Name = "Second",
-            Description = "Second course description",
-        };
+            {
+                Id = new Guid(SecondCourseId),
+                Name = "Second",
+                Description = "Second course description",
+            };
 
         public static CourseModel ThirdCourse = new CourseModel
-        {
-            Id = new Guid( ThirdCourseId ),
-            Name = "Third",
-            Description = "Third course description"
-        };
+            {
+                Id = new Guid(ThirdCourseId),
+                Name = "Third",
+                Description = "Third course description"
+            };
 
         public static CourseModel ForthCourse = new CourseModel
-        {
-            Id = new Guid(ForthCourseId),
-            Name = "Forth",
-            Description = "Forth course description"
-        };
+            {
+                Id = new Guid(ForthCourseId),
+                Name = "Forth",
+                Description = "Forth course description"
+            };
 
         public static CourseModel CourseToUpdate = new CourseModel
-        {
-            Id = new Guid(CourseToUpdateId),
-            Name = "Updatable",
-            Description = "Updatable course description"
-        };
+            {
+                Id = new Guid(CourseToUpdateId),
+                Name = "Updatable",
+                Description = "Updatable course description"
+            };
 
         public static CourseModel CourseToDelete = new CourseModel
-        {
-            Id = new Guid(CourseToDeleteId),
-            Name = "Deletable",
-            Description = "Deletable course description"
-        };
+            {
+                Id = new Guid(CourseToDeleteId),
+                Name = "Deletable",
+                Description = "Deletable course description"
+            };
 
         public static void SetupFixtureDataInDatabase(IDbProvider dbProvider)
         {

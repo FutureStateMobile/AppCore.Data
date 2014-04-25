@@ -5,7 +5,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Models
 {
     public class StudentModel : ModelBase
     {
-        public StudentModel ()
+        public StudentModel()
         {
             Courses = new List<CourseModel>();
             Books = new List<BookModel>();
@@ -14,7 +14,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        
+
         [ManyToMany]
         public IList<CourseModel> Courses { get; set; }
 

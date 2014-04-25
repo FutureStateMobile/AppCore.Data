@@ -78,7 +78,9 @@ namespace FutureState.AppCore.Data
 
         public override string ToString()
         {
-            return Environment.NewLine + string.Format(_dialect.CreateColumn, Name, GetDataType(Type, Precision), string.Join(" ", Constraints));
+            return Environment.NewLine +
+                   string.Format(_dialect.CreateColumn, Name, GetDataType(Type, Precision),
+                                 string.Join(" ", Constraints));
         }
 
         private string GetDataType(Type type, int precision)

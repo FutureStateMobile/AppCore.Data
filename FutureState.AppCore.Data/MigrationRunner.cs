@@ -10,7 +10,7 @@ namespace FutureState.AppCore.Data
         private readonly IDbProvider _dbProvider;
         private SystemRole _systemRole;
 
-        public MigrationRunner ( IDbProvider dbProvider )
+        public MigrationRunner(IDbProvider dbProvider)
         {
             _dbProvider = dbProvider;
         }
@@ -53,9 +53,9 @@ namespace FutureState.AppCore.Data
 
             CreateDatabase();
 
-            var orderedMigrations = migrations.OrderBy( m => m.GetType().Name);
+            var orderedMigrations = migrations.OrderBy(m => m.GetType().Name);
 
-            foreach ( var migration in orderedMigrations )
+            foreach (var migration in orderedMigrations)
             {
                 Run(migration);
             }
@@ -87,11 +87,11 @@ namespace FutureState.AppCore.Data
                 if (_systemRole == SystemRole.Client) migration.ClientAfterMigrate();
 
                 // Update the database version number to this version
-                _dbProvider.Create( new DatabaseVersionModel
-                {
-                    VersionNumber = migration.MigrationVersion,
-                    MigrationDate = DateTime.UtcNow
-                } );
+                _dbProvider.Create(new DatabaseVersionModel
+                    {
+                        VersionNumber = migration.MigrationVersion,
+                        MigrationDate = DateTime.UtcNow
+                    });
             }
         }
     }

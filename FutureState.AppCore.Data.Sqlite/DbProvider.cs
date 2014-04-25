@@ -8,14 +8,15 @@ namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbProvider : SqliteDbProviderBase
     {
-        private bool _enableForeignKey;
         private readonly IDbConnectionProvider _connectionProvider;
         private readonly string _sqliteDatabasePath;
+        private bool _enableForeignKey;
 
         public DbProvider(string databaseName)
         {
             DatabaseName = databaseName;
-            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                                               databaseName);
             _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath);
         }
 
@@ -47,6 +48,15 @@ namespace FutureState.AppCore.Data.Sqlite
             return exists;
         }
 
+        private void EnableForeignKeys(IDbCommand command)
+        {
+            if (_enableForeignKey)
+            {
+                command.CommandText = "PRAGMA foreign_keys=ON";
+                command.ExecuteNonQuery();
+            }
+        }
+
         #region ExecuteReader
 
         public override TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper)
@@ -54,7 +64,8 @@ namespace FutureState.AppCore.Data.Sqlite
             return ExecuteReader(commandText, new Dictionary<string, object>(), readerMapper);
         }
 
-        public override TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper)
+        public override TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters,
+                                                       Func<IDbReader, TResult> readerMapper)
         {
             using (var connection = _connectionProvider.GetOpenConnection())
             {
@@ -130,25 +141,16 @@ namespace FutureState.AppCore.Data.Sqlite
 
                     var result = command.ExecuteScalar();
 
-                    if (typeof(TKey) == typeof(Guid))
-                        return (TKey)(object)new Guid((byte[])result);
-                    if (typeof(TKey) == typeof(int))
-                        return (TKey)(object)(result == null ? 0 : 1);
+                    if (typeof (TKey) == typeof (Guid))
+                        return (TKey) (object) new Guid((byte[]) result);
+                    if (typeof (TKey) == typeof (int))
+                        return (TKey) (object) (result == null ? 0 : 1);
 
-                    return (TKey)result;
+                    return (TKey) result;
                 }
             }
         }
 
         #endregion
-
-        private void EnableForeignKeys(IDbCommand command)
-        {
-            if (_enableForeignKey)
-            {
-                command.CommandText = "PRAGMA foreign_keys=ON";
-                command.ExecuteNonQuery();
-            }
-        }
     }
 }

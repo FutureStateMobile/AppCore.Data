@@ -20,7 +20,7 @@ namespace FutureState.AppCore.Data.Constraints
 
             if (typeof (T) == typeof (bool))
             {
-                string value = ((bool?) Convert.ChangeType(_defaultValue, typeof (T), null) ?? false) ? "1" : "0";
+                var value = ((bool?) Convert.ChangeType(_defaultValue, typeof (T), null) ?? false) ? "1" : "0";
                 return string.Format(_dialect.DefaultBoolConstraint, value);
             }
 

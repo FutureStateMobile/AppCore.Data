@@ -45,7 +45,7 @@ namespace FutureState.AppCore.Data.Tests.Unit.Extensions
             const string expectedBar = "bar one";
 
             // Execute
-            IEnumerable<Foo> updatedFoo = _oldList.Exclude(_newList, foo => foo.Bar);
+            var updatedFoo = _oldList.Exclude(_newList, foo => foo.Bar);
 
             // Assert
             Assert.AreEqual(updatedFoo.FirstOrDefault().Bar, expectedBar);
@@ -59,7 +59,7 @@ namespace FutureState.AppCore.Data.Tests.Unit.Extensions
             const string expectedBar = "bar five";
 
             // Execute
-            IEnumerable<Foo> updatedFoo = _newList.Exclude(_oldList, foo => foo.Bar);
+            var updatedFoo = _newList.Exclude(_oldList, foo => foo.Bar);
 
             // Assert
             Assert.AreEqual(updatedFoo.FirstOrDefault().Bar, expectedBar);
@@ -78,7 +78,7 @@ namespace FutureState.AppCore.Data.Tests.Unit.Extensions
                 };
 
             // Execute
-            IEnumerable<Foo> actualList = expectedList.Exclude(new List<Foo>(), foo => foo.Bar);
+            var actualList = expectedList.Exclude(new List<Foo>(), foo => foo.Bar);
 
             // Assert
             Assert.AreEqual(expectedList.Count, actualList.Count());

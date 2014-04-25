@@ -8,7 +8,8 @@
         private readonly string _referenceField;
         private readonly string _referenceTable;
 
-        public ForeignKeyConstraint(IDialect dialect, string localTable, string localField, string referenceTable, string referenceField)
+        public ForeignKeyConstraint(IDialect dialect, string localTable, string localField, string referenceTable,
+                                    string referenceField)
         {
             _dialect = dialect;
             _localTable = localTable;
@@ -19,7 +20,8 @@
 
         public override string ToString()
         {
-            return string.Format(_dialect.ForeignKeyConstraint, _localTable, _localField, _referenceTable, _referenceField);
+            return string.Format(_dialect.ForeignKeyConstraint, _localTable, _localField, _referenceTable,
+                                 _referenceField);
         }
     }
 }

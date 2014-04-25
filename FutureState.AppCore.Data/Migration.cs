@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FutureState.AppCore.Data
+﻿namespace FutureState.AppCore.Data
 {
     public abstract class Migration : IMigration
     {
@@ -82,7 +80,7 @@ namespace FutureState.AppCore.Data
 
         protected string LoadSqlFile(string fileName)
         {
-            string fullFilePath = "Migrations.Migration" + MigrationVersion.ToString().PadLeft(3, '0') + "." + fileName;
+            var fullFilePath = "Migrations.Migration" + MigrationVersion.ToString().PadLeft(3, '0') + "." + fileName;
             return DbProvider.LoadSqlFile(fullFilePath);
         }
 

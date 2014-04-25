@@ -17,9 +17,9 @@ namespace FutureState.AppCore.Data.SqlServer
 
         public IDbConnection GetOpenConnection()
         {
-            DbProviderFactory dbFactory = DbProviderFactories.GetFactory(_connectionProviderName);
+            var dbFactory = DbProviderFactories.GetFactory(_connectionProviderName);
 
-            DbConnection connection = dbFactory.CreateConnection();
+            var connection = dbFactory.CreateConnection();
             if (connection == null) throw new Exception("Could not create a database connection.");
 
             connection.ConnectionString = String.Format(_connectionString);

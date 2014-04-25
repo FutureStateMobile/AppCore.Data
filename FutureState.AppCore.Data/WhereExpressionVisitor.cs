@@ -116,13 +116,13 @@ namespace FutureState.AppCore.Data
 
         private void VisitLambda(LambdaExpression expression)
         {
-            Expression lambda = expression.Body;
+            var lambda = expression.Body;
             Visit(lambda);
         }
 
         private void VisitUnary(UnaryExpression expression)
         {
-            Expression unary = expression.Operand;
+            var unary = expression.Operand;
             Visit(unary);
         }
 
@@ -189,10 +189,10 @@ namespace FutureState.AppCore.Data
 
         private void VisitMethodCall(MethodCallExpression expression)
         {
-            MethodCallExpression exp = expression;
+            var exp = expression;
 
-            string commandText = GetMethodCallFormat(expression);
-            string parameterFormat = GetParameterFormat(expression);
+            var commandText = GetMethodCallFormat(expression);
+            var parameterFormat = GetParameterFormat(expression);
             var memberExpression = (MemberExpression) exp.Object;
             var constantExpression = exp.Arguments[0] as ConstantExpression;
             object expressionValue;
@@ -205,11 +205,11 @@ namespace FutureState.AppCore.Data
             else
                 expressionValue = constantExpression.Value;
 
-            string key = memberExpression.Member.Name;
-            string value = string.Format(parameterFormat, expressionValue);
+            var key = memberExpression.Member.Name;
+            var value = string.Format(parameterFormat, expressionValue);
 
             // Format the Method string to include the Key/Parameter
-            int number = AddParameter("@" + key, value, 1);
+            var number = AddParameter("@" + key, value, 1);
             _strings.Append(string.Format(commandText, key, String.Format(key + "{0}", number)));
             _strings.Append(" ");
 
@@ -219,9 +219,9 @@ namespace FutureState.AppCore.Data
 
         private void VisitConstant(ConstantExpression expression, MemberExpression left)
         {
-            string key = "@" + left.Member.Name;
+            var key = "@" + left.Member.Name;
             // add the parameter value
-            int number = AddParameter(key, expression.Value, 1);
+            var number = AddParameter(key, expression.Value, 1);
             // add the string parameter
             _strings.Append(String.Format(key + "{0}", number));
             _strings.Append(" ");
@@ -229,8 +229,8 @@ namespace FutureState.AppCore.Data
 
         private int AddParameter(string key, object value, int times)
         {
-            int newTimes = times;
-            string newKey = String.Format(key + "{0}", times);
+            var newTimes = times;
+            var newKey = String.Format(key + "{0}", times);
             if (Parameters.ContainsKey(newKey))
             {
                 newTimes = AddParameter(key, value, ++times);
@@ -248,7 +248,7 @@ namespace FutureState.AppCore.Data
             // To preserve Case between key/value pairs, we always want to use the LEFT side of the expression.
             // therefore, if left is null, then expression is actually left. 
             // Doing this ensures that our `key` matches between parameter names and database fields
-            string key = left != null ? left.Member.Name : expression.Member.Name;
+            var key = left != null ? left.Member.Name : expression.Member.Name;
 
             // If the NodeType is a `Parameter`, we want to add the key as a DB Field name to our string collection
             // Otherwise, we want to add the key as a DB Parameter to our string collection
@@ -259,7 +259,7 @@ namespace FutureState.AppCore.Data
             }
             else
             {
-                int paramNo = AddParameter("@" + key, GetMemberExpressionValue(expression), 1);
+                var paramNo = AddParameter("@" + key, GetMemberExpressionValue(expression), 1);
 
                 _strings.Append(string.Format("@{0}", String.Format(key + "{0}", paramNo)));
                 _strings.Append(" ");
@@ -272,33 +272,33 @@ namespace FutureState.AppCore.Data
             // If the key is being added as a DB Parameter, then we have to also add the Parameter key/value pair to the collection
             // Because we're working off of Model Objects that should only contain Properties or Fields,
             // there should only be two options. PropertyInfo or FieldInfo... let's extract the VALUE accordingly
-            if ( ( memberExpression.Member as PropertyInfo ) != null )
+            if ((memberExpression.Member as PropertyInfo) != null)
             {
                 var exp = memberExpression.Expression as MemberExpression;
-                if ( exp != null )
+                if (exp != null)
                 {
                     var constantExpression = exp.Expression as ConstantExpression;
                     var fieldInfo = exp.Member as FieldInfo;
-                    if ( fieldInfo != null && constantExpression != null )
+                    if (fieldInfo != null && constantExpression != null)
                     {
-                        var fieldInfoValue = ( (FieldInfo)exp.Member ).GetValue( constantExpression.Value );
-                        return ( (PropertyInfo)memberExpression.Member ).GetValue( fieldInfoValue, null );
+                        var fieldInfoValue = ((FieldInfo) exp.Member).GetValue(constantExpression.Value);
+                        return ((PropertyInfo) memberExpression.Member).GetValue(fieldInfoValue, null);
                     }
                     var propInfo = exp.Member as PropertyInfo;
-                    if ( propInfo != null && constantExpression != null )
+                    if (propInfo != null && constantExpression != null)
                     {
-                        var fieldInfoValue = propInfo.GetValue( constantExpression.Value, null );
-                        return ( (PropertyInfo)memberExpression.Member ).GetValue( fieldInfoValue, null );
+                        var fieldInfoValue = propInfo.GetValue(constantExpression.Value, null);
+                        return ((PropertyInfo) memberExpression.Member).GetValue(fieldInfoValue, null);
                     }
                 }
             }
-            if ( ( memberExpression.Member as FieldInfo ) != null )
+            if ((memberExpression.Member as FieldInfo) != null)
             {
                 var fieldInfo = memberExpression.Member as FieldInfo;
                 var constantExpression = memberExpression.Expression as ConstantExpression;
-                if ( fieldInfo != null & constantExpression != null )
+                if (fieldInfo != null & constantExpression != null)
                 {
-                    return fieldInfo.GetValue( constantExpression.Value );
+                    return fieldInfo.GetValue(constantExpression.Value);
                 }
             }
 

@@ -16,7 +16,9 @@ namespace FutureState.AppCore.Data
 
         // Used for Finds and Gets
         TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper);
-        TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper);
+
+        TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters,
+                                       Func<IDbReader, TResult> readerMapper);
 
         // Used For Updates and Deletes
         void ExecuteNonQuery(string commandText);

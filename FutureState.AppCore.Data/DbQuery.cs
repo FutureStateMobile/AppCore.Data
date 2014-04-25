@@ -42,7 +42,8 @@ namespace FutureState.AppCore.Data
         }
 
         // Used for OneToMany and OneToOne joins, we will use and Expression to build the Join clause
-        public IDbQuery<TModel, TJoinTo> Join<TJoinTo>(JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression)
+        public IDbQuery<TModel, TJoinTo> Join<TJoinTo>(JoinType joinType,
+                                                       Expression<Func<TModel, TJoinTo, object>> joinExpression)
             where TJoinTo : class, new()
         {
             return new DbQuery<TModel, TJoinTo>(_dbProvider, joinType, joinExpression);
@@ -65,13 +66,13 @@ namespace FutureState.AppCore.Data
 
         public IEnumerable<TModel> Select()
         {
-            string commandText = string.Format(_dbProvider.Dialect.SelectFrom, _tableName, GetExtendedWhereClause()).Trim();
+            var commandText = string.Format(_dbProvider.Dialect.SelectFrom, _tableName, GetExtendedWhereClause()).Trim();
             return _dbProvider.ExecuteReader(commandText, _parameters, _mapper.BuildStackFrom);
         }
 
         public void Delete()
         {
-            string commandText = string.Format(_dbProvider.Dialect.DeleteFrom, _tableName, _whereClause);
+            var commandText = string.Format(_dbProvider.Dialect.DeleteFrom, _tableName, _whereClause);
             _dbProvider.ExecuteNonQuery(commandText, _parameters);
         }
 
@@ -115,7 +116,8 @@ namespace FutureState.AppCore.Data
         }
 
         // Called for OneToOne and OneToMany joins, we need to look at the express to build Join clause
-        public DbQuery(IDbProvider dbProvider, JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression)
+        public DbQuery(IDbProvider dbProvider, JoinType joinType,
+                       Expression<Func<TModel, TJoinTo, object>> joinExpression)
             : this(dbProvider, joinType)
         {
             _joinExpressionVisitor = new JoinExpressionVisitor().Visit(joinType, joinExpression);
@@ -126,7 +128,8 @@ namespace FutureState.AppCore.Data
             throw new NotImplementedException();
         }
 
-        public IDbQuery<TModel, TJoinTo> OrderBy(Expression<Func<TModel, TJoinTo, object>> orderByExpression, OrderDirection direction)
+        public IDbQuery<TModel, TJoinTo> OrderBy(Expression<Func<TModel, TJoinTo, object>> orderByExpression,
+                                                 OrderDirection direction)
         {
             throw new NotImplementedException();
         }

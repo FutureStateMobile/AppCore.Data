@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using FutureState.AppCore.Data.Attributes;
 using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
@@ -16,9 +15,9 @@ namespace FutureState.AppCore.Data
         {
             var dictionary = new Dictionary<string, object>();
 
-            foreach (PropertyInfo property in model.GetType().GetProperties().OrderBy(p => p.Name))
+            foreach (var property in model.GetType().GetProperties().OrderBy(p => p.Name))
             {
-                object value = property.GetValue(model, null);
+                var value = property.GetValue(model, null);
 
                 if (property.PropertyType == typeof (DateTime))
                 {
@@ -29,9 +28,9 @@ namespace FutureState.AppCore.Data
                 }
 
                 // Check if the model object is to be ignored.
-                bool ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
-                              property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
-                              property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any();
+                var ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any();
 
                 if (!ignore)
                 {
@@ -45,9 +44,9 @@ namespace FutureState.AppCore.Data
         public IList<string> GetFieldNameList(TMapTo model)
         {
             return (from property in model.GetType().GetProperties().OrderBy(p => p.Name)
-                    let ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
-                                 property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
-                                 property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any()
+                    let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
+                                 property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
+                                 property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
                     where !ignore
                     select property.Name).ToList();
         }
@@ -56,7 +55,7 @@ namespace FutureState.AppCore.Data
         {
             var list = new List<TMapTo>();
 
-            TMapTo model = BuildFrom(reader);
+            var model = BuildFrom(reader);
 
             while (model != null)
             {
@@ -76,7 +75,7 @@ namespace FutureState.AppCore.Data
 
             var model = new TMapTo();
 
-            foreach (PropertyInfo property in model.GetType().GetProperties())
+            foreach (var property in model.GetType().GetProperties())
             {
                 // hack: a try/catch to handle DBNull to String converstion.
                 try
@@ -106,9 +105,9 @@ namespace FutureState.AppCore.Data
 
             var model = new TMapTo();
 
-            foreach (PropertyInfo prop in model.GetType().GetProperties())
+            foreach (var prop in model.GetType().GetProperties())
             {
-                PropertyInfo getProp = input.GetType().GetProperty(prop.Name);
+                var getProp = input.GetType().GetProperty(prop.Name);
                 if (getProp != null)
                 {
                     prop.SetValue(model, getProp.GetValue(input, null), null);
@@ -122,7 +121,7 @@ namespace FutureState.AppCore.Data
         {
             var stack = new Stack<TMapTo>();
 
-            TMapTo model = BuildFrom(reader);
+            var model = BuildFrom(reader);
 
             while (model != null)
             {

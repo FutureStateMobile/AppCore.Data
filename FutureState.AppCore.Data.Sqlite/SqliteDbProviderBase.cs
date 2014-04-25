@@ -8,21 +8,26 @@ namespace FutureState.AppCore.Data.Sqlite
         protected const string RootSqlScriptPath = "FutureState.AppCore.Data.Sqlite.SqlScripts.";
         protected const string CheckTableExists = "SELECT name FROM sqlite_master WHERE type='table' AND name='{0}'";
 
-        public override string LoadSqlFile ( string fileName )
+        public override sealed IDialect Dialect
+        {
+            get { return new SqliteDialect(); }
+        }
+
+        public override string LoadSqlFile(string fileName)
         {
             var sqlStatement = string.Empty;
 
-            using ( var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream( RootSqlScriptPath + fileName ) )
+            using (
+                var resourceStream =
+                    Assembly.GetExecutingAssembly().GetManifestResourceStream(RootSqlScriptPath + fileName))
             {
-                if ( resourceStream != null )
+                if (resourceStream != null)
                 {
-                    sqlStatement = new StreamReader( resourceStream ).ReadToEnd();
+                    sqlStatement = new StreamReader(resourceStream).ReadToEnd();
                 }
             }
 
             return sqlStatement;
         }
-
-        public override sealed IDialect Dialect { get { return new SqliteDialect(); } }
     }
 }

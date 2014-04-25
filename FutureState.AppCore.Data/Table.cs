@@ -34,7 +34,7 @@ namespace FutureState.AppCore.Data
 
         public Column AddColumn(string columnName, Type dataType)
         {
-            Column column = AddColumn(columnName, dataType, 0);
+            var column = AddColumn(columnName, dataType, 0);
             return column;
         }
 
@@ -49,8 +49,8 @@ namespace FutureState.AppCore.Data
         {
             if (Constraints.Count != 0)
             {
-                string columns = string.Join(",", Columns);
-                string constraints = Environment.NewLine + string.Join(",", Constraints);
+                var columns = string.Join(",", Columns);
+                var constraints = Environment.NewLine + string.Join(",", Constraints);
 
                 return Environment.NewLine +
                        string.Format(_dialect.CreateTable, Name, string.Join(",", new[] {columns, constraints}));

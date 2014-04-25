@@ -9,7 +9,8 @@ namespace FutureState.AppCore.Data
     {
         IDbQuery<TModel, TJoinTo> Join<TJoinTo>(JoinType joinType) where TJoinTo : class, new();
 
-        IDbQuery<TModel, TJoinTo> Join<TJoinTo>(JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression)
+        IDbQuery<TModel, TJoinTo> Join<TJoinTo>(JoinType joinType,
+                                                Expression<Func<TModel, TJoinTo, object>> joinExpression)
             where TJoinTo : class, new();
 
         IDbQuery<TModel> Where(Expression<Func<TModel, object>> whereExpression);
@@ -24,7 +25,10 @@ namespace FutureState.AppCore.Data
         where TJoinTo : class, new()
     {
         IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, object>> whereExpression);
-        IDbQuery<TModel, TJoinTo> OrderBy(Expression<Func<TModel, TJoinTo, object>> orderByExpression, OrderDirection direction);
+
+        IDbQuery<TModel, TJoinTo> OrderBy(Expression<Func<TModel, TJoinTo, object>> orderByExpression,
+                                          OrderDirection direction);
+
         IDbQuery<TModel, TJoinTo> SkipTake(int skip, int take);
         IEnumerable<TModel> Select();
         void Delete();

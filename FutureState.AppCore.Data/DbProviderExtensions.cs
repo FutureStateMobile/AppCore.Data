@@ -5,8 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using FutureState.AppCore.Data.Attributes;
-using FutureState.AppCore.Data.Helpers;
-using FutureState.AppCore.Data.Models;
 
 namespace FutureState.AppCore.Data
 {
@@ -23,12 +21,12 @@ namespace FutureState.AppCore.Data
         {
             var mapper = new AutoMapper<TModel>();
 
-            string tableName = GetTableName(typeof (TModel));
-            List<string> fieldNameList = mapper.GetFieldNameList(model).Select(field => field).ToList();
-            string parameters = "@" + string.Join(",@", fieldNameList);
-            string fields = string.Join(",", fieldNameList);
-            string commandText = string.Format(dbProvider.Dialect.InsertInto, tableName, fields, parameters);
-            IDictionary<string, object> commandParams = mapper.BuildDbParametersFrom(model);
+            var tableName = GetTableName(typeof (TModel));
+            var fieldNameList = mapper.GetFieldNameList(model).Select(field => field).ToList();
+            var parameters = "@" + string.Join(",@", fieldNameList);
+            var fields = string.Join(",", fieldNameList);
+            var commandText = string.Format(dbProvider.Dialect.InsertInto, tableName, fields, parameters);
+            var commandParams = mapper.BuildDbParametersFrom(model);
 
             dbProvider.ExecuteNonQuery(commandText, commandParams);
 
@@ -51,19 +49,20 @@ namespace FutureState.AppCore.Data
             where TModel : class, new()
         {
             var mapper = new AutoMapper<TModel>();
-            string tableName = GetTableName(typeof (TModel)); // Users
-            string tableNameSingular = tableName.Remove(tableName.Length - 1); // User
-            string referenceTableName = GetTableName(typeof (TJoinTo)); // Roles
-            string referenceTableNameSingular = referenceTableName.Remove(referenceTableName.Length - 1); // Role
-            string joinTableName = GetJoinTableName(tableName, referenceTableName); // Roles_Users
-            string joinText = string.Format(dbProvider.Dialect.InnerJoin, joinTableName, tableNameSingular, tableName, referenceTableName,
-                                            referenceTableNameSingular);
+            var tableName = GetTableName(typeof (TModel)); // Users
+            var tableNameSingular = tableName.Remove(tableName.Length - 1); // User
+            var referenceTableName = GetTableName(typeof (TJoinTo)); // Roles
+            var referenceTableNameSingular = referenceTableName.Remove(referenceTableName.Length - 1); // Role
+            var joinTableName = GetJoinTableName(tableName, referenceTableName); // Roles_Users
+            var joinText = string.Format(dbProvider.Dialect.InnerJoin, joinTableName, tableNameSingular, tableName,
+                                         referenceTableName,
+                                         referenceTableNameSingular);
 
-            string whereExpression = string.Format("{0}.{1}Id = @{1}Id", joinTableName, referenceTableNameSingular);
-            string whereClause = string.Format(dbProvider.Dialect.Where, whereExpression);
-            string commandText = string.Format(dbProvider.Dialect.SelectFrom, tableName, joinText + " " + whereClause);
+            var whereExpression = string.Format("{0}.{1}Id = @{1}Id", joinTableName, referenceTableNameSingular);
+            var whereClause = string.Format(dbProvider.Dialect.Where, whereExpression);
+            var commandText = string.Format(dbProvider.Dialect.SelectFrom, tableName, joinText + " " + whereClause);
 
-            string key = string.Format("@{0}Id", referenceTableNameSingular);
+            var key = string.Format("@{0}Id", referenceTableNameSingular);
             var parameters = new Dictionary<string, object> {{key, id}};
 
             return dbProvider.ExecuteReader(commandText, parameters, mapper.BuildStackFrom);
@@ -126,12 +125,12 @@ namespace FutureState.AppCore.Data
         public static void Update<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
         {
             var mapper = new AutoMapper<TModel>();
-            List<string> dbFields = mapper.GetFieldNameList(model).Select(field => string.Format("[{0}] = @{0}", field)).ToList();
+            var dbFields = mapper.GetFieldNameList(model).Select(field => string.Format("[{0}] = @{0}", field)).ToList();
 
-            string tableName = GetTableName(typeof (TModel));
-            string whereClause = string.Format(dbProvider.Dialect.Where, "Id = @Id");
-            string commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", dbFields),
-                                               whereClause);
+            var tableName = GetTableName(typeof (TModel));
+            var whereClause = string.Format(dbProvider.Dialect.Where, "Id = @Id");
+            var commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", dbFields),
+                                            whereClause);
 
             dbProvider.ExecuteNonQuery(commandText, mapper.BuildDbParametersFrom(model));
 
@@ -149,12 +148,12 @@ namespace FutureState.AppCore.Data
         public static void Delete<TModel>(this IDbProvider dbProvider, Expression<Func<TModel, object>> expression)
             where TModel : class, new()
         {
-            WhereExpressionVisitor visitor = new WhereExpressionVisitor().Visit(expression);
+            var visitor = new WhereExpressionVisitor().Visit(expression);
 
             // this is a hard delete. soft deletes will happen in the repository layer.
-            string tableName = GetTableName(typeof (TModel));
-            string whereClause = string.Format(dbProvider.Dialect.Where, visitor.WhereExpression);
-            string commandText = string.Format(dbProvider.Dialect.DeleteFrom, tableName, whereClause);
+            var tableName = GetTableName(typeof (TModel));
+            var whereClause = string.Format(dbProvider.Dialect.Where, visitor.WhereExpression);
+            var commandText = string.Format(dbProvider.Dialect.DeleteFrom, tableName, whereClause);
 
             dbProvider.ExecuteNonQuery(commandText, visitor.Parameters);
         }
@@ -172,46 +171,48 @@ namespace FutureState.AppCore.Data
         private static void UpdateJoins<TModel>(IDbProvider dbProvider, TModel model, string tableName,
                                                 IAutoMapper<TModel> mapper) where TModel : class, new()
         {
-            KeyValuePair<string, object> leftModel = mapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
-            string leftKey = typeof (TModel).Name.Replace("Model", string.Empty) + "Id";
+            var leftModel = mapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
+            var leftKey = typeof (TModel).Name.Replace("Model", string.Empty) + "Id";
             var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
             // loop through all the model properties, and grab ONLY the ones that are decorated with "[ManyToMany]"
             foreach (
-                PropertyInfo collection in model.GetType()
-                                                .GetProperties()
-                                                .Where(
-                                                    property =>
-                                                    property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()))
+                var collection in model.GetType()
+                                       .GetProperties()
+                                       .Where(
+                                           property =>
+                                           property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()))
             {
                 if (!IsGenericList(collection.PropertyType))
                     throw new ArgumentException("The property must be an ICollection<>");
-                string joinTableName = GetJoinTableName(tableName, collection.Name);
-                string deleteWhereClause = string.Format(dbProvider.Dialect.Where, string.Format("{0} = @{0}", leftKey));
-                string deleteCommandText = string.Format(dbProvider.Dialect.DeleteFrom, joinTableName, deleteWhereClause);
+                var joinTableName = GetJoinTableName(tableName, collection.Name);
+                var deleteWhereClause = string.Format(dbProvider.Dialect.Where, string.Format("{0} = @{0}", leftKey));
+                var deleteCommandText = string.Format(dbProvider.Dialect.DeleteFrom, joinTableName, deleteWhereClause);
                 // Delete ALL records in the Join table associated with the `leftModel`
                 dbProvider.ExecuteNonQuery(deleteCommandText, parameters);
-                Type manyToManyCollection = collection.PropertyType.GetGenericArguments().FirstOrDefault();
+                var manyToManyCollection = collection.PropertyType.GetGenericArguments().FirstOrDefault();
                 var listValues = (IEnumerable) collection.GetValue(model, null);
                 if (listValues == null) continue;
-                foreach (object value in listValues)
+                foreach (var value in listValues)
                 {
                     if (manyToManyCollection == null)
                         throw new ArgumentException();
-                    PropertyInfo[] rightProperties = manyToManyCollection.GetProperties();
-                    string manyToManyCollectionName = manyToManyCollection.Name.Replace("Model", string.Empty);
-                    foreach (PropertyInfo rightProperty in rightProperties)
+                    var rightProperties = manyToManyCollection.GetProperties();
+                    var manyToManyCollectionName = manyToManyCollection.Name.Replace("Model", string.Empty);
+                    foreach (var rightProperty in rightProperties)
                     {
-                        string rightPropertyName = rightProperty.Name;
+                        var rightPropertyName = rightProperty.Name;
                         if (rightPropertyName != "Id")
                             continue; // short circuit the loop if we're not dealing with the primary key.
-                        string rightKey = manyToManyCollectionName + rightPropertyName;
-                        object rightValue = rightProperty.GetValue(value, null);
+                        var rightKey = manyToManyCollectionName + rightPropertyName;
+                        var rightValue = rightProperty.GetValue(value, null);
                         parameters.Add("@" + rightKey, rightValue);
-                        string fieldsToInsert = string.Format(dbProvider.Dialect.JoinFields, leftKey, rightKey); // "[{0}], [{1}]"
-                        string parametersToSet = string.Format(dbProvider.Dialect.JoinParameters, leftKey, rightKey); // "@{0}, @{1}"
-                        string insertCommandText = string.Format(dbProvider.Dialect.InsertInto, joinTableName,
-                                                                 fieldsToInsert,
-                                                                 parametersToSet);
+                        var fieldsToInsert = string.Format(dbProvider.Dialect.JoinFields, leftKey, rightKey);
+                            // "[{0}], [{1}]"
+                        var parametersToSet = string.Format(dbProvider.Dialect.JoinParameters, leftKey, rightKey);
+                            // "@{0}, @{1}"
+                        var insertCommandText = string.Format(dbProvider.Dialect.InsertInto, joinTableName,
+                                                              fieldsToInsert,
+                                                              parametersToSet);
                         dbProvider.ExecuteNonQuery(insertCommandText, parameters);
                         // Remove the parameter for the next iteration.
                         parameters.Remove("@" + rightKey);

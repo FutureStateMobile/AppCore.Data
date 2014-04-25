@@ -58,9 +58,9 @@ namespace FutureState.AppCore.Data.SqlServer
             if (_hashOfNames == null)
             {
                 _hashOfNames = new Hashtable();
-                for (int i = 0; i < _reader.FieldCount; i++)
+                for (var i = 0; i < _reader.FieldCount; i++)
                 {
-                    _hashOfNames.Add( _reader.GetName( i ), i );
+                    _hashOfNames.Add(_reader.GetName(i), i);
                 }
             }
             return _hashOfNames.ContainsKey(name);

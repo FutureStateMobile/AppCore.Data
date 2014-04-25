@@ -15,57 +15,57 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
 
         public static StudentModel FirstStudent = new StudentModel
             {
-                Id = new Guid( FirstStudentId ),
+                Id = new Guid(FirstStudentId),
                 FirstName = "firstname",
                 LastName = "lastname",
                 Email = "firstemail",
-                Courses = new List<CourseModel>{CourseFixture.FirstCourse}
+                Courses = new List<CourseModel> {CourseFixture.FirstCourse}
             };
 
         public static StudentModel SecondStudent = new StudentModel
             {
-                Id = new Guid( SecondStudentId ),
+                Id = new Guid(SecondStudentId),
                 FirstName = "secondname",
                 LastName = "lastname",
                 Email = "secondemail",
-                Courses = new List<CourseModel> { CourseFixture.SecondCourse }
+                Courses = new List<CourseModel> {CourseFixture.SecondCourse}
             };
 
         public static StudentModel ThirdStudent = new StudentModel
-        {
-            Id = new Guid(ThirdStudentId),
-            FirstName = "thirdname",
-            LastName = "lastname",
-            Email = "thirdemail",
-            Courses = new List<CourseModel> { CourseFixture.ThirdCourse }
-        };
+            {
+                Id = new Guid(ThirdStudentId),
+                FirstName = "thirdname",
+                LastName = "lastname",
+                Email = "thirdemail",
+                Courses = new List<CourseModel> {CourseFixture.ThirdCourse}
+            };
 
         public static StudentModel ForthStudent = new StudentModel
-        {
-            Id = new Guid(ForthStudentId),
-            FirstName = "forthname",
-            LastName = "lastname",
-            Email = "forthemail",
-            Courses = new List<CourseModel> { CourseFixture.ForthCourse }
-        };
+            {
+                Id = new Guid(ForthStudentId),
+                FirstName = "forthname",
+                LastName = "lastname",
+                Email = "forthemail",
+                Courses = new List<CourseModel> {CourseFixture.ForthCourse}
+            };
 
         public static StudentModel StudentToUpdate = new StudentModel
-        {
-            Id = new Guid(StudentToUpdateId),
-            FirstName = "updatable User",
-            LastName = "updatable user last",
-            Email = "updatable@user.email",
-            Courses = new List<CourseModel> { CourseFixture.FirstCourse }
-        };
+            {
+                Id = new Guid(StudentToUpdateId),
+                FirstName = "updatable User",
+                LastName = "updatable user last",
+                Email = "updatable@user.email",
+                Courses = new List<CourseModel> {CourseFixture.FirstCourse}
+            };
 
         public static StudentModel StudentToDelete = new StudentModel
-        {
-            Id = new Guid(StudentToDeleteId),
-            FirstName = "deletable User",
-            LastName = "deletable user last",
-            Email = "deletable@user.email",
-            Courses = new List<CourseModel> { CourseFixture.FirstCourse }
-        };
+            {
+                Id = new Guid(StudentToDeleteId),
+                FirstName = "deletable User",
+                LastName = "deletable user last",
+                Email = "deletable@user.email",
+                Courses = new List<CourseModel> {CourseFixture.FirstCourse}
+            };
 
         public static void SetupFixtureDataInDatabase(IDbProvider dbProvider)
         {

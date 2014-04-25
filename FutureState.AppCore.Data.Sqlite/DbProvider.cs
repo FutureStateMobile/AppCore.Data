@@ -4,7 +4,7 @@ using System.Data;
 using System.IO;
 using Mono.Data.Sqlite;
 
-namespace FutureState.AppCore.Data.Sqlite.Touch
+namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbProvider : SqliteDbProviderBase
     {

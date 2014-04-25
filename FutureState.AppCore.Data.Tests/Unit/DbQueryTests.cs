@@ -82,7 +82,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             var expectedQuery = string.Empty;
             switch (dbProvider.GetType().ToString())
             {
-                case "FutureState.AppCore.Data.Sqlite.Windows.DbProvider":
+                case "FutureState.AppCore.Data.Sqlite.DbProvider":
                     expectedQuery = @"SELECT Students.* FROM Students WHERE [Id] = @Id1  LIMIT 10 OFFSET 20";
                     break;
                 case "FutureState.AppCore.Data.SqlServer.DbProvider":

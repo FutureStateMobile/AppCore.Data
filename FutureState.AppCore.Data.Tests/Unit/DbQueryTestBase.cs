@@ -6,9 +6,9 @@ namespace FutureState.AppCore.Data.Tests.Unit
     {
         public IEnumerable<IDbProvider> Repositories()
         {
-            var cp = new Data.SqlServer.DbConnectionProvider( null, null );
-            var sqlServerDbProvider = new Data.SqlServer.DbProvider( cp, "foo" );
-            var sqliteDbProvider = new Data.Sqlite.Windows.DbProvider("foo");
+            var cp = new SqlServer.DbConnectionProvider( null, null );
+            var sqlServerDbProvider = new SqlServer.DbProvider( cp, "foo" );
+            var sqliteDbProvider = new Sqlite.DbProvider("foo").WithForeignKeyConstraints();
 
             yield return sqlServerDbProvider;
             yield return sqliteDbProvider;

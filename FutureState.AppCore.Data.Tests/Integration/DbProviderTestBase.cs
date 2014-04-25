@@ -15,7 +15,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
                                                                 sqlServerConnection.ProviderName );
             
             IDbProvider sqlDbProvider = new SqlServer.DbProvider( sqlDbConnectionProvider, testDbName );
-            IDbProvider sqliteDbProvider = new Sqlite.Windows.DbProvider( testDbName );
+            IDbProvider sqliteDbProvider = new Sqlite.DbProvider( testDbName ).WithForeignKeyConstraints();
 
             yield return sqlDbProvider;
             yield return sqliteDbProvider;

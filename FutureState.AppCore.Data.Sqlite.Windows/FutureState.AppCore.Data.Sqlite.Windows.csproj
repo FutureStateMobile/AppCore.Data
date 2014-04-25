@@ -48,10 +48,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbConnectionProvider.cs" />
-    <Compile Include="DbProvider.cs" />
-    <Compile Include="DbReader.cs" />
-    <Compile Include="IDbConnectionProvider.cs" />
+    <Compile Include="..\FutureState.AppCore.Data.Sqlite\DbConnectionProvider.cs">
+      <Link>DbConnectionProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\FutureState.AppCore.Data.Sqlite\DbProvider.cs">
+      <Link>DbProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\FutureState.AppCore.Data.Sqlite\DbReader.cs">
+      <Link>DbReader.cs</Link>
+    </Compile>
+    <Compile Include="..\FutureState.AppCore.Data.Sqlite\IDbConnectionProvider.cs">
+      <Link>IDbConnectionProvider.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -66,9 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SqlScripts\Migrations\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

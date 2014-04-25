@@ -1,6 +1,6 @@
 ﻿using Mono.Data.Sqlite;
 
-namespace FutureState.AppCore.Data.Sqlite.Touch
+namespace FutureState.AppCore.Data.Sqlite
 {
     public interface IDbConnectionProvider
     {

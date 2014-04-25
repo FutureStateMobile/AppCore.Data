@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Mono.Data.Sqlite;
 
-namespace FutureState.AppCore.Data.Sqlite.Android
+namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbReader : IDbReader
     {

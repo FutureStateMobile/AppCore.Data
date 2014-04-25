@@ -73,7 +73,7 @@ To give you a taste of what it looks like, here are some examples of CRUD operat
 
 ###Dependencies###
 
-Since this ORM is simply a wrapper over an ADO database, it doesn't contain any drivers for the specific databases. If you're using SQLite, you'll want to use the Mono.Data.Sqlite library located in the [3rd party/Mono.Data.Sqlite](https://github.com/FutureStateMobile/AppCore.Data/tree/master/3rd%20party/Mono.Data.SQLite.1.0.61.0) directory as well as the System.Data library located in the [3rd party/System.Data/MonoTouch](https://github.com/FutureStateMobile/AppCore.Data/tree/master/3rd%20party/System.Data/MonoTouch) directory.
+Since this ORM is simply a wrapper over an ADO database, it doesn't contain any drivers for the specific databases. If you're using SQLite, you'll want to use the Mono.Data.Sqlite library located in the [3rd party/Mono.Data.Sqlite](https://github.com/FutureStateMobile/AppCore.Data/tree/master/3rd%20party/Mono.Data.SQLite.1.0.61.0) directory.
 
 Also, the project was built using Xamarin. We haven't had a chance to investigate compatibility in a Xamarin Free Environment.
 

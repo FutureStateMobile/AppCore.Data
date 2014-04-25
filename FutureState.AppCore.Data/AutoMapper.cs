@@ -29,8 +29,9 @@ namespace FutureState.AppCore.Data
                 }
 
                 // Check if the model object is to be ignored.
-                bool ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
-                              property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any();
+                bool ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
+                              property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
+                              property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any();
 
                 if (!ignore)
                 {
@@ -44,8 +45,9 @@ namespace FutureState.AppCore.Data
         public IList<string> GetFieldNameList(TMapTo model)
         {
             return (from property in model.GetType().GetProperties().OrderBy(p => p.Name)
-                    let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
-                                 property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
+                    let ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
+                                 property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
+                                 property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any()
                     where !ignore
                     select property.Name).ToList();
         }

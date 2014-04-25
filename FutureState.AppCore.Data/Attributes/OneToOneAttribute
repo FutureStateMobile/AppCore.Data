@@ -1,6 +1,6 @@
 using System;
 
-namespace FutureState.AppCore.Attributes
+namespace FutureState.AppCore.Data.Attributes
 {
     public class OneToOneAttribute : Attribute
     {

@@ -8,14 +8,21 @@ namespace FutureState.AppCore.Data.Sqlite.Touch
 {
     public class DbProvider : SqliteDbProviderBase
     {
+        private bool _enableForeignKey;
         private readonly IDbConnectionProvider _connectionProvider;
         private readonly string _sqliteDatabasePath;
+
         public DbProvider(string databaseName)
         {
-
             DatabaseName = databaseName;
             _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
             _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath);
+        }
+
+        public DbProvider WithForeignKeyConstraints()
+        {
+            _enableForeignKey = true;
+            return this;
         }
 
         public override bool CheckIfDatabaseExists()
@@ -135,11 +142,13 @@ namespace FutureState.AppCore.Data.Sqlite.Touch
 
         #endregion
 
-        private static void EnableForeignKeys(SqliteCommand command)
+        private void EnableForeignKeys(IDbCommand command)
         {
-            // todo: make this configurable.
-            command.CommandText = "PRAGMA foreign_keys=ON";
-            command.ExecuteNonQuery();
+            if (_enableForeignKey)
+            {
+                command.CommandText = "PRAGMA foreign_keys=ON";
+                command.ExecuteNonQuery();
+            }
         }
     }
 }

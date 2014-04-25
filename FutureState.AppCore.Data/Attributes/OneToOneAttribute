@@ -1,0 +1,8 @@
+using System;
+
+namespace FutureState.AppCore.Attributes
+{
+    public class OneToOneAttribute : Attribute
+    {
+    }
+}

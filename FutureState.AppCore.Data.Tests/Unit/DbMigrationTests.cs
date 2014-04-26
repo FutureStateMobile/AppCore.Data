@@ -1,6 +1,7 @@
 ﻿using System;
 using FutureState.AppCore.Data.SqlServer;
 using FutureState.AppCore.Data.Sqlite;
+using FutureState.AppCore.Data.Tests.Helpers.CustomTypes;
 using NUnit.Framework;
 
 namespace FutureState.AppCore.Data.Tests.Unit
@@ -172,6 +173,29 @@ CREATE TABLE [Test] (
             var testTable = database.AddTable("Test");
             testTable.AddColumn("Id", typeof (int)).NotNullable();
             testTable.AddColumn("Foo", typeof (string));
+
+            // Execute
+            var actualDDL = migration.GenerateDDL(database);
+
+            // Assert
+            Assert.AreEqual(expectedDDL, actualDDL);
+        }
+
+        [Test]
+        public void ShouldCreateATableWithALatLongColumn()
+        {
+            // Setup
+            const string expectedDDL = @"
+CREATE TABLE [Test] (
+[Latitude] double(9, 6) );";
+
+            var dialect = new SqlServerDialect();
+            var customDialect = new CustomDialect();
+            var migration = new DbMigration(dialect);
+            var database = new Database("MyDatabase", dialect);
+
+            var testTable = database.AddTable("Test");
+            testTable.AddColumn("Latitude", typeof (LatLong)).AsCustomType(customDialect.LatLong);
 
             // Execute
             var actualDDL = migration.GenerateDDL(database);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FutureState.AppCore.Data.Constraints;
 using FutureState.AppCore.Data.Exceptions;
 
@@ -15,7 +14,7 @@ namespace FutureState.AppCore.Data
 
         private readonly IDialect _dialect;
         private readonly string _tableName;
-        private static IList<KeyValuePair<Type, string>> _customTypes;
+        public static IList<KeyValuePair<Type, string>> CustomTypes = new List<KeyValuePair<Type, string>>();
 
         public Column(IDialect dialect, string name, Type type, string tableName, int precision)
         {
@@ -25,7 +24,6 @@ namespace FutureState.AppCore.Data
             Type = type;
             _dialect = dialect;
             _tableName = tableName;
-            _customTypes = new List<KeyValuePair<Type, string>>();
         }
 
         public Column PrimaryKey()
@@ -79,16 +77,17 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
+        public Column AsCustomType(string dialectValue)
+        {
+            CustomTypes.Add(new KeyValuePair<Type, string>(Type, dialectValue));
+            return this;
+        }
+
         public override string ToString()
         {
             return Environment.NewLine +
                    string.Format(_dialect.CreateColumn, Name, GetDataType(Type, Precision),
                                  string.Join(" ", Constraints));
-        }
-
-        public static void AddCustomType(Type type, string dialectValue)
-        {
-            _customTypes.Add(new KeyValuePair<Type, string>(type, dialectValue));
         }
 
         private string GetDataType(Type type, int precision)
@@ -135,9 +134,9 @@ namespace FutureState.AppCore.Data
             if (type == typeof (TimeSpan))
                 return _dialect.TimeSpan;
 
-            foreach (var customType in _customTypes)
+            foreach (var customType in CustomTypes)
             {
-                if (type == customType.GetType())
+                if (type == customType.Key)
                 {
                     return customType.Value;
                 }

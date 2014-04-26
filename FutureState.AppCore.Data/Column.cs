@@ -135,9 +135,12 @@ namespace FutureState.AppCore.Data
             if (type == typeof (TimeSpan))
                 return _dialect.TimeSpan;
 
-            foreach (var customType in _customTypes.Where(customType => type == customType.Key))
+            foreach (var customType in _customTypes)
             {
-                return customType.Value;
+                if (type == customType.GetType())
+                {
+                    return customType.Value;
+                }
             }
 
             throw new DataTypeNotSupportedException();

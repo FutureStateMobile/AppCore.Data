@@ -2,7 +2,7 @@
 
 namespace FutureState.AppCore.Data
 {
-    public abstract class CustomType
+    public class CustomType
     {
         public CustomType(Type customType, String dialectValue)
         {

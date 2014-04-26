@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FutureState.AppCore.Data.Constraints;
 using FutureState.AppCore.Data.Exceptions;
 
@@ -14,6 +15,7 @@ namespace FutureState.AppCore.Data
 
         private readonly IDialect _dialect;
         private readonly string _tableName;
+        private static IList<KeyValuePair<Type, string>> _customTypes;
 
         public Column(IDialect dialect, string name, Type type, string tableName, int precision)
         {
@@ -23,6 +25,7 @@ namespace FutureState.AppCore.Data
             Type = type;
             _dialect = dialect;
             _tableName = tableName;
+            _customTypes = new List<KeyValuePair<Type, string>>();
         }
 
         public Column PrimaryKey()
@@ -83,6 +86,11 @@ namespace FutureState.AppCore.Data
                                  string.Join(" ", Constraints));
         }
 
+        public static void AddCustomType(Type type, string dialectValue)
+        {
+            _customTypes.Add(new KeyValuePair<Type, string>(type, dialectValue));
+        }
+
         private string GetDataType(Type type, int precision)
         {
             if (type == typeof (String) && precision == 0)
@@ -126,6 +134,11 @@ namespace FutureState.AppCore.Data
 
             if (type == typeof (TimeSpan))
                 return _dialect.TimeSpan;
+
+            foreach (var customType in _customTypes.Where(customType => type == customType.Key))
+            {
+                return customType.Value;
+            }
 
             throw new DataTypeNotSupportedException();
         }

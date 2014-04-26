@@ -2,9 +2,9 @@
 
 namespace FutureState.AppCore.Data
 {
-    public abstract class CustomDataType
+    public abstract class CustomType
     {
-        protected CustomDataType(Type customType, String dialectValue)
+        public CustomType(Type customType, String dialectValue)
         {
             if (customType != null && dialectValue != null)
                 Column.AddCustomType(customType, dialectValue);

@@ -32,10 +32,11 @@ In our attempt to create our idea of the ultimate sync engine between mobile dev
 
 We're working on building out the [Wiki](https://github.com/FutureStateMobile/AppCore.Data/wiki), so more information will be found there.
 
-To get started, you'll need to compile the project (we plan to have this up on [nuget.org](http://nuget.org) shortly).  
-Simply clone the project to your Windows computer (we're currently using MSBuild and PSAKE for our builds), and run the `build.ps1` script. 
+To get started, can either compile the project yourself. Simply clone the project to your Windows computer (we're currently using MSBuild and Powershell for our builds), and run the `build.ps1` script. From there you can either grab the dll's out of the `build-artifacts\output` directory, or scoop the nupkg out of the `build-artifacts` directory and drop it in your local nuget package source. 
 
-From there you can either grab the dll's out of the `build-artifacts\output` directory, or scoop the nupkg out of the `build-artifacts` directory and drop it in your local nuget package source. 
+Or you can just grab it from Nuget.org
+
+    > Install-Package FutureState.AppCore.Data
 
 To give you a taste of what it looks like, here are some examples of CRUD operations.
 

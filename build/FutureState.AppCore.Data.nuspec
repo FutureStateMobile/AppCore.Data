@@ -29,7 +29,5 @@
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.SqlServer.dll" target="lib\net45\FutureState.AppCore.Data.SqlServer.dll" />
     <!-- PCL -->
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\FutureState.AppCore.Data.dll" />
-    <!-- Deploy Script for Octopus -->
-    <file src="deploy.ps1" target="deploy.ps1" />
   </files>
 </package>

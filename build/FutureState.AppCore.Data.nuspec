@@ -6,11 +6,13 @@
     <title>AppCore.Data</title>
     <authors>Keith Larsen,Chase Florell,Joe Kupres</authors>
     <owners>FutureState Mobile Inc.</owners>
-    <licenseUrl>http://www.futurestate.mobi/license</licenseUrl>
+    <licenseUrl>http://www.microsoft.com/en-us/openness/licenses.aspx#MPL</licenseUrl>
     <projectUrl>https://github.com/FutureStateMobile/AppCore.Data</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>An Opinionated .NET ORM that is portable (PCL) and has multi-database support.</description>
-    <summary>FutureState.AppCore.Data 0.1.1 Developer Build</summary>
+    <description>A Portable (PCL), Opinionated .NET ORM with multi-database support.
+Current DB Support includes SqlServer (=> 2012) and Sqlite. This library gives you the ability to create a portable repository and deploy it against any ADO database across multiple platforms Including Windows, Android, and iOS. Currently being developed for Cross Platform applications using Xamarin.
+This project is licensed under Ms-PL. Dependencies carry their own licenses.</description>
+    <summary>A Portable (PCL), Opinionated .NET ORM with multi-database support.</summary>
     <tags>mobile sqllite sqlserver orm pcl ado</tags>
   </metadata>
   <files>

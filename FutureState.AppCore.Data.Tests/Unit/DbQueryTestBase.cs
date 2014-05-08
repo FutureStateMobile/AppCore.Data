@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using FutureState.AppCore.Data.SqlServer;
-using Mono.Data.Sqlite;
-using SQLiteJournalModeEnum = Mono.Data.Sqlite.SQLiteJournalModeEnum;
+using FutureState.AppCore.Data.Sqlite;
+using DbConnectionProvider = FutureState.AppCore.Data.SqlServer.DbConnectionProvider;
+using DbProvider = FutureState.AppCore.Data.SqlServer.DbProvider;
 
 namespace FutureState.AppCore.Data.Tests.Unit
 {

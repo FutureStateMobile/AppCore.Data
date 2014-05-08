@@ -1,5 +1,4 @@
 ﻿using System;
-using Mono.Data.Sqlite;
 
 namespace FutureState.AppCore.Data.Sqlite
 {
@@ -62,5 +61,19 @@ namespace FutureState.AppCore.Data.Sqlite
         }
 
         public bool ReadOnly { get; set; }
+    }
+
+    public enum SynchronizationModes
+    {
+        Full,
+        Normal,
+        Off
+    }
+
+    public enum SQLiteJournalModeEnum
+    {
+        Delete,
+        Off,
+        Persist
     }
 }

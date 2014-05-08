@@ -12,13 +12,14 @@ namespace FutureState.AppCore.Data.Sqlite
             var sqliteConnectionStringBuilder = new SqliteConnectionStringBuilder(dataSource)
                 {
                     CacheSize = sqliteSettings.CacheSize,
-                    JournalMode = sqliteSettings.JournalMode,
+                    JournalMode = GetJournalMode(sqliteSettings.JournalMode),
                     PageSize = sqliteSettings.PageSize,
-                    DefaultTimeout = (int)sqliteSettings.DefaultTimeout.TotalMilliseconds,
-                    SyncMode = sqliteSettings.SyncMode,
+                    DefaultTimeout = (int) sqliteSettings.DefaultTimeout.TotalMilliseconds,
+                    SyncMode = GetSyncMode(sqliteSettings.SyncMode),
                     FailIfMissing = sqliteSettings.FailIfMissing,
                     ReadOnly = sqliteSettings.ReadOnly,
                 };
+
 
             _connectionString = sqliteConnectionStringBuilder.ConnectionString;
         }
@@ -31,6 +32,36 @@ namespace FutureState.AppCore.Data.Sqlite
             connection.Open();
 
             return connection;
+        }
+
+        private static Mono.Data.Sqlite.SynchronizationModes GetSyncMode(SynchronizationModes syncMode)
+        {
+            switch (syncMode)
+            {
+                case SynchronizationModes.Full:
+                    return Mono.Data.Sqlite.SynchronizationModes.Full;
+                case SynchronizationModes.Normal:
+                    return Mono.Data.Sqlite.SynchronizationModes.Normal;
+                case SynchronizationModes.Off:
+                    return Mono.Data.Sqlite.SynchronizationModes.Off;
+                default:
+                    return Mono.Data.Sqlite.SynchronizationModes.Normal;
+            }
+        }
+
+        private static Mono.Data.Sqlite.SQLiteJournalModeEnum GetJournalMode(SQLiteJournalModeEnum journalMode)
+        {
+            switch (journalMode)
+            {
+                case SQLiteJournalModeEnum.Delete:
+                    return Mono.Data.Sqlite.SQLiteJournalModeEnum.Delete;
+                case SQLiteJournalModeEnum.Off:
+                    return Mono.Data.Sqlite.SQLiteJournalModeEnum.Off;
+                case SQLiteJournalModeEnum.Persist:
+                    return Mono.Data.Sqlite.SQLiteJournalModeEnum.Persist;
+                default:
+                    return Mono.Data.Sqlite.SQLiteJournalModeEnum.Delete;
+            }
         }
     }
 }

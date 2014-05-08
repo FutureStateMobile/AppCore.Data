@@ -6,9 +6,21 @@ namespace FutureState.AppCore.Data.Sqlite
     {
         private readonly string _connectionString;
 
-        public DbConnectionProvider(string sqlFile)
+        public DbConnectionProvider(string sqlFile, SqliteSettings sqliteSettings)
         {
-            _connectionString = string.Format("Data Source={0};", sqlFile);
+            var dataSource = string.Format("Data Source={0};", sqlFile);
+            var sqliteConnectionStringBuilder = new SqliteConnectionStringBuilder(dataSource)
+                {
+                    CacheSize = sqliteSettings.CacheSize,
+                    JournalMode = sqliteSettings.JournalMode,
+                    PageSize = sqliteSettings.PageSize,
+                    DefaultTimeout = (int)sqliteSettings.DefaultTimeout.TotalMilliseconds,
+                    SyncMode = sqliteSettings.SyncMode,
+                    FailIfMissing = sqliteSettings.FailIfMissing,
+                    ReadOnly = sqliteSettings.ReadOnly,
+                };
+
+            _connectionString = sqliteConnectionStringBuilder.ConnectionString;
         }
 
         public SqliteConnection GetOpenConnection()

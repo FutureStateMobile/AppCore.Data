@@ -8,69 +8,27 @@ namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbProvider : SqliteDbProviderBase
     {
-        private readonly SqliteSettings _settings = new SqliteSettings();
         private readonly string _sqliteDatabasePath;
-        private IDbConnectionProvider _connectionProvider;
+        private readonly IDbConnectionProvider _connectionProvider;
         private bool _enableForeignKey;
 
         public DbProvider(string databaseName)
         {
             DatabaseName = databaseName;
-            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                                               databaseName);
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
+            _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath);
+        }
+
+        public DbProvider(string databaseName, SqliteSettings settings)
+        {
+            DatabaseName = databaseName;
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
+            _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, settings);
         }
 
         public DbProvider WithForeignKeyConstraints()
         {
             _enableForeignKey = true;
-            return this;
-        }
-
-        public DbProvider JournalMode(SQLiteJournalModeEnum journalMode)
-        {
-            _settings.JournalMode = journalMode;
-            return this;
-        }
-
-        public DbProvider CacheSize(int cacheSize)
-        {
-            _settings.CacheSize = cacheSize;
-            return this;
-        }
-
-        public DbProvider FailIfMissing(bool failIfMissing)
-        {
-            _settings.FailIfMissing = failIfMissing;
-            return this;
-        }
-
-        public DbProvider ReadOnly(bool readOnly)
-        {
-            _settings.ReadOnly = readOnly;
-            return this;
-        }
-
-        public DbProvider PageSize(int pageSize)
-        {
-            _settings.PageSize = pageSize;
-            return this;
-        }
-
-        public DbProvider DefaultTimeout(TimeSpan defaultTimeout)
-        {
-            _settings.DefaultTimeout = defaultTimeout;
-            return this;
-        }
-
-        public DbProvider SyncMode(SynchronizationModes syncMode)
-        {
-            _settings.SyncMode = syncMode;
-            return this;
-        }
-
-        public DbProvider Init()
-        {
-            _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, _settings);
             return this;
         }
 

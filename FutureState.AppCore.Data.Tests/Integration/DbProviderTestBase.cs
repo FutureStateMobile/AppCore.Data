@@ -18,14 +18,14 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 sqlServerConnection.ProviderName);
 
             IDbProvider sqlDbProvider = new DbProvider(sqlDbConnectionProvider, testDbName);
-            IDbProvider sqliteDbProvider = new Sqlite.DbProvider(testDbName).WithForeignKeyConstraints()
-                                                                            .SyncMode(SynchronizationModes.Off)
-                                                                            .JournalMode(SQLiteJournalModeEnum.Off)
-                                                                            .PageSize(65536)
-                                                                            .FailIfMissing(false)
-                                                                            .CacheSize(16777216)
-                                                                            .ReadOnly(false)
-                                                                            .Init();
+
+            IDbProvider sqliteDbProvider = new Sqlite.DbProvider(testDbName, new SqliteSettings
+                {
+                    CacheSize = 16777216,
+                    SyncMode = SynchronizationModes.Off,
+                    JournalMode = SQLiteJournalModeEnum.Off,
+                    PageSize = 65536
+                }).WithForeignKeyConstraints();
 
             yield return sqlDbProvider;
             yield return sqliteDbProvider;

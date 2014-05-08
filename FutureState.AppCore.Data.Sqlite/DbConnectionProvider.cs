@@ -24,6 +24,12 @@ namespace FutureState.AppCore.Data.Sqlite
             _connectionString = sqliteConnectionStringBuilder.ConnectionString;
         }
 
+        public DbConnectionProvider(string sqlFile)
+        {
+            var connectionString = string.Format("Data Source={0};", sqlFile);
+            _connectionString = connectionString;
+        }
+
         public SqliteConnection GetOpenConnection()
         {
             var connection = new SqliteConnection(_connectionString);

@@ -16,8 +16,9 @@ namespace FutureState.AppCore.Data.Tests.Unit
                                                                .JournalMode(SQLiteJournalModeEnum.Off)
                                                                .PageSize(65536)
                                                                .FailIfMissing(false)
-                                                               .ReadOnly(false);
-
+                                                               .CacheSize(16777216)
+                                                               .ReadOnly(false)
+                                                               .Init();
             yield return sqlServerDbProvider;
             yield return sqliteDbProvider;
         }

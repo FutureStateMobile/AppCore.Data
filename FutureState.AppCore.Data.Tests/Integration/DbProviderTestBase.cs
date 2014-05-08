@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
-using FutureState.AppCore.Data.SqlServer;
+using FutureState.AppCore.Data.Sqlite;
+using DbConnectionProvider = FutureState.AppCore.Data.SqlServer.DbConnectionProvider;
+using DbProvider = FutureState.AppCore.Data.SqlServer.DbProvider;
 
 namespace FutureState.AppCore.Data.Tests.Integration
 {
@@ -16,7 +18,14 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 sqlServerConnection.ProviderName);
 
             IDbProvider sqlDbProvider = new DbProvider(sqlDbConnectionProvider, testDbName);
-            IDbProvider sqliteDbProvider = new Sqlite.DbProvider(testDbName).WithForeignKeyConstraints();
+            IDbProvider sqliteDbProvider = new Sqlite.DbProvider(testDbName).WithForeignKeyConstraints()
+                                                                            .SyncMode(SynchronizationModes.Off)
+                                                                            .JournalMode(SQLiteJournalModeEnum.Off)
+                                                                            .PageSize(65536)
+                                                                            .FailIfMissing(false)
+                                                                            .CacheSize(16777216)
+                                                                            .ReadOnly(false)
+                                                                            .Init();
 
             yield return sqlDbProvider;
             yield return sqliteDbProvider;

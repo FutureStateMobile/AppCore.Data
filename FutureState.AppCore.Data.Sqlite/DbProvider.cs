@@ -8,9 +8,9 @@ namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbProvider : SqliteDbProviderBase
     {
-        private readonly IDbConnectionProvider _connectionProvider;
         private readonly SqliteSettings _settings = new SqliteSettings();
         private readonly string _sqliteDatabasePath;
+        private IDbConnectionProvider _connectionProvider;
         private bool _enableForeignKey;
 
         public DbProvider(string databaseName)
@@ -18,7 +18,6 @@ namespace FutureState.AppCore.Data.Sqlite
             DatabaseName = databaseName;
             _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
                                                databaseName);
-            _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, _settings);
         }
 
         public DbProvider WithForeignKeyConstraints()
@@ -66,6 +65,12 @@ namespace FutureState.AppCore.Data.Sqlite
         public DbProvider SyncMode(SynchronizationModes syncMode)
         {
             _settings.SyncMode = syncMode;
+            return this;
+        }
+
+        public DbProvider Init()
+        {
+            _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, _settings);
             return this;
         }
 

@@ -11,7 +11,8 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             var cp = new DbConnectionProvider(null, null);
             var sqlServerDbProvider = new DbProvider(cp, "foo");
-            var sqliteDbProvider = new Sqlite.DbProvider("foo").WithForeignKeyConstraints();
+            var sqliteDbProvider = new Sqlite.DbProvider("foo");
+            ;
             yield return sqlServerDbProvider;
             yield return sqliteDbProvider;
         }

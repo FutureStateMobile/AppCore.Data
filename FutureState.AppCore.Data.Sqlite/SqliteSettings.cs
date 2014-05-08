@@ -12,6 +12,7 @@ namespace FutureState.AppCore.Data.Sqlite
         private SQLiteJournalModeEnum _journalMode = SQLiteJournalModeEnum.Delete;
         private int _pageSize = 1024;
         private SynchronizationModes _syncMode = SynchronizationModes.Normal;
+        private bool _enforceForeignKeys = true;
         //-----------------------------
 
         public SQLiteJournalModeEnum JournalMode
@@ -61,6 +62,12 @@ namespace FutureState.AppCore.Data.Sqlite
         }
 
         public bool ReadOnly { get; set; }
+
+        public bool EnforceForeignKeys
+        {
+            get { return _enforceForeignKeys; }
+            set { _enforceForeignKeys = value; }
+        }
     }
 
     public enum SynchronizationModes

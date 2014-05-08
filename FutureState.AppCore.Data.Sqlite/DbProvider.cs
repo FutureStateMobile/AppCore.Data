@@ -8,28 +8,25 @@ namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbProvider : SqliteDbProviderBase
     {
-        private readonly string _sqliteDatabasePath;
         private readonly IDbConnectionProvider _connectionProvider;
-        private bool _enableForeignKey;
+        private readonly bool _enforceForeignKeys = true;
+        private readonly string _sqliteDatabasePath;
 
         public DbProvider(string databaseName)
         {
             DatabaseName = databaseName;
-            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                                               databaseName);
             _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath);
         }
 
         public DbProvider(string databaseName, SqliteSettings settings)
         {
             DatabaseName = databaseName;
-            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
+            _enforceForeignKeys = settings.EnforceForeignKeys;
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                                               databaseName);
             _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, settings);
-        }
-
-        public DbProvider WithForeignKeyConstraints()
-        {
-            _enableForeignKey = true;
-            return this;
         }
 
         public override bool CheckIfDatabaseExists()
@@ -56,7 +53,7 @@ namespace FutureState.AppCore.Data.Sqlite
 
         private void EnableForeignKeys(IDbCommand command)
         {
-            if (_enableForeignKey)
+            if (_enforceForeignKeys)
             {
                 command.CommandText = "PRAGMA foreign_keys=ON";
                 command.ExecuteNonQuery();

@@ -38,6 +38,13 @@ namespace FutureState.AppCore.Data
                 case ExpressionType.MemberAccess:
                     VisitMemberAccess((MemberExpression) expression);
                     break;
+                case ExpressionType.Convert:
+                    var exp = expression as UnaryExpression;
+                    if (exp != null)
+                    {
+                        VisitMemberAccess( (MemberExpression)exp.Operand );
+                    }
+                    break;
                 default:
                     throw new ExpressionNotSupportedException(expression);
             }

@@ -17,11 +17,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
             switch (dbProvider.GetType().ToString())
             {
                 case "FutureState.AppCore.Data.Sqlite.DbProvider":
-                    expectedQuery = @"SELECT Students.* FROM Students WHERE [Id] = @Id1  LIMIT 10 OFFSET 20";
+                    expectedQuery = @"SELECT Students.* FROM Students WHERE [Id] = @Id1 ORDER BY [Email] DESC LIMIT 10 OFFSET 20";
                     break;
                 case "FutureState.AppCore.Data.SqlServer.DbProvider":
                     expectedQuery =
-                        @"SELECT Students.* FROM Students WHERE [Id] = @Id1  ORDER BY Id OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY";
+                        @"SELECT Students.* FROM Students WHERE [Id] = @Id1 ORDER BY [Email] DESC OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY";
                     break;
             }
 
@@ -30,6 +30,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             // execute
             var actualQuery = dbProvider.Query<StudentModel>()
                                         .Where(u => u.Id == testGuid)
+                                        .OrderBy(u => u.Email, OrderDirection.Descending)
                                         .SkipTake(20, 10)
                                         .ToString();
 

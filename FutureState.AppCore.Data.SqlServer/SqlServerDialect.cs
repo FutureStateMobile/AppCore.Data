@@ -83,7 +83,7 @@
 
         public string SkipTake
         {
-            get { return "OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY"; }
+            get { return "ORDER BY Id OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY"; }
         }
 
         // Constraints

@@ -21,7 +21,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
                     break;
                 case "FutureState.AppCore.Data.SqlServer.DbProvider":
                     expectedQuery =
-                        @"SELECT Students.* FROM Students WHERE [Id] = @Id1  OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY";
+                        @"SELECT Students.* FROM Students WHERE [Id] = @Id1  ORDER BY Id OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY";
                     break;
             }
 

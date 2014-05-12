@@ -65,7 +65,10 @@ namespace FutureState.AppCore.Data
         {
             // Check Actual DatabaseVersion against the migration version
             // Don't run unless the MigrationVersion is 1 more than DatabaseVersion
-            var databaseVersion = _dbProvider.Query<DatabaseVersionModel>().Select().FirstOrDefault();
+            var databaseVersion = _dbProvider.Query<DatabaseVersionModel>()
+                                             .OrderBy(v => v.VersionNumber, OrderDirection.Descending)
+                                             .Select()
+                                             .FirstOrDefault();
 
             if (databaseVersion == null || databaseVersion.VersionNumber + 1 == migration.MigrationVersion)
             {

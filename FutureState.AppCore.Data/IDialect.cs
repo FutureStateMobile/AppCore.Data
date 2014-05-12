@@ -1,4 +1,6 @@
-﻿namespace FutureState.AppCore.Data
+﻿using System;
+
+namespace FutureState.AppCore.Data
 {
     public interface IDialect
     {
@@ -50,5 +52,6 @@
         string Single { get; }
         string TimeSpan { get; }
         string OrderBy { get; }
+        string Truncate { get; }
     }
 }

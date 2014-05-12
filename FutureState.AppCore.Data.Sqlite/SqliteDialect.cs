@@ -218,5 +218,10 @@
         {
             get { return "ORDER BY {0} {1}"; }
         }
+
+        public string Truncate
+        {
+            get { return "DELETE FROM {0}"; }
+        }
     }
 }

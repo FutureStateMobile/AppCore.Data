@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Migrations;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
 using NUnit.Framework;
@@ -110,6 +111,63 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert Delete
             Assert.IsNull(actualUser);
+        }
+
+        [Test, TestCaseSource( "DbProviders" )]
+        public void ShouldDoCrudWithGeese ( IDbProvider db )
+        {
+            // don't run against SQLite because it's not seeded.
+            var provider = db.GetType().ToString();
+            if ( provider == "FutureState.AppCore.Data.Sqlite.Windows.DbProvider" ) return;
+
+            Trace.WriteLine( TraceObjectGraphInfo( db ) );
+
+            // Execute Create
+            var firstGoose = new GooseModel { Id = new Guid("43F4C249-E24C-41A7-9DED-73E3AE2C17BE"), Name = "My New Goose"};
+            db.Create( firstGoose );
+            var goose = db.Query<GooseModel>().Where( u => u.Id == firstGoose.Id ).Select().FirstOrDefault();
+
+            // Assert Create
+            Assert.IsNotNull( goose );
+            Assert.IsNotNull( goose.Id );
+            Assert.AreEqual( firstGoose.Name, goose.Name );
+            Assert.AreNotEqual( Guid.Empty, goose.Id );
+
+            // Execute Find IEnumerable
+            var actualGeese = db.Query<GooseModel>().Where( x => x.Name.Contains( "irst" ) ).Select();
+            // this returns an IEnumerable
+
+            // Assert Find IEnumerable
+            Assert.True( actualGeese.Any() );
+
+            // Execute Find List
+            var actualGeese2 = db.Query<GooseModel>().Where( x => x.Name.Contains( "Goose" ) ).Select().ToList();
+
+            // Assert Find List
+            Assert.True( actualGeese2.Count == 4 );
+
+            // Execute Update
+            var gooseToUpdate = GooseFixture.GooseToUpdate;
+            gooseToUpdate.Name = "Canada Goose";
+            db.Update( gooseToUpdate );
+            var actualUpdatedGoose = db.Query<GooseModel>().Where( x => x.Id == gooseToUpdate.Id ).Select().FirstOrDefault();
+
+            //// Assert Update
+            Assert.IsNotNull( actualUpdatedGoose );
+            Assert.AreEqual( "Canada Goose", actualUpdatedGoose.Name );
+
+            // Execute Delete
+            var gooseToDelete = GooseFixture.GooseToDelete;
+            db.Query<GooseModel>().Where( u => u.Id == gooseToDelete.Id ).Delete();
+            var actualDeletedGoose = db.Query<GooseModel>().Where( x => x.Id == gooseToDelete.Id ).Select().FirstOrDefault();
+
+            // Assert Delete
+            Assert.IsNull( actualDeletedGoose );
+
+            db.Query<GooseModel>().Truncate();
+
+            var emptyResults = db.Query<GooseModel>().Select();
+            Assert.IsEmpty(emptyResults);
         }
 
         [Test, TestCaseSource("DbProviders")]

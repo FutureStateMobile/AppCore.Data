@@ -56,6 +56,7 @@
     <Compile Include="DbProviderBase.cs" />
     <Compile Include="DbProviderExtensions.cs" />
     <Compile Include="DbQuery.cs" />
+    <Compile Include="Helpers\Inflector.cs" />
     <Compile Include="JoinExpressionVisitor.cs" />
     <Compile Include="JoinType.cs" />
     <Compile Include="OrderByExpressionVisitor.cs" />

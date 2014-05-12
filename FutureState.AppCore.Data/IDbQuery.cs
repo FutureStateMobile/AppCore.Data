@@ -18,6 +18,7 @@ namespace FutureState.AppCore.Data
         IDbQuery<TModel> SkipTake(int skip, int take);
         IEnumerable<TModel> Select();
         void Delete();
+        void Truncate();
     }
 
     public interface IDbQuery<TModel, TJoinTo>

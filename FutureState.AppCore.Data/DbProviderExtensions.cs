@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using FutureState.AppCore.Data.Attributes;
+using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
@@ -223,8 +224,7 @@ namespace FutureState.AppCore.Data
 
         private static string GetTableName(MemberInfo type)
         {
-            // TODO: Inflection Library here
-            return type.Name.Replace("Model", "s");
+            return type.Name.Replace("Model", "").Pluralize();
         }
 
         private static string GetJoinTableName(string tableName, string joinTableName)

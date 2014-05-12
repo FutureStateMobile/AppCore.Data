@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
@@ -76,6 +77,12 @@ namespace FutureState.AppCore.Data
             _dbProvider.ExecuteNonQuery(commandText, _parameters);
         }
 
+        public void Truncate()
+        {
+            var commandText = string.Format( _dbProvider.Dialect.Truncate, _tableName);
+            _dbProvider.ExecuteNonQuery( commandText );
+        }
+
         public override string ToString()
         {
             return string.Format(_dbProvider.Dialect.SelectFrom, _tableName, GetExtendedWhereClause()).Trim();
@@ -88,7 +95,7 @@ namespace FutureState.AppCore.Data
 
         private static string GetTableName(MemberInfo type)
         {
-            return type.Name.Replace("Model", "s");
+            return type.Name.Replace("Model", "").Pluralize();
         }
     }
 
@@ -151,7 +158,7 @@ namespace FutureState.AppCore.Data
 
         private static string GetTableName(MemberInfo type)
         {
-            return type.Name.Replace("Model", "s");
+            return type.Name.Replace( "Model", "" ).Pluralize();
         }
     }
 }

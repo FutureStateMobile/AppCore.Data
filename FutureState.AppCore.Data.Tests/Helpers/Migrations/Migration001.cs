@@ -52,6 +52,10 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             bookTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();
             bookTable.AddColumn("IsDeleted", typeof (bool)).NotNullable(false);
 
+            var gooseTable = database.AddTable("Geese");
+            gooseTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            gooseTable.AddColumn("Name", typeof (string), 100).Nullable();
+
             // ManyToMany Join Tables are currently handled under the covers (without an associated model)
             // Naming convention used by ORM is to joing the 2 table names together in alphabetical order
             var courseStudentTable = database.AddTable("Courses_Students").CompositeKey("StudentId", "CourseId");

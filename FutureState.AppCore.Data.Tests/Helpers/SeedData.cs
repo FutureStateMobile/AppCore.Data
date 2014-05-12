@@ -9,6 +9,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers
             CourseFixture.SetupFixtureDataInDatabase(dbProvider);
             StudentFixture.SetupFixtureDataInDatabase(dbProvider);
             BookFixture.SetupFixtureDataInDatabase(dbProvider);
+            GooseFixture.SetupFixtureDataInDatabase(dbProvider);
         }
     }
 }

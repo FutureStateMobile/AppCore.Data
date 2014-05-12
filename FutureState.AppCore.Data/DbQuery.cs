@@ -67,7 +67,7 @@ namespace FutureState.AppCore.Data
         public IEnumerable<TModel> Select()
         {
             var commandText = string.Format(_dbProvider.Dialect.SelectFrom, _tableName, GetExtendedWhereClause()).Trim();
-            return _dbProvider.ExecuteReader(commandText, _parameters, _mapper.BuildStackFrom);
+            return _dbProvider.ExecuteReader(commandText, _parameters, _mapper.BuildQueueFrom);
         }
 
         public void Delete()

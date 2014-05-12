@@ -134,8 +134,8 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Setup
             var expectedUsers = new List<StudentModel>
                 {
-                    new StudentModel {FirstName = "Bob"},
-                    new StudentModel {FirstName = "Jill"}
+                    new StudentModel {FirstName = "Jill"},
+                    new StudentModel {FirstName = "Bob"}
                 };
 
             // Execute

@@ -117,19 +117,19 @@ namespace FutureState.AppCore.Data
             return model;
         }
 
-        public IEnumerable<TMapTo> BuildStackFrom(IDbReader reader)
+        public IEnumerable<TMapTo> BuildQueueFrom(IDbReader reader)
         {
-            var stack = new Stack<TMapTo>();
+            var queue = new Queue<TMapTo>();
 
             var model = BuildFrom(reader);
 
             while (model != null)
             {
-                stack.Push(model);
+                queue.Enqueue(model);
                 model = BuildFrom(reader);
             }
 
-            return stack;
+            return queue;
         }
     }
 }

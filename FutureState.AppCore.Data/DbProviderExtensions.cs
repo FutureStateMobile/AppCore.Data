@@ -65,7 +65,7 @@ namespace FutureState.AppCore.Data
             var key = string.Format("@{0}Id", referenceTableNameSingular);
             var parameters = new Dictionary<string, object> {{key, id}};
 
-            return dbProvider.ExecuteReader(commandText, parameters, mapper.BuildStackFrom);
+            return dbProvider.ExecuteReader(commandText, parameters, mapper.BuildQueueFrom);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace FutureState.AppCore.Data
 //            var whereClause = string.Format(dbProvider.Dialect.Where, visitor.WhereExpression);
 //            var commandText = string.Format(dbProvider.Dialect.SelectFrom, tableName, whereClause);
 //
-//            return dbProvider.ExecuteReader(commandText, visitor.Parameters, mapper.BuildStackFrom);
+//            return dbProvider.ExecuteReader(commandText, visitor.Parameters, mapper.BuildQueueFrom);
 //        }
 //
 //        /// <summary>
@@ -112,7 +112,7 @@ namespace FutureState.AppCore.Data
 //            var tableName = GetTableName(typeof(TModel));
 //            var commandText = string.Format(dbProvider.Dialect.SelectFrom, tableName, "");
 //
-//            return dbProvider.ExecuteReader(commandText, mapper.BuildStackFrom);
+//            return dbProvider.ExecuteReader(commandText, mapper.BuildQueueFrom);
 //        }
 
         /// <summary>

@@ -26,6 +26,7 @@ namespace FutureState.AppCore.Data.Helpers
             AddPlural( "([m|l])ouse$", "$1ice" );
             AddPlural( "^(ox)$", "$1en" );
             AddPlural( "(quiz)$", "$1zes" );
+            AddPlural( "(media)$", "$1" );
 
             AddSingular( "s$", "" );
             AddSingular( "(n)ews$", "$1ews" );
@@ -50,7 +51,8 @@ namespace FutureState.AppCore.Data.Helpers
             AddSingular( "^(ox)en", "$1" );
             AddSingular( "(vert|ind)ices$", "$1ex" );
             AddSingular( "(matr)ices$", "$1ix" );
-            AddSingular( "(quiz)zes$", "$1" );
+            AddSingular("(quiz)zes$", "$1");
+            AddSingular("(media)$", "$1");
 
             AddIrregular( "person", "people" );
             AddIrregular( "man", "men" );

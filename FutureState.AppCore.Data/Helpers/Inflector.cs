@@ -70,6 +70,7 @@ namespace FutureState.AppCore.Data.Helpers
             AddUncountable( "sheep" );
             AddUncountable( "deer" );
             AddUncountable( "aircraft" );
+            AddUncountable( "media" );
         }
 
         #endregion

@@ -23,7 +23,7 @@ namespace FutureState.AppCore.Data
         {
             _dbProvider = dbProvider;
             _mapper = new AutoMapper<TModel>();
-            _tableName = GetTableName(typeof (TModel));
+            _tableName = GetTableName(typeof (TModel).GetTypeInfo());
             _parameters = new Dictionary<string, object>();
         }
 
@@ -117,8 +117,8 @@ namespace FutureState.AppCore.Data
             _dbProvider = dbProvider;
             _joinType = joinType;
             _mapper = new AutoMapper<TModel>();
-            _tableName = GetTableName(typeof (TModel));
-            _joinTableName = GetTableName(typeof (TJoinTo));
+            _tableName = GetTableName(typeof (TModel).GetTypeInfo());
+            _joinTableName = GetTableName(typeof (TJoinTo).GetTypeInfo());
             _parameters = new Dictionary<string, object>();
         }
 

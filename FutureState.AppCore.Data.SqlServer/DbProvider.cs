@@ -25,7 +25,7 @@ namespace FutureState.AppCore.Data.SqlServer
             get { return new SqlServerDialect(); }
         }
 
-        public override string LoadSqlFile(string fileName)
+        public override string LoadSqlFile<TDbProvider>(string fileName)
         {
             var sqlStatement = string.Empty;
 

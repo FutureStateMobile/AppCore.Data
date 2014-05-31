@@ -8,7 +8,7 @@ namespace FutureState.AppCore.Data
         // Database specific stuff
         IDialect Dialect { get; }
         string DatabaseName { get; set; }
-        string LoadSqlFile(string fileName);
+        string LoadSqlFile<TDbProvider>(string fileName);
         bool CheckIfDatabaseExists();
         void CreateDatabase();
         void DropDatabase();

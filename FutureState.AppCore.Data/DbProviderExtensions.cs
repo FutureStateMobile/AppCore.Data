@@ -22,7 +22,7 @@ namespace FutureState.AppCore.Data
         {
             var mapper = new AutoMapper<TModel>();
 
-            var tableName = GetTableName(typeof (TModel));
+            var tableName = GetTableName(typeof (TModel).GetTypeInfo());
             var fieldNameList = mapper.GetFieldNameList(model).Select(field => field).ToList();
             var parameters = "@" + string.Join(",@", fieldNameList);
             var fields = string.Join(",", fieldNameList);
@@ -50,9 +50,9 @@ namespace FutureState.AppCore.Data
             where TModel : class, new()
         {
             var mapper = new AutoMapper<TModel>();
-            var tableName = GetTableName(typeof (TModel)); // Users
+            var tableName = GetTableName(typeof (TModel).GetTypeInfo()); // Users
             var tableNameSingular = tableName.Remove(tableName.Length - 1); // User
-            var referenceTableName = GetTableName(typeof (TJoinTo)); // Roles
+            var referenceTableName = GetTableName(typeof (TJoinTo).GetTypeInfo()); // Roles
             var referenceTableNameSingular = referenceTableName.Remove(referenceTableName.Length - 1); // Role
             var joinTableName = GetJoinTableName(tableName, referenceTableName); // Roles_Users
             var joinText = string.Format(dbProvider.Dialect.InnerJoin, joinTableName, tableNameSingular, tableName,
@@ -128,7 +128,7 @@ namespace FutureState.AppCore.Data
             var mapper = new AutoMapper<TModel>();
             var dbFields = mapper.GetFieldNameList(model).Select(field => string.Format("[{0}] = @{0}", field)).ToList();
 
-            var tableName = GetTableName(typeof (TModel));
+            var tableName = GetTableName(typeof (TModel).GetTypeInfo());
             var whereClause = string.Format(dbProvider.Dialect.Where, "Id = @Id");
             var commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", dbFields),
                                             whereClause);
@@ -152,7 +152,7 @@ namespace FutureState.AppCore.Data
             var visitor = new WhereExpressionVisitor().Visit(expression);
 
             // this is a hard delete. soft deletes will happen in the repository layer.
-            var tableName = GetTableName(typeof (TModel));
+            var tableName = GetTableName(typeof (TModel).GetTypeInfo());
             var whereClause = string.Format(dbProvider.Dialect.Where, visitor.WhereExpression);
             var commandText = string.Format(dbProvider.Dialect.DeleteFrom, tableName, whereClause);
 
@@ -177,8 +177,7 @@ namespace FutureState.AppCore.Data
             var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
             // loop through all the model properties, and grab ONLY the ones that are decorated with "[ManyToMany]"
             foreach (
-                var collection in model.GetType()
-                                       .GetProperties()
+                var collection in typeof(TModel).GetRuntimeProperties()
                                        .Where(
                                            property =>
                                            property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()))
@@ -190,14 +189,17 @@ namespace FutureState.AppCore.Data
                 var deleteCommandText = string.Format(dbProvider.Dialect.DeleteFrom, joinTableName, deleteWhereClause);
                 // Delete ALL records in the Join table associated with the `leftModel`
                 dbProvider.ExecuteNonQuery(deleteCommandText, parameters);
-                var manyToManyCollection = collection.PropertyType.GetGenericArguments().FirstOrDefault();
+                
+                //var manyToManyCollection = collection.PropertyType.GetGenericArguments().FirstOrDefault();
+                var manyToManyCollection = collection.PropertyType.GenericTypeArguments.FirstOrDefault();
                 var listValues = (IEnumerable) collection.GetValue(model, null);
                 if (listValues == null) continue;
+                
                 foreach (var value in listValues)
                 {
                     if (manyToManyCollection == null)
                         throw new ArgumentException();
-                    var rightProperties = manyToManyCollection.GetProperties();
+                    var rightProperties = manyToManyCollection.GetRuntimeProperties();
                     var manyToManyCollectionName = manyToManyCollection.Name.Replace("Model", string.Empty);
                     foreach (var rightProperty in rightProperties)
                     {
@@ -238,8 +240,9 @@ namespace FutureState.AppCore.Data
         {
             if (type == null)
                 throw new ArgumentNullException("type");
-            return type.GetInterfaces()
-                       .Where(i => i.IsGenericType)
+
+            return type.GetTypeInfo().ImplementedInterfaces
+                       .Where(i => i.IsConstructedGenericType)
                        .Any(i => i.GetGenericTypeDefinition() == typeof (ICollection<>));
         }
     }

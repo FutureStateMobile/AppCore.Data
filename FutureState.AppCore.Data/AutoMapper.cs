@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Linq;
 using FutureState.AppCore.Data.Attributes;
 using FutureState.AppCore.Data.Extensions;
@@ -15,7 +16,7 @@ namespace FutureState.AppCore.Data
         {
             var dictionary = new Dictionary<string, object>();
 
-            foreach (var property in model.GetType().GetProperties().OrderBy(p => p.Name))
+            foreach ( var property in typeof( TMapTo ).GetRuntimeProperties().OrderBy( p => p.Name ) )
             {
                 var value = property.GetValue(model, null);
 
@@ -43,7 +44,7 @@ namespace FutureState.AppCore.Data
 
         public IList<string> GetFieldNameList(TMapTo model)
         {
-            return (from property in model.GetType().GetProperties().OrderBy(p => p.Name)
+            return ( from property in typeof( TMapTo ).GetRuntimeProperties().OrderBy( p => p.Name )
                     let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
                                  property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
                                  property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
@@ -75,7 +76,7 @@ namespace FutureState.AppCore.Data
 
             var model = new TMapTo();
 
-            foreach (var property in model.GetType().GetProperties())
+            foreach ( var property in typeof( TMapTo ).GetRuntimeProperties() )
             {
                 // hack: a try/catch to handle DBNull to String converstion.
                 try
@@ -105,9 +106,9 @@ namespace FutureState.AppCore.Data
 
             var model = new TMapTo();
 
-            foreach (var prop in model.GetType().GetProperties())
+            foreach ( var prop in typeof( TMapTo ).GetRuntimeProperties() )
             {
-                var getProp = input.GetType().GetProperty(prop.Name);
+                var getProp = typeof(TInput).GetRuntimeProperty(prop.Name);
                 if (getProp != null)
                 {
                     prop.SetValue(model, getProp.GetValue(input, null), null);

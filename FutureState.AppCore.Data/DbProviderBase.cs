@@ -5,7 +5,7 @@ namespace FutureState.AppCore.Data
 {
     public abstract class DbProviderBase : IDbProvider
     {
-        public abstract string LoadSqlFile(string fileName);
+        public abstract string LoadSqlFile<TDbProvider>(string fileName);
         public abstract bool CheckIfDatabaseExists();
         public abstract void CreateDatabase();
         public abstract void DropDatabase();

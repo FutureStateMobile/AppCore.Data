@@ -13,13 +13,11 @@ namespace FutureState.AppCore.Data.Sqlite
             get { return new SqliteDialect(); }
         }
 
-        public override string LoadSqlFile(string fileName)
+        public override string LoadSqlFile<TDbProvider>(string fileName)
         {
             var sqlStatement = string.Empty;
-
-            using (
-                var resourceStream =
-                    Assembly.GetExecutingAssembly().GetManifestResourceStream(RootSqlScriptPath + fileName))
+            
+            using ( var resourceStream = typeof( TDbProvider ).GetTypeInfo().Assembly.GetManifestResourceStream( RootSqlScriptPath + fileName ) )
             {
                 if (resourceStream != null)
                 {

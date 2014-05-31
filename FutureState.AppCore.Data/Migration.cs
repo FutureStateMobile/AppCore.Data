@@ -81,7 +81,7 @@
         protected string LoadSqlFile(string fileName)
         {
             var fullFilePath = "Migrations.Migration" + MigrationVersion.ToString().PadLeft(3, '0') + "." + fileName;
-            return DbProvider.LoadSqlFile(fullFilePath);
+            return DbProvider.LoadSqlFile<IDbProvider>(fullFilePath);
         }
 
         protected void ExecuteMigrationScript(string sql)

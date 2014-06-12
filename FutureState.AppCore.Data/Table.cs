@@ -42,34 +42,80 @@ namespace FutureState.AppCore.Data
 
         public Column AddColumn(string columnName, Type dataType, int precision)
         {
-            var column = new Column(_dialect, columnName, dataType, Name, precision, _updateTable);
+            var column = new Column(_dialect, columnName, dataType, Name, precision);
             Columns.Add(column);
             return column;
         }
 
         public override string ToString()
         {
-            if (Constraints.Count != 0)
+            var ddl = "";
+            if ( _updateTable )
             {
-                var columns = string.Join(",", Columns);
-                var constraints = Environment.NewLine + string.Join(",", Constraints);
-
-                if (_updateTable)
+                foreach ( var column in Columns )
                 {
-                    return Environment.NewLine +
-                           string.Format( _dialect.UpdateTable, Name, string.Join( ",", new[] { columns, constraints } ) );
+                    ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, column );
                 }
 
-                return Environment.NewLine +
-                        string.Format( _dialect.CreateTable, Name, string.Join( ",", new[] { columns, constraints } ) );
+                // Sqlite can't added constraints after the table has already been created.
+                if (_dialect.GetType().Name != "SqliteDialiect")
+                {
+                    foreach ( var constraint in Constraints )
+                    {
+                        ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, constraint );
+                    }
+                }
             }
-
-            if (_updateTable)
+            else
             {
-                return Environment.NewLine + string.Format( _dialect.UpdateTable, Name, string.Join( ",", Columns ) );
+                var columnsAndConstraints = string.Join( ",", Columns );
+                if (Constraints.Count > 0)
+                {
+                    columnsAndConstraints += "," + Environment.NewLine + string.Join( ",", Constraints );
+                }
+                ddl += Environment.NewLine + string.Format( _dialect.CreateTable, Name, columnsAndConstraints );
+
             }
 
-            return Environment.NewLine + string.Format( _dialect.CreateTable, Name, string.Join( ",", Columns ) );
+            return ddl;
+
+//            if (Constraints.Count != 0)
+//            {
+//                var columns = string.Join(",", Columns);
+//                var constraints = Environment.NewLine + string.Join(",", Constraints);
+//
+//                if (_updateTable)
+//                {
+//                    var ddl = "";
+//
+//                    foreach ( var column in Columns )
+//                    {
+//                        ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, column );
+//                    }
+//
+//                    foreach ( var constraint in Constraints )
+//                    {
+//                        ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, constraint );
+//                    }
+//
+//                    return ddl;
+//                }
+//
+//                return Environment.NewLine +
+//                        string.Format( _dialect.CreateTable, Name, string.Join( ",", new[] { columns, constraints } ) );
+//            }
+//
+//            if (_updateTable)
+//            {
+//                var ddl = "";
+//                foreach (var column in Columns)
+//                {
+//                    ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, column );
+//                }
+//                return ddl;
+//            }
+//
+//            return Environment.NewLine + string.Format( _dialect.CreateTable, Name, string.Join( ",", Columns ) );
         }
     }
 }

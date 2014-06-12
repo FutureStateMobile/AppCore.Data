@@ -59,8 +59,8 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             // ManyToMany Join Tables are currently handled under the covers (without an associated model)
             // Naming convention used by ORM is to joing the 2 table names together in alphabetical order
             var courseStudentTable = database.AddTable("Courses_Students").CompositeKey("StudentId", "CourseId");
-            courseStudentTable.AddColumn("CourseId", typeof (Guid)).ForeignKey("Courses", "Id");
-            courseStudentTable.AddColumn("StudentId", typeof (Guid)).ForeignKey("Students", "Id");
+            courseStudentTable.AddColumn("CourseId", typeof (Guid)).ForeignKey("Courses", "Id").NotNullable();
+            courseStudentTable.AddColumn("StudentId", typeof (Guid)).ForeignKey("Students", "Id").NotNullable();
 
             DbProvider.ExecuteNonQuery(migration.GenerateDDL(database));
         }

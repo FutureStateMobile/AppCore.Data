@@ -22,7 +22,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             var migrationRunner = new MigrationRunner(dbProvider);
 
             migrationRunner.DropDatabase();
-            migrationRunner.RunAll(SystemRole.Server, new List<IMigration> {new Migration001()});
+            migrationRunner.RunAll(SystemRole.Server, new List<IMigration> {new Migration001(), new Migration002()});
 
             // Setup Dummy Database
             SeedData.SetupFixtureDataInDatabase(dbProvider);

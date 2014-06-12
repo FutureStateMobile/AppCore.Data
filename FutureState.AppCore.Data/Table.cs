@@ -42,7 +42,7 @@ namespace FutureState.AppCore.Data
 
         public Column AddColumn(string columnName, Type dataType, int precision)
         {
-            var column = new Column(_dialect, columnName, dataType, Name, precision, _updateTable);
+            var column = new Column(_dialect, columnName, dataType, Name, precision);
             Columns.Add(column);
             return column;
         }

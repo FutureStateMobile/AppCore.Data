@@ -10,19 +10,17 @@ namespace FutureState.AppCore.Data
         public readonly IList<IConstraint> Constraints;
         public readonly string Name;
         public readonly int Precision;
-        private readonly bool _updateTable;
         public readonly Type Type;
 
         private readonly IDialect _dialect;
         private readonly string _tableName;
         public static IList<KeyValuePair<Type, string>> CustomTypes = new List<KeyValuePair<Type, string>>();
 
-        public Column(IDialect dialect, string name, Type type, string tableName, int precision, bool updateTable)
+        public Column(IDialect dialect, string name, Type type, string tableName, int precision)
         {
             Constraints = new List<IConstraint>();
             Name = name;
             Precision = precision;
-            _updateTable = updateTable;
             Type = type;
             _dialect = dialect;
             _tableName = tableName;
@@ -87,12 +85,6 @@ namespace FutureState.AppCore.Data
 
         public override string ToString()
         {
-            if (_updateTable)
-            {
-                return Environment.NewLine +
-                       string.Format( _dialect.CreateColumnOnUpdateTable, Name, GetDataType( Type, Precision ),
-                                     string.Join( " ", Constraints ) );
-            }
             return Environment.NewLine +
                     string.Format( _dialect.CreateColumn, Name, GetDataType( Type, Precision ),
                                     string.Join( " ", Constraints ) );

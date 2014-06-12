@@ -38,8 +38,9 @@ CREATE TABLE [Test] (
         {
             // Setup
             const string expectedDDL = @"
-ALTER TABLE [Test] (
-ADD [Name] nvarchar(100) NULL);";
+ALTER TABLE [Test] ADD 
+[Name] nvarchar(100) NULL,
+[Address] nvarchar(100) NULL;";
 
             var dialect = new SqlServerDialect();
             var migration = new DbMigration( dialect );
@@ -47,6 +48,7 @@ ADD [Name] nvarchar(100) NULL);";
 
             var testTable = database.UpdateTable( "Test" );
             testTable.AddColumn( "Name", typeof( string ), 100 ).Nullable();
+            testTable.AddColumn( "Address", typeof( string ), 100 ).Nullable();
 
             // Execute
             var actualDDL = migration.GenerateDDL( database );

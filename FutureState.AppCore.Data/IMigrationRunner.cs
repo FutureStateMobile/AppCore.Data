@@ -7,6 +7,8 @@ namespace FutureState.AppCore.Data
         void CreateDatabase();
         void DropDatabase();
         void RunAll(SystemRole systemRole, IList<IMigration> migrations);
-        void Run(IMigration migration);
+        void RunBeforeMigration ( IMigration migration );
+        void RunMigration ( IMigration migration );
+        void RunAfterMigration ( IMigration migration );
     }
 }

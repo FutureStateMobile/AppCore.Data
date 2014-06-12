@@ -57,11 +57,38 @@ namespace FutureState.AppCore.Data
 
             foreach (var migration in orderedMigrations)
             {
-                Run(migration);
+                RunBeforeMigration(migration);
+                RunMigration(migration);
+            }
+
+            foreach ( var migration in orderedMigrations )
+            {
+                RunAfterMigration( migration );
+            }
+
+        }
+
+        public void RunBeforeMigration(IMigration migration)
+        {
+            // Check Actual DatabaseVersion against the migration version
+            // Don't run unless the MigrationVersion is 1 more than DatabaseVersion
+            var databaseVersion = _dbProvider.Query<DatabaseVersionModel>()
+                                             .OrderBy( v => v.VersionNumber, OrderDirection.Descending )
+                                             .Select()
+                                             .FirstOrDefault();
+
+            if ( databaseVersion == null || databaseVersion.VersionNumber < migration.MigrationVersion )
+            {
+                migration.DbProvider = _dbProvider;
+
+                // Before Migrate
+                migration.BeforeMigrate();
+                if ( _systemRole == SystemRole.Server ) migration.ServerBeforeMigrate();
+                if ( _systemRole == SystemRole.Client ) migration.ClientBeforeMigrate();
             }
         }
 
-        public void Run(IMigration migration)
+        public void RunMigration(IMigration migration)
         {
             // Check Actual DatabaseVersion against the migration version
             // Don't run unless the MigrationVersion is 1 more than DatabaseVersion
@@ -70,31 +97,42 @@ namespace FutureState.AppCore.Data
                                              .Select()
                                              .FirstOrDefault();
 
-            if (databaseVersion == null || databaseVersion.VersionNumber + 1 == migration.MigrationVersion)
+            if (databaseVersion == null || databaseVersion.VersionNumber < migration.MigrationVersion)
             {
                 migration.DbProvider = _dbProvider;
-
-                // Before Migrate
-                migration.BeforeMigrate();
-                if (_systemRole == SystemRole.Server) migration.ServerBeforeMigrate();
-                if (_systemRole == SystemRole.Client) migration.ClientBeforeMigrate();
 
                 // Migrate                
                 migration.Migrate();
                 if (_systemRole == SystemRole.Server) migration.ServerMigrate();
                 if (_systemRole == SystemRole.Client) migration.ClientMigrate();
 
+            }
+        }
+
+        public void RunAfterMigration(IMigration migration)
+        {
+            // Check Actual DatabaseVersion against the migration version
+            // Don't run unless the MigrationVersion is 1 more than DatabaseVersion
+            var databaseVersion = _dbProvider.Query<DatabaseVersionModel>()
+                                             .OrderBy( v => v.VersionNumber, OrderDirection.Descending )
+                                             .Select()
+                                             .FirstOrDefault();
+
+            if ( databaseVersion == null || databaseVersion.VersionNumber <= migration.MigrationVersion )
+            {
+                migration.DbProvider = _dbProvider;
+
                 // After Migrate
                 migration.AfterMigrate();
-                if (_systemRole == SystemRole.Server) migration.ServerAfterMigrate();
-                if (_systemRole == SystemRole.Client) migration.ClientAfterMigrate();
+                if ( _systemRole == SystemRole.Server ) migration.ServerAfterMigrate();
+                if ( _systemRole == SystemRole.Client ) migration.ClientAfterMigrate();
 
                 // Update the database version number to this version
-                _dbProvider.Create(new DatabaseVersionModel
-                    {
-                        VersionNumber = migration.MigrationVersion,
-                        MigrationDate = DateTime.UtcNow
-                    });
+                _dbProvider.Create( new DatabaseVersionModel
+                {
+                    VersionNumber = migration.MigrationVersion,
+                    MigrationDate = DateTime.UtcNow
+                } );
             }
         }
     }

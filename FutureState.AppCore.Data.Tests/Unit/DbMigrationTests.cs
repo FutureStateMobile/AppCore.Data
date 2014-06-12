@@ -34,6 +34,28 @@ CREATE TABLE [Test] (
         }
 
         [Test]
+        public void ShouldUpdateAnExistingTableAndAddANewColumn ()
+        {
+            // Setup
+            const string expectedDDL = @"
+ALTER TABLE [Test] (
+ADD [Name] nvarchar(100) NULL);";
+
+            var dialect = new SqlServerDialect();
+            var migration = new DbMigration( dialect );
+            var database = new Database( "MyDatabase", dialect );
+
+            var testTable = database.UpdateTable( "Test" );
+            testTable.AddColumn( "Name", typeof( string ), 100 ).Nullable();
+
+            // Execute
+            var actualDDL = migration.GenerateDDL( database );
+
+            // Assert
+            Assert.AreEqual( expectedDDL, actualDDL );
+        }
+
+        [Test]
         public void ShouldBuildProperDDLForANewSqlServerDatabase()
         {
             // Setup

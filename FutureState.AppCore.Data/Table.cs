@@ -9,13 +9,15 @@ namespace FutureState.AppCore.Data
         public readonly IList<IConstraint> Constraints;
         public readonly string Name;
         private readonly IDialect _dialect;
+        private readonly bool _updateTable;
 
-        public Table(string name, IDialect dialect)
+        public Table(string name, IDialect dialect, bool updateTable)
         {
             Name = name;
             Columns = new List<Column>();
             Constraints = new List<IConstraint>();
             _dialect = dialect;
+            _updateTable = updateTable;
         }
 
         public IList<Column> Columns { get; set; }
@@ -40,7 +42,7 @@ namespace FutureState.AppCore.Data
 
         public Column AddColumn(string columnName, Type dataType, int precision)
         {
-            var column = new Column(_dialect, columnName, dataType, Name, precision);
+            var column = new Column(_dialect, columnName, dataType, Name, precision, _updateTable);
             Columns.Add(column);
             return column;
         }
@@ -52,11 +54,22 @@ namespace FutureState.AppCore.Data
                 var columns = string.Join(",", Columns);
                 var constraints = Environment.NewLine + string.Join(",", Constraints);
 
+                if (_updateTable)
+                {
+                    return Environment.NewLine +
+                           string.Format( _dialect.UpdateTable, Name, string.Join( ",", new[] { columns, constraints } ) );
+                }
+
                 return Environment.NewLine +
-                       string.Format(_dialect.CreateTable, Name, string.Join(",", new[] {columns, constraints}));
+                        string.Format( _dialect.CreateTable, Name, string.Join( ",", new[] { columns, constraints } ) );
             }
 
-            return Environment.NewLine + string.Format(_dialect.CreateTable, Name, string.Join(",", Columns));
+            if (_updateTable)
+            {
+                return Environment.NewLine + string.Format( _dialect.UpdateTable, Name, string.Join( ",", Columns ) );
+            }
+
+            return Environment.NewLine + string.Format( _dialect.CreateTable, Name, string.Join( ",", Columns ) );
         }
     }
 }

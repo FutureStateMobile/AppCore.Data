@@ -18,8 +18,15 @@ namespace FutureState.AppCore.Data
 
         public Table AddTable(string tableName)
         {
-            var table = new Table(tableName, _dialect);
+            var table = new Table(tableName, _dialect, false);
             Tables.Add(table);
+            return table;
+        }
+
+        public Table UpdateTable(string tableName)
+        {
+            var table = new Table( tableName, _dialect, true );
+            Tables.Add( table );
             return table;
         }
 

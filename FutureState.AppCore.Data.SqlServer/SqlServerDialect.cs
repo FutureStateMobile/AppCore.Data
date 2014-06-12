@@ -12,9 +12,19 @@
             get { return "CREATE TABLE [{0}] ({1});"; }
         }
 
+        public string UpdateTable
+        {
+            get { return "ALTER TABLE [{0}] ({1});"; }
+        }
+
         public string CreateColumn
         {
             get { return "[{0}] {1} {2}"; }
+        }
+
+        public string CreateColumnOnUpdateTable
+        {
+            get { return "ADD [{0}] {1} {2}"; }
         }
 
         public string CheckDatabaseExists

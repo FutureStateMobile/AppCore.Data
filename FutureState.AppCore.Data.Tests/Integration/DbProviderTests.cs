@@ -37,6 +37,17 @@ namespace FutureState.AppCore.Data.Tests.Integration
         }
 
         [Test, TestCaseSource("DbProviders")]
+        public void ShouldNotRunMigrations(IDbProvider db)
+        {
+            // Setup
+            var migrationRunner = new MigrationRunner(db);
+
+            // Execute / Assert
+            Assert.DoesNotThrow(() => migrationRunner.RunAll(SystemRole.Server, new List<IMigration> { new Migration001(), new Migration002() }));
+            Assert.DoesNotThrow(() => migrationRunner.RunAll(SystemRole.Client, new List<IMigration> { new Migration001(), new Migration002() }));
+        }
+
+        [Test, TestCaseSource("DbProviders")]
         public void ShouldDoCrud(IDbProvider db)
         {
             // don't run against SQLite because it's not seeded.

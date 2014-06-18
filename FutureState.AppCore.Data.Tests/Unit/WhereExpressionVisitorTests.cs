@@ -57,7 +57,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             const string expectedString = "[Email] <> @Email1 AND [Email] <> @Email2";
-            var expectedParameters = new Dictionary<string, object> {{"@Email1", null}, {"@Email2", ""}};
+            var expectedParameters = new Dictionary<string, object> {{"@Email1", "thing"}, {"@Email2", ""}};
             var actualExpression = TestExpression<StudentModel>(u => u.Email != "thing" && u.Email != "");
 
             // Execute

@@ -34,7 +34,7 @@
 
         public string CheckTableColumnExists
         {
-            get { return ""; }
+            get { return "SELECT COUNT(*) FROM sqlite_master WHERE tbl_name='{0}' AND name='{1}'"; }
         }
 
         public string CreateDatabase

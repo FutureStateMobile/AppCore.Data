@@ -78,44 +78,6 @@ namespace FutureState.AppCore.Data
             }
 
             return ddl;
-
-//            if (Constraints.Count != 0)
-//            {
-//                var columns = string.Join(",", Columns);
-//                var constraints = Environment.NewLine + string.Join(",", Constraints);
-//
-//                if (_updateTable)
-//                {
-//                    var ddl = "";
-//
-//                    foreach ( var column in Columns )
-//                    {
-//                        ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, column );
-//                    }
-//
-//                    foreach ( var constraint in Constraints )
-//                    {
-//                        ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, constraint );
-//                    }
-//
-//                    return ddl;
-//                }
-//
-//                return Environment.NewLine +
-//                        string.Format( _dialect.CreateTable, Name, string.Join( ",", new[] { columns, constraints } ) );
-//            }
-//
-//            if (_updateTable)
-//            {
-//                var ddl = "";
-//                foreach (var column in Columns)
-//                {
-//                    ddl += Environment.NewLine + string.Format( _dialect.UpdateTable, Name, column );
-//                }
-//                return ddl;
-//            }
-//
-//            return Environment.NewLine + string.Format( _dialect.CreateTable, Name, string.Join( ",", Columns ) );
         }
     }
 }

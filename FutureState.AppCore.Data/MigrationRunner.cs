@@ -24,30 +24,35 @@ namespace FutureState.AppCore.Data
             }
 
             // Check if DatabaseVersion table is setup, if not, create it.
-            if ( !_dbProvider.CheckIfTableExists( "DatabaseVersions" ) )
-            {
-                var migration = new DbMigration( _dbProvider.Dialect );
-                var database = new Database( _dbProvider.DatabaseName, _dbProvider.Dialect );
-
-                var dbVersionTable = database.AddTable( "DatabaseVersions" );
-                dbVersionTable.AddColumn( "VersionNumber", typeof( int ) ).PrimaryKey().NotNullable();
-                dbVersionTable.AddColumn( "MigrationDate", typeof( DateTime ) ).NotNullable();
-
-                _dbProvider.ExecuteNonQuery( migration.GenerateDDL( database ) );
-            }
-
-            // Check if the new fields have bee added to the DatabaseVersion table yet, if not add them.
-            if (!_dbProvider.CheckIfTableColumnExists( "DatabaseVersions", "IsBeforeMigrationComplete"))
+            if (!_dbProvider.CheckIfTableExists("DatabaseVersions"))
             {
                 var migration = new DbMigration(_dbProvider.Dialect);
                 var database = new Database(_dbProvider.DatabaseName, _dbProvider.Dialect);
 
-                var dbVersionTable = database.UpdateTable("DatabaseVersions");
-                dbVersionTable.AddColumn( "IsBeforeMigrationComplete", typeof( bool ) ).NotNullable(true);
-                dbVersionTable.AddColumn( "IsMigrationComplete", typeof( bool ) ).NotNullable(true);
-                dbVersionTable.AddColumn( "IsAfterMigrationComplete", typeof( bool ) ).NotNullable(true);
+                var dbVersionTable = database.AddTable("DatabaseVersions");
+                dbVersionTable.AddColumn("VersionNumber", typeof (int)).PrimaryKey().NotNullable();
+                dbVersionTable.AddColumn("MigrationDate", typeof (DateTime)).NotNullable();
+                dbVersionTable.AddColumn("IsBeforeMigrationComplete", typeof (bool)).NotNullable(true);
+                dbVersionTable.AddColumn("IsMigrationComplete", typeof (bool)).NotNullable(true);
+                dbVersionTable.AddColumn("IsAfterMigrationComplete", typeof (bool)).NotNullable(true);
 
                 _dbProvider.ExecuteNonQuery(migration.GenerateDDL(database));
+            }
+            else
+            {
+                // Check if the new fields have bee added to the DatabaseVersion table yet, if not add them.
+                if ( !_dbProvider.CheckIfTableColumnExists( "DatabaseVersions", "IsBeforeMigrationComplete" ) )
+                {
+                    var migration = new DbMigration( _dbProvider.Dialect );
+                    var database = new Database( _dbProvider.DatabaseName, _dbProvider.Dialect );
+
+                    var dbVersionTable = database.UpdateTable( "DatabaseVersions" );
+                    dbVersionTable.AddColumn( "IsBeforeMigrationComplete", typeof( bool ) ).NotNullable( true );
+                    dbVersionTable.AddColumn( "IsMigrationComplete", typeof( bool ) ).NotNullable( true );
+                    dbVersionTable.AddColumn( "IsAfterMigrationComplete", typeof( bool ) ).NotNullable( true );
+
+                    _dbProvider.ExecuteNonQuery( migration.GenerateDDL( database ) );
+                }
             }
         }
 

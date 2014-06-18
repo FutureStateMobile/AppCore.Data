@@ -10,11 +10,13 @@ namespace FutureState.AppCore.Data
         string CreateColumn { get; }
         string CheckDatabaseExists { get; }
         string CheckTableExists { get; }
+        string CheckTableColumnExists { get; }
         string CreateDatabase { get; }
         string DropDatabase { get; }
 
         string InsertInto { get; }
         string SelectFrom { get; }
+        string SelectCountFrom { get; }
         string DeleteFrom { get; }
         string Update { get; }
         string Where { get; }

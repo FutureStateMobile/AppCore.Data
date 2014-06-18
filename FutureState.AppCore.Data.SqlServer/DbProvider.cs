@@ -12,6 +12,7 @@ namespace FutureState.AppCore.Data.SqlServer
         private const string RootSqlScriptPath = "FutureState.AppCore.Data.SqlServer.SqlScripts.";
         private static string _useStatement;
         private readonly IDbConnectionProvider _connectionProvider;
+        private IDialect _dialect;
 
         public DbProvider(IDbConnectionProvider connectionProvider, string databaseName)
         {
@@ -22,7 +23,7 @@ namespace FutureState.AppCore.Data.SqlServer
 
         public override sealed IDialect Dialect
         {
-            get { return new SqlServerDialect(); }
+            get { return _dialect ?? ( _dialect = new SqlServerDialect() ); }
         }
 
         public override string LoadSqlFile<TDbProvider>(string fileName)
@@ -60,6 +61,11 @@ namespace FutureState.AppCore.Data.SqlServer
         public override bool CheckIfTableExists(string tableName)
         {
             return ExecuteScalar<int>(string.Format(Dialect.CheckTableExists, tableName)) == 1;
+        }
+
+        public override bool CheckIfTableColumnExists ( string tableName, string columnName )
+        {
+            return ExecuteScalar<int>( string.Format( Dialect.CheckTableColumnExists, tableName, columnName ) ) == 1;
         }
 
         #region ExecuteReader

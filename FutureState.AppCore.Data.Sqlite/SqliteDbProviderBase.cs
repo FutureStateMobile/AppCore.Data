@@ -6,11 +6,11 @@ namespace FutureState.AppCore.Data.Sqlite
     public abstract class SqliteDbProviderBase : DbProviderBase
     {
         protected const string RootSqlScriptPath = "FutureState.AppCore.Data.Sqlite.SqlScripts.";
-        protected const string CheckTableExists = "SELECT name FROM sqlite_master WHERE type='table' AND name='{0}'";
+        private IDialect _dialect;
 
         public override sealed IDialect Dialect
         {
-            get { return new SqliteDialect(); }
+            get { return _dialect ?? (_dialect = new SqliteDialect()); }
         }
 
         public override string LoadSqlFile<TDbProvider>(string fileName)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using FutureState.AppCore.Data.Helpers;
@@ -65,27 +66,56 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
+        public int Count()
+        {
+            return _dbProvider.ExecuteScalar<int>( ToStringCount(), _parameters );
+        }
+
         public IEnumerable<TModel> Select()
         {
-            var commandText = string.Format(_dbProvider.Dialect.SelectFrom, _tableName, GetExtendedWhereClause()).Trim();
-            return _dbProvider.ExecuteReader(commandText, _parameters, _mapper.BuildQueueFrom);
+            return _dbProvider.ExecuteReader(ToString(), _parameters, _mapper.BuildQueueFrom);
+        }
+
+        public void Update(TModel model)
+        {
+            // TODO: Make the update only update specified feilds, this requires a lot more work though
+            var mapper = new AutoMapper<TModel>();
+            var dbFields = mapper.GetFieldNameList( model ).Where(field => field != "ID").Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
+
+            var whereClause = GetExtendedWhereClause();
+            var commandText = string.Format( _dbProvider.Dialect.Update, _tableName, string.Join( ",", dbFields ), whereClause );
+            var parameters = _parameters.Union(mapper.BuildDbParametersFrom(model)).ToDictionary( pair => pair.Key, pair => pair.Value);
+            _dbProvider.ExecuteNonQuery( commandText, parameters );
         }
 
         public void Delete()
         {
-            var commandText = string.Format(_dbProvider.Dialect.DeleteFrom, _tableName, _whereClause);
-            _dbProvider.ExecuteNonQuery(commandText, _parameters);
+            _dbProvider.ExecuteNonQuery(ToStringDelete(), _parameters);
         }
 
         public void Truncate()
         {
-            var commandText = string.Format( _dbProvider.Dialect.Truncate, _tableName);
-            _dbProvider.ExecuteNonQuery( commandText );
+            _dbProvider.ExecuteNonQuery( ToStringTruncate() );
         }
 
         public override string ToString()
         {
             return string.Format(_dbProvider.Dialect.SelectFrom, _tableName, GetExtendedWhereClause()).Trim();
+        }
+
+        public string ToStringCount()
+        {
+            return string.Format(_dbProvider.Dialect.SelectCountFrom, _tableName, GetExtendedWhereClause()).Trim();
+        }
+
+        public string ToStringDelete()
+        {
+            return string.Format(_dbProvider.Dialect.DeleteFrom, _tableName, _whereClause);
+        }
+
+        public string ToStringTruncate()
+        {
+            return string.Format(_dbProvider.Dialect.Truncate, _tableName);
         }
 
         private string GetExtendedWhereClause()

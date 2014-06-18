@@ -8,6 +8,20 @@ namespace FutureState.AppCore.Data.Tests.Unit
     public class DbQueryTests : DbQueryTestBase
     {
         // NOTE: These tests have no way of working against a DELETE command.
+        [Test, TestCaseSource( "Repositories" )]
+        public void ShouldBuildQueryForUsersGettingCount ( IDbProvider dbProvider )
+        {
+            // setup
+            const string expectedQuery = @"SELECT COUNT(*) FROM Students WHERE [FirstName] LIKE @FirstName1";
+
+            // execute
+            var actualQuery = dbProvider.Query<StudentModel>()
+                                        .Where( u => u.FirstName.Contains("Bo") )
+                                        .ToStringCount();
+
+            // assert
+            Assert.AreEqual( expectedQuery, actualQuery );
+        }
 
         [Test, TestCaseSource("Repositories")]
         public void ShouldBuildQueryForUsersAndUtilizeSkipTake(IDbProvider dbProvider)
@@ -70,6 +84,22 @@ namespace FutureState.AppCore.Data.Tests.Unit
             // assert
             Assert.AreEqual(expectedQuery, actualQuery);
         }
+
+        [Test, TestCaseSource( "Repositories" )]
+        public void ShouldBuildQueryForUsersByNameNotNull ( IDbProvider dbProvider )
+        {
+            // setup
+            const string expectedQuery = @"SELECT Students.* FROM Students WHERE [FirstName] IS NOT NULL";
+
+            // execute
+            var actualQuery = dbProvider.Query<StudentModel>()
+                                        .Where( u => u.FirstName != null )
+                                        .ToString();
+
+            // assert
+            Assert.AreEqual( expectedQuery, actualQuery );
+        }
+
 
         [Test, TestCaseSource("Repositories")]
         public void ShouldBuildQueryWithOrderByAscClause(IDbProvider dbProvider)

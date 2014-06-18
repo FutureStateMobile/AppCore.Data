@@ -9,7 +9,8 @@ namespace FutureState.AppCore.Data
         public abstract bool CheckIfDatabaseExists();
         public abstract void CreateDatabase();
         public abstract void DropDatabase();
-        public abstract bool CheckIfTableExists(string tableName);
+        public abstract bool CheckIfTableExists ( string tableName );
+        public abstract bool CheckIfTableColumnExists ( string tableName, string columnName );
         public abstract TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper);
 
         public abstract TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters,

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using FutureState.AppCore.Data.Exceptions;
+using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data
 {
@@ -221,9 +222,11 @@ namespace FutureState.AppCore.Data
         {
             var key = "@" + left.Member.Name;
             // add the parameter value
-            var number = AddParameter(key, expression.Value, 1);
+            var value = expression.Value;
+            var number = AddParameter(key, value, 1);
             // add the string parameter
-            _strings.Append(String.Format(key + "{0}", number));
+            _strings.Append( value.IsNull() ? "NULL" : String.Format( key + "{0}", number ) );
+            //_strings.Append(String.Format(key + "{0}", number));
             _strings.Append(" ");
         }
 
@@ -259,9 +262,11 @@ namespace FutureState.AppCore.Data
             }
             else
             {
-                var paramNo = AddParameter("@" + key, GetMemberExpressionValue(expression), 1);
+                // if the parameter is null, we want to just put the key word "NULL" in rather that the value
+                var value = GetMemberExpressionValue(expression);
+                var paramNo = AddParameter("@" + key, value, 1);
 
-                _strings.Append(string.Format("@{0}", String.Format(key + "{0}", paramNo)));
+                _strings.Append(value.IsNull() ? "NULL" : String.Format("@" + key + "{0}", paramNo));
                 _strings.Append(" ");
                 //Parameters.Add("@" + key, GetMemberExpressionValue(expression));
             }
@@ -307,6 +312,24 @@ namespace FutureState.AppCore.Data
 
         private void GetBinaryOperator(BinaryExpression expression)
         {
+            var exp = expression.Right as ConstantExpression;
+            if (exp != null && exp.Value.IsNull())
+            {
+                switch (expression.NodeType)
+                {
+                    case ExpressionType.Equal:
+                        _strings.Append("IS ");
+                        break;
+                    case ExpressionType.NotEqual:
+                        _strings.Append("IS NOT ");
+                        break;
+                    default:
+                        throw new ExpressionBinaryOperatorNotSupportedException(expression);
+                }
+
+                return;
+            }
+
             switch (expression.NodeType)
             {
                 case ExpressionType.Equal:

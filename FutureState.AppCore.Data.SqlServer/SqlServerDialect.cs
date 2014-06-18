@@ -32,6 +32,11 @@
             get { return "SELECT COUNT(*) AS IsExists FROM dbo.sysobjects WHERE id = object_id('[dbo].[{0}]')"; }
         }
 
+        public string CheckTableColumnExists
+        {
+            get { return "SELECT COUNT(*) AS IsExists FROM sys.columns WHERE [name] = '{1}' AND [object_id] = object_id('[dbo].[{0}]')"; }
+        }
+
         public string CreateDatabase
         {
             get
@@ -54,6 +59,11 @@
         public string SelectFrom
         {
             get { return "SELECT {0}.* FROM {0} {1}"; }
+        }
+
+        public string SelectCountFrom
+        {
+            get { return "SELECT COUNT(*) FROM {0} {1}"; }
         }
 
         public string DeleteFrom

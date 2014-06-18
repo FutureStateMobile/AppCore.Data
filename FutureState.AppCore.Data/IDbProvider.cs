@@ -13,6 +13,7 @@ namespace FutureState.AppCore.Data
         void CreateDatabase();
         void DropDatabase();
         bool CheckIfTableExists(string tableName);
+        bool CheckIfTableColumnExists ( string tableName, string columnName );
 
         // Used for Finds and Gets
         TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper);

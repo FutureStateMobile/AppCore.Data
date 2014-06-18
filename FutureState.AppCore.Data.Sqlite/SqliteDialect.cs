@@ -29,6 +29,11 @@
 
         public string CheckTableExists
         {
+            get { return "SELECT name FROM sqlite_master WHERE type='table' AND name='{0}'"; }
+        }
+
+        public string CheckTableColumnExists
+        {
             get { return ""; }
         }
 
@@ -50,6 +55,11 @@
         public string SelectFrom
         {
             get { return "SELECT {0}.* FROM {0} {1}"; }
+        }
+
+        public string SelectCountFrom
+        {
+            get { return "SELECT COUNT(*) FROM {0} {1}"; }
         }
 
         public string DeleteFrom

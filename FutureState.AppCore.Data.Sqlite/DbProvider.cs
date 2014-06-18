@@ -15,8 +15,7 @@ namespace FutureState.AppCore.Data.Sqlite
         public DbProvider(string databaseName)
         {
             DatabaseName = databaseName;
-            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                                               databaseName);
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
             _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath);
         }
 
@@ -24,8 +23,7 @@ namespace FutureState.AppCore.Data.Sqlite
         {
             DatabaseName = databaseName;
             _enforceForeignKeys = settings.EnforceForeignKeys;
-            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                                               databaseName);
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
             _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, settings);
         }
 
@@ -47,7 +45,13 @@ namespace FutureState.AppCore.Data.Sqlite
 
         public override bool CheckIfTableExists(string tableName)
         {
-            var exists = ExecuteScalar<int>(string.Format(CheckTableExists, tableName)) == 1;
+            var exists = ExecuteScalar<int>( string.Format( Dialect.CheckTableExists, tableName ) ) == 1;
+            return exists;
+        }
+
+        public override bool CheckIfTableColumnExists ( string tableName, string columnName )
+        {
+            var exists = ExecuteScalar<int>( string.Format( Dialect.CheckTableColumnExists, tableName, columnName ) ) == 1;
             return exists;
         }
 

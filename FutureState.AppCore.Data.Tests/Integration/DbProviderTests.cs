@@ -19,12 +19,12 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Setup
             var expectedUser = new StudentModel
-                {
-                    Id = new Guid("57F98915-DBDF-41C7-9D24-F4BB1C0D9D0C"),
-                    FirstName = "Joe",
-                    LastName = "Blow",
-                    Email = "JoeBlow@microsoft.com",
-                };
+            {
+                Id = new Guid("57F98915-DBDF-41C7-9D24-F4BB1C0D9D0C"),
+                FirstName = "Joe",
+                LastName = "Blow",
+                Email = "JoeBlow@microsoft.com",
+            };
             db.Create(expectedUser);
 
             // Execute
@@ -34,17 +34,6 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert
             Assert.IsEmpty(actualUser);
-        }
-
-        [Test, TestCaseSource("DbProviders")]
-        public void ShouldNotRunMigrations(IDbProvider db)
-        {
-            // Setup
-            var migrationRunner = new MigrationRunner(db);
-
-            // Execute / Assert
-            Assert.DoesNotThrow(() => migrationRunner.RunAll(SystemRole.Server, new List<IMigration> { new Migration001(), new Migration002() }));
-            Assert.DoesNotThrow(() => migrationRunner.RunAll(SystemRole.Client, new List<IMigration> { new Migration001(), new Migration002() }));
         }
 
         [Test, TestCaseSource("DbProviders")]
@@ -58,12 +47,12 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Setup
             var expectedUser = new StudentModel
-                {
-                    Id = new Guid("381BC8C2-AF5D-40E1-81DD-620B4DCCEDBB"),
-                    FirstName = "SQL",
-                    LastName = "Admin",
-                    Email = "sa@microsoft.com",
-                };
+            {
+                Id = new Guid("381BC8C2-AF5D-40E1-81DD-620B4DCCEDBB"),
+                FirstName = "SQL",
+                LastName = "Admin",
+                Email = "sa@microsoft.com",
+            };
 
             // Execute Create
             db.Create(expectedUser);
@@ -76,7 +65,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Execute Find IEnumerable
             var actualUsers1 = db.Query<StudentModel>().Where(x => x.FirstName.Contains("jil")).Select();
-                // this returns an IEnumerable
+            // this returns an IEnumerable
 
             // Assert Find IEnumerable
             Assert.True(actualUsers1.Any());
@@ -124,56 +113,56 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Assert.IsNull(actualUser);
         }
 
-        [Test, TestCaseSource( "DbProviders" )]
-        public void ShouldDoCrudWithGeese ( IDbProvider db )
+        [Test, TestCaseSource("DbProviders")]
+        public void ShouldDoCrudWithGeese(IDbProvider db)
         {
             // don't run against SQLite because it's not seeded.
             var provider = db.GetType().ToString();
-            if ( provider == "FutureState.AppCore.Data.Sqlite.Windows.DbProvider" ) return;
+            if (provider == "FutureState.AppCore.Data.Sqlite.Windows.DbProvider") return;
 
-            Trace.WriteLine( TraceObjectGraphInfo( db ) );
+            Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Execute Create
-            var firstGoose = new GooseModel { Id = new Guid("43F4C249-E24C-41A7-9DED-73E3AE2C17BE"), Name = "My New Goose"};
-            db.Create( firstGoose );
-            var goose = db.Query<GooseModel>().Where( u => u.Id == firstGoose.Id ).Select().FirstOrDefault();
+            var firstGoose = new GooseModel {Id = new Guid("43F4C249-E24C-41A7-9DED-73E3AE2C17BE"), Name = "My New Goose"};
+            db.Create(firstGoose);
+            var goose = db.Query<GooseModel>().Where(u => u.Id == firstGoose.Id).Select().FirstOrDefault();
 
             // Assert Create
-            Assert.IsNotNull( goose );
-            Assert.IsNotNull( goose.Id );
-            Assert.AreEqual( firstGoose.Name, goose.Name );
-            Assert.AreNotEqual( Guid.Empty, goose.Id );
+            Assert.IsNotNull(goose);
+            Assert.IsNotNull(goose.Id);
+            Assert.AreEqual(firstGoose.Name, goose.Name);
+            Assert.AreNotEqual(Guid.Empty, goose.Id);
 
             // Execute Find IEnumerable
-            var actualGeese = db.Query<GooseModel>().Where( x => x.Name.Contains( "irst" ) ).Select();
+            var actualGeese = db.Query<GooseModel>().Where(x => x.Name.Contains("irst")).Select();
             // this returns an IEnumerable
 
             // Assert Find IEnumerable
-            Assert.True( actualGeese.Any() );
+            Assert.True(actualGeese.Any());
 
             // Execute Find List
-            var actualGeese2 = db.Query<GooseModel>().Where( x => x.Name.Contains( "Goose" ) ).Select().ToList();
+            var actualGeese2 = db.Query<GooseModel>().Where(x => x.Name.Contains("Goose")).Select().ToList();
 
             // Assert Find List
-            Assert.True( actualGeese2.Count == 4 );
+            Assert.True(actualGeese2.Count == 4);
 
             // Execute Update
             var gooseToUpdate = GooseFixture.GooseToUpdate;
             gooseToUpdate.Name = "Canada Goose";
-            db.Update( gooseToUpdate );
-            var actualUpdatedGoose = db.Query<GooseModel>().Where( x => x.Id == gooseToUpdate.Id ).Select().FirstOrDefault();
+            db.Update(gooseToUpdate);
+            var actualUpdatedGoose = db.Query<GooseModel>().Where(x => x.Id == gooseToUpdate.Id).Select().FirstOrDefault();
 
             //// Assert Update
-            Assert.IsNotNull( actualUpdatedGoose );
-            Assert.AreEqual( "Canada Goose", actualUpdatedGoose.Name );
+            Assert.IsNotNull(actualUpdatedGoose);
+            Assert.AreEqual("Canada Goose", actualUpdatedGoose.Name);
 
             // Execute Delete
             var gooseToDelete = GooseFixture.GooseToDelete;
-            db.Query<GooseModel>().Where( u => u.Id == gooseToDelete.Id ).Delete();
-            var actualDeletedGoose = db.Query<GooseModel>().Where( x => x.Id == gooseToDelete.Id ).Select().FirstOrDefault();
+            db.Query<GooseModel>().Where(u => u.Id == gooseToDelete.Id).Delete();
+            var actualDeletedGoose = db.Query<GooseModel>().Where(x => x.Id == gooseToDelete.Id).Select().FirstOrDefault();
 
             // Assert Delete
-            Assert.IsNull( actualDeletedGoose );
+            Assert.IsNull(actualDeletedGoose);
 
             db.Query<GooseModel>().Truncate();
 
@@ -202,16 +191,16 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Setup
             var expectedUsers = new List<StudentModel>
-                {
-                    new StudentModel {FirstName = "Jill"},
-                    new StudentModel {FirstName = "Bob"}
-                };
+            {
+                new StudentModel {FirstName = "Jill"},
+                new StudentModel {FirstName = "Bob"}
+            };
 
             // Execute
             var actualUsers = db.Query<StudentModel>()
-                                .Where(u => u.FirstName.Contains("jil") || u.FirstName == "Bob")
-                                .Select()
-                                .ToList();
+                .Where(u => u.FirstName.Contains("jil") || u.FirstName == "Bob")
+                .Select()
+                .ToList();
 
             // Assert
             Assert.AreEqual(expectedUsers[0].FirstName, actualUsers[0].FirstName);
@@ -255,12 +244,12 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             var expectedUser = new StudentModel
-                {
-                    Id = new Guid("5A7685A2-3EEC-442D-902F-D2022F28DD33"),
-                    FirstName = "test",
-                    LastName = "test",
-                    Email = "test@microsoft.com",
-                };
+            {
+                Id = new Guid("5A7685A2-3EEC-442D-902F-D2022F28DD33"),
+                FirstName = "test",
+                LastName = "test",
+                Email = "test@microsoft.com",
+            };
 
             // Execute Create
             db.Create(expectedUser);
@@ -281,17 +270,17 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Setup
             var expectedUsers = new List<StudentModel>
-                {
-                    new StudentModel {FirstName = "Bob"}
-                };
+            {
+                new StudentModel {FirstName = "Bob"}
+            };
 
             // Execute
             var actualUsers = db.Query<StudentModel>()
-                                .Join<CourseModel>(JoinType.ManyToMany)
-                                .Where((s, c) => c.Name == "Math 101")
-                                .OrderBy((s, c) => s.FirstName, OrderDirection.Descending)
-                                .Select()
-                                .ToList();
+                .Join<CourseModel>(JoinType.ManyToMany)
+                .Where((s, c) => c.Name == "Math 101")
+                .OrderBy((s, c) => s.FirstName, OrderDirection.Descending)
+                .Select()
+                .ToList();
 
             // Assert
             Assert.AreEqual(expectedUsers[0].FirstName, actualUsers[0].FirstName);
@@ -305,20 +294,31 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Setup
             var expectedUsers = new List<StudentModel>
-                {
-                    new StudentModel {FirstName = "User1"}
-                };
+            {
+                new StudentModel {FirstName = "User1"}
+            };
 
             // Execute
             var actualUsers = db.Query<StudentModel>()
-                                .Join<BookModel>(JoinType.Left, (u, b) => u.Id == b.StudentId)
-                                .Where((u, b) => b.Name == "Book1Name")
-                                .OrderBy((u, b) => u.FirstName, OrderDirection.Descending)
-                                .Select()
-                                .ToList();
+                .Join<BookModel>(JoinType.Left, (u, b) => u.Id == b.StudentId)
+                .Where((u, b) => b.Name == "Book1Name")
+                .OrderBy((u, b) => u.FirstName, OrderDirection.Descending)
+                .Select()
+                .ToList();
 
             // Assert
             Assert.AreEqual(expectedUsers[0].FirstName, actualUsers[0].FirstName);
+        }
+
+        [Test, TestCaseSource("DbProviders")]
+        public void ShouldNotRunMigrations(IDbProvider db)
+        {
+            // Setup
+            var migrationRunner = new MigrationRunner(db);
+
+            // Execute / Assert
+            Assert.DoesNotThrow(() => migrationRunner.RunAll(SystemRole.Server, new List<IMigration> {new Migration001(), new Migration002()}));
+            Assert.DoesNotThrow(() => migrationRunner.RunAll(SystemRole.Client, new List<IMigration> {new Migration001(), new Migration002()}));
         }
 
         [Test, TestCaseSource("DbProviders")]
@@ -337,6 +337,28 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert
             Assert.IsNotEmpty(actualUsers);
+        }
+
+        [Test, TestCaseSource("DbProviders")]
+        public void ShouldAddToCollectionWithoutUniqueConstraintFailure(IDbProvider db)
+        {
+            Trace.WriteLine(TraceObjectGraphInfo(db));
+
+            // setup
+            var studentToUpdate = StudentFixture.StudentToUpdate;
+            studentToUpdate.Courses.Add(CourseFixture.ThirdCourse);
+
+            // execute
+            db.Update(studentToUpdate);
+            var studentFromDb = db.Query<StudentModel>().Where(s => s.Id == studentToUpdate.Id).Select().FirstOrDefault();
+
+            studentFromDb.Courses = db.Query<CourseModel, StudentModel>(studentFromDb.Id)
+                .Where(x => x.IsDeleted == false)
+                .ToList();
+
+            // assert
+            Assert.IsNotNull(studentFromDb);
+            Assert.That(studentFromDb.Courses.Any(p => p.Id == CourseFixture.ThirdCourse.Id));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -192,10 +193,10 @@ namespace FutureState.AppCore.Data
                 
                 //var manyToManyCollection = collection.PropertyType.GetGenericArguments().FirstOrDefault();
                 var manyToManyCollection = collection.PropertyType.GenericTypeArguments.FirstOrDefault();
-                var listValues = (IEnumerable) collection.GetValue(model, null);
+                var listValues = (IEnumerable<object>)collection.GetValue(model, null);
                 if (listValues == null) continue;
                 
-                foreach (var value in listValues)
+                foreach (var value in listValues.Distinct())
                 {
                     if (manyToManyCollection == null)
                         throw new ArgumentException();

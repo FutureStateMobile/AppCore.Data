@@ -66,6 +66,21 @@
             get { return "SELECT COUNT(*) FROM {0} {1}"; }
         }
 
+        public string SelectMaxFrom
+        {
+            get { return "SELECT MAX({2}) FROM {0} {1}"; }
+        }
+
+        public string SelectMinFrom
+        {
+            get { return "SELECT MIN({2}) FROM {0} {1}"; }
+        }
+
+        public string SelectSumFrom
+        {
+            get { return "SELECT SUM({2}) FROM {0} {1}"; }
+        }
+
         public string DeleteFrom
         {
             get { return "DELETE FROM {0} {1}"; }

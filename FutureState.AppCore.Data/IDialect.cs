@@ -17,6 +17,9 @@ namespace FutureState.AppCore.Data
         string InsertInto { get; }
         string SelectFrom { get; }
         string SelectCountFrom { get; }
+        string SelectMaxFrom { get; }
+        string SelectMinFrom { get; }
+        string SelectSumFrom { get; }
         string DeleteFrom { get; }
         string Update { get; }
         string Where { get; }

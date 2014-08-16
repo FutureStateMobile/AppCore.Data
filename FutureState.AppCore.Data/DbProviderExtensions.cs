@@ -82,40 +82,18 @@ namespace FutureState.AppCore.Data
             return query;
         }
 
-//        /// <summary>
-//        ///     Query the Database based on an expression tree
-//        /// </summary>
-//        /// <typeparam name="TModel">Model type</typeparam>
-//        /// <param name="dbProvider">Database Provider</param>
-//        /// <param name="expression">The expression to query</param>
-//        /// <returns>IEnumerable model</returns>
-//        public static IEnumerable<TModel> Query<TModel>(this IDbProvider dbProvider, Expression<Func<TModel, object>> expression) where TModel : class, new()
-//        {
-//            var visitor = new WhereExpressionVisitor().Visit(expression);
-//            var mapper = new AutoMapper<TModel>();
-//
-//            var tableName = GetTableName(typeof(TModel));
-//            var whereClause = string.Format(dbProvider.Dialect.Where, visitor.WhereExpression);
-//            var commandText = string.Format(dbProvider.Dialect.SelectFrom, tableName, whereClause);
-//
-//            return dbProvider.ExecuteReader(commandText, visitor.Parameters, mapper.BuildQueueFrom);
-//        }
-//
-//        /// <summary>
-//        ///     Query the Database for ALL records.
-//        /// </summary>
-//        /// <typeparam name="TModel">Model Type</typeparam>
-//        /// <param name="dbProvider">Database Provider</param>
-//        /// <returns>IEnumerable model</returns>
-//        public static IEnumerable<TModel> Query<TModel>(this IDbProvider dbProvider) where TModel : class, new()
-//        {
-//            var mapper = new AutoMapper<TModel>();
-//
-//            var tableName = GetTableName(typeof(TModel));
-//            var commandText = string.Format(dbProvider.Dialect.SelectFrom, tableName, "");
-//
-//            return dbProvider.ExecuteReader(commandText, mapper.BuildQueueFrom);
-//        }
+        /// <summary>
+        ///     Query the Database for ALL records.
+        /// </summary>
+        /// <typeparam name="TModel">Model Type</typeparam>
+        /// <typeparam name="TReturnType">The scalar return value</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="propertyExpression">The expression to use for the query</param>
+        /// <returns>IEnumerable model</returns>
+        public static IDbScalar<TModel, TReturnType> Scalar<TModel, TReturnType> ( this IDbProvider dbProvider, Expression<Func<TModel, TReturnType>> propertyExpression ) where TModel : class, new()
+        {
+            return new DbScalar<TModel, TReturnType>(dbProvider, propertyExpression);
+        }
 
         /// <summary>
         ///     Update the Database Record of a specified model.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Migrations;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
@@ -259,7 +260,20 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert
             Assert.IsNotNull(actualUser);
-            Assert.AreEqual(actualUser.Id, expectedUser.Id);
+            Assert.AreEqual( expectedUser.Id, actualUser.Id );
+        }
+
+        [Test, TestCaseSource( "DbProviders" )]
+        public void ShouldSelectMaxCreatedDate ( IDbProvider db )
+        {
+            Trace.WriteLine( TraceObjectGraphInfo( db ) );
+            const string expectedSelect = "SELECT MAX(CreatedDate) FROM Students";
+
+            // Execute Query
+            var actualSelect = db.Scalar<StudentModel, DateTime>(s => s.CreatedDate).ToStringMax();
+
+            // Assert
+            Assert.AreEqual( expectedSelect, actualSelect );
         }
 
         [Ignore, Test, TestCaseSource("DbProviders")]

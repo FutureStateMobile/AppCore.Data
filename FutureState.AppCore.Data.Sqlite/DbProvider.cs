@@ -152,6 +152,8 @@ namespace FutureState.AppCore.Data.Sqlite
                         return (TKey) (object) new Guid((byte[]) result);
                     if (typeof (TKey) == typeof (int))
                         return (TKey) (object) (result == null ? 0 : 1);
+                    if (typeof (TKey) == typeof (DateTime))
+                        return (TKey) (object) DateTime.Parse(result.ToString());
 
                     return (TKey) result;
                 }

@@ -134,6 +134,7 @@
     <Compile Include="Helpers\Fixtures\GooseFixture.cs" />
     <Compile Include="Helpers\Migrations\Migration002.cs" />
     <Compile Include="Helpers\Migrations\Migration001.cs" />
+    <Compile Include="Helpers\Models\FakeModel.cs" />
     <Compile Include="Helpers\Models\GooseModel.cs" />
     <Compile Include="Helpers\Models\ModelBase.cs" />
     <Compile Include="Helpers\Models\CourseModel.cs" />

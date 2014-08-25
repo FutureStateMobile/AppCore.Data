@@ -277,6 +277,26 @@ namespace FutureState.AppCore.Data.Tests.Integration
             //Assert.AreEqual( expectedSelect, actualSelect );
         }
 
+        [Test, TestCaseSource("DbProviders")]
+        public void ShouldReturnMinDateTimeFromEmptyTable(IDbProvider db)
+        {
+            Trace.WriteLine(TraceObjectGraphInfo(db));
+
+            //setup
+            var migration = new DbMigration(db.Dialect);
+            var database = new Database(db.DatabaseName, db.Dialect);
+            var fakeTable = database.AddTable("Fakes");
+            fakeTable.AddColumn("TimeStamp", typeof (DateTime)).Nullable();
+            db.ExecuteNonQuery(migration.GenerateDDL(database));
+
+            // Execute Query
+            var actualSelect = db.Scalar<FakeModel, DateTime>(s => s.TimeStamp).Max();
+
+            // Assert
+            Assert.IsNotNull(actualSelect);
+            //Assert.AreEqual( expectedSelect, actualSelect );
+        }
+
         [Ignore, Test, TestCaseSource("DbProviders")]
         public void ShouldJoinToAnotherManyToManyTableAndBuildWhereClauseAndOrderByClause(IDbProvider db)
         {

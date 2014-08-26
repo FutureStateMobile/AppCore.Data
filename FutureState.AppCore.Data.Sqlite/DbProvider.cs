@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using FutureState.AppCore.Data.Helpers;
 using Mono.Data.Sqlite;
 
 namespace FutureState.AppCore.Data.Sqlite
@@ -151,9 +152,17 @@ namespace FutureState.AppCore.Data.Sqlite
                     if (typeof (TKey) == typeof (Guid))
                         return (TKey) (object) new Guid((byte[]) result);
                     if (typeof (TKey) == typeof (int))
-                        return (TKey) (object) (result == null ? 0 : 1);
-                    if (typeof (TKey) == typeof (DateTime))
-                        return (TKey) (object) DateTime.Parse(result.ToString());
+                        return (TKey) (result ?? 0);
+                    if ( typeof( TKey ) == typeof( DateTime ) )
+                    {
+                        DateTime retval;
+                        if ( !DateTime.TryParse( result.ToString(), out retval ) )
+                        {
+                            return (TKey)(object)DateTimeHelper.MinSqlValue;
+                        }
+
+                        return (TKey)(object)retval;
+                    }
 
                     return (TKey) result;
                 }

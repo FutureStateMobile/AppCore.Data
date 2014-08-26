@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
+using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data.SqlServer
 {
@@ -184,7 +185,23 @@ namespace FutureState.AppCore.Data.SqlServer
                         command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value));
                     }
 
-                    return (TKey) command.ExecuteScalar();
+                    var result = command.ExecuteScalar();
+
+                    if ( typeof( TKey ) == typeof( int ) )
+                        return (TKey)( result ?? 0 );
+
+                    if (typeof (TKey) == typeof (DateTime))
+                    {
+                        DateTime retval;
+                        if (! DateTime.TryParse(result.ToString(), out retval))
+                        {
+                            return (TKey)(object)DateTimeHelper.MinSqlValue;
+                        }
+                        
+                        return (TKey)(object)retval;
+                    }
+
+                    return (TKey) result;
                 }
             }
         }

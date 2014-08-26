@@ -46,14 +46,14 @@ namespace FutureState.AppCore.Data.Sqlite
 
         public override bool CheckIfTableExists(string tableName)
         {
-            var exists = ExecuteScalar<int>( string.Format( Dialect.CheckTableExists, tableName ) ) == 1;
-            return exists;
+            var count = ExecuteScalar<int>(string.Format(Dialect.CheckTableExists, tableName));
+            return count > 0;
         }
 
-        public override bool CheckIfTableColumnExists ( string tableName, string columnName )
+        public override bool CheckIfTableColumnExists(string tableName, string columnName)
         {
-            var exists = ExecuteScalar<int>( string.Format( Dialect.CheckTableColumnExists, tableName, columnName ) ) == 1;
-            return exists;
+            var columnSql = ExecuteScalar<string>(string.Format(Dialect.CheckTableColumnExists, tableName));
+            return columnSql.Contains(string.Format("[{0}]",columnName));
         }
 
         private void EnableForeignKeys(IDbCommand command)
@@ -149,22 +149,36 @@ namespace FutureState.AppCore.Data.Sqlite
 
                     var result = command.ExecuteScalar();
 
-                    if (typeof (TKey) == typeof (Guid))
-                        return (TKey) (object) new Guid((byte[]) result);
-                    if (typeof (TKey) == typeof (int))
-                        return (TKey) (result ?? 0);
-                    if ( typeof( TKey ) == typeof( DateTime ) )
+                    if (typeof(TKey) == typeof(Guid))
+                    {
+                        return (TKey)(object)new Guid((byte[])result);
+                    }
+
+                    if (typeof(TKey) == typeof(int))
+                    {
+                        if (result == null)
+                        {
+                            return (TKey)(object)0;
+                        }
+                        int retVal;
+                        if (!int.TryParse(result.ToString(), out retVal))
+                        {
+                            return (TKey)(object)0;
+                        }
+                        return (TKey)(object)retVal;
+                    }
+
+                    if (typeof(TKey) == typeof(DateTime))
                     {
                         DateTime retval;
-                        if ( !DateTime.TryParse( result.ToString(), out retval ) )
+                        if (!DateTime.TryParse(result.ToString(), out retval))
                         {
                             return (TKey)(object)DateTimeHelper.MinSqlValue;
                         }
-
                         return (TKey)(object)retval;
                     }
 
-                    return (TKey) result;
+                    return (TKey)result;
                 }
             }
         }

@@ -14,6 +14,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
                 Id = new Guid(FirstBookId),
                 StudentId = new Guid(StudentFixture.FirstStudentId),
                 Name = "FirstBookTitle",
+                BookNumber = 1
             };
 
         public static BookModel BookToUpdate = new BookModel
@@ -21,6 +22,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
                 Id = new Guid(BookToUpdateId),
                 StudentId = new Guid(StudentFixture.StudentToUpdateId),
                 Name = "BookTitleToUpdate",
+                BookNumber = 2
             };
 
         public static BookModel BookToDelete = new BookModel
@@ -28,6 +30,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
                 Id = new Guid(BookToDeleteId),
                 StudentId = new Guid(StudentFixture.StudentToDeleteId),
                 Name = "BookTitleToDelete",
+                BookNumber = 3
             };
 
         public static void SetupFixtureDataInDatabase(IDbProvider dbProvider)

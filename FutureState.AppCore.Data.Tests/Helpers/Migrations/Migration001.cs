@@ -45,8 +45,9 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             // OneToMany Relationship to Student
             var bookTable = database.AddTable("Books");
             bookTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
-            bookTable.AddColumn("StudentId", typeof (Guid)).NotNullable().ForeignKey("Students", "Id");
-            bookTable.AddColumn("Name", typeof (string), 100).NotNullable();
+            bookTable.AddColumn("StudentId", typeof(Guid)).NotNullable().ForeignKey("Students", "Id");
+            bookTable.AddColumn("Name", typeof(string), 100).NotNullable();
+            bookTable.AddColumn("BookNumber", typeof(int)).Nullable();
             bookTable.AddColumn("PublishDate", typeof (DateTime)).NotNullable();
             bookTable.AddColumn("CreatedDate", typeof (DateTime)).NotNullable();
             bookTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();

@@ -7,5 +7,6 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Models
         public Guid StudentId { get; set; }
         public string Name { get; set; }
         public DateTime PublishDate { get; set; }
+        public int BookNumber { get; set; }
     }
 }

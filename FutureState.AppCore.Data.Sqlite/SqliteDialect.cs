@@ -29,12 +29,12 @@
 
         public string CheckTableExists
         {
-            get { return "SELECT name FROM sqlite_master WHERE type='table' AND name='{0}'"; }
+            get { return "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{0}'"; }
         }
 
         public string CheckTableColumnExists
         {
-            get { return "SELECT COUNT(*) FROM sqlite_master WHERE tbl_name='{0}' AND name='{1}'"; }
+            get { return "SELECT SQL FROM sqlite_master WHERE tbl_name='{0}'"; }
         }
 
         public string CreateDatabase

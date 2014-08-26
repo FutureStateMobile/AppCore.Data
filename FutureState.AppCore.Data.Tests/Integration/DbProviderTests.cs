@@ -395,5 +395,18 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Assert.IsNotNull(studentFromDb);
             Assert.That(studentFromDb.Courses.Any(p => p.Id == CourseFixture.ThirdCourse.Id));
         }
+
+        [Test, TestCaseSource("DbProviders")]
+        public void ShouldSayTheHighestbookNumberIsThree(IDbProvider db)
+        {
+            Trace.WriteLine(TraceObjectGraphInfo(db));
+            const int expectedNumber = 3;
+
+            // Execute Query
+            var actualNumber = db.Scalar<BookModel, int>(s => s.BookNumber).Max();
+
+            // Assert
+            Assert.That(actualNumber, Is.EqualTo(expectedNumber));
+        }
     }
 }

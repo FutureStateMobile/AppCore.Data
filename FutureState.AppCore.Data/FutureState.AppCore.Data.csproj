@@ -57,6 +57,7 @@
     <Compile Include="DbProviderExtensions.cs" />
     <Compile Include="DbQuery.cs" />
     <Compile Include="DbScalar.cs" />
+    <Compile Include="Exceptions\DuplicateRecordException.cs" />
     <Compile Include="Helpers\Inflector.cs" />
     <Compile Include="IDbScalar.cs" />
     <Compile Include="JoinExpressionVisitor.cs" />

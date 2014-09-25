@@ -87,7 +87,6 @@
     <Compile Include="Exceptions\NullFieldException.cs" />
     <Compile Include="Exceptions\RepositoryCreateFailedException.cs" />
     <Compile Include="Exceptions\SqlStatementNotFoundException.cs" />
-    <Compile Include="Exceptions\SystemAccountChangeException.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Extensions\GenericNullCheck.cs" />
     <Compile Include="Extensions\PropertyEqualityComparer.cs" />

@@ -113,9 +113,14 @@
         }
 
         // Constraints
-        public string PrimaryKeyConstraint
+        public string NonClusteredPrimaryKeyConstraint
         {
             get { return "PRIMARY KEY"; }
+        }
+
+        public string ClusteredPrimaryKeyConstraint
+        {
+            get { return NonClusteredPrimaryKeyConstraint; }
         }
 
         public string ForeignKeyConstraint

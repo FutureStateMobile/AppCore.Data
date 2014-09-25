@@ -204,8 +204,10 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 .ToList();
 
             // Assert
-            Assert.AreEqual(expectedUsers[0].FirstName, actualUsers[0].FirstName);
-            Assert.AreEqual(expectedUsers[1].FirstName, actualUsers[1].FirstName);
+            Assert.That(actualUsers.Any(s => s.FirstName == expectedUsers[0].FirstName));
+            Assert.That(actualUsers.Any(s => s.FirstName == expectedUsers[1].FirstName));
+            Assert.That(actualUsers.Count(s => s.FirstName == expectedUsers[0].FirstName), Is.EqualTo(1));
+            Assert.That(actualUsers.Count(s => s.FirstName == expectedUsers[1].FirstName), Is.EqualTo(1));
         }
 
         [Test, TestCaseSource("DbProviders")]

@@ -25,7 +25,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             var database = new Database(DbProvider.DatabaseName, DbProvider.Dialect);
 
             var studentTable = database.AddTable("Students");
-            studentTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            studentTable.AddColumn("Id", typeof (Guid)).PrimaryKey(IndexType.Clustered).NotNullable();
             studentTable.AddColumn("FirstName", typeof (string), 100);
             studentTable.AddColumn("LastName", typeof (string), 100);
             studentTable.AddColumn("Email", typeof (string), 100).NotNullable().Unique();

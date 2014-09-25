@@ -10,7 +10,7 @@ namespace FutureState.AppCore.Data.SqlServer
 {
     public class DbProvider : DbProviderBase
     {
-        private const string RootSqlScriptPath = "FutureState.AppCore.Data.SqlServer.SqlScripts.";
+        private const string _rootSqlScriptPath = "FutureState.AppCore.Data.SqlServer.SqlScripts.";
         private static string _useStatement;
         private readonly IDbConnectionProvider _connectionProvider;
         private IDialect _dialect;
@@ -24,7 +24,7 @@ namespace FutureState.AppCore.Data.SqlServer
 
         public override sealed IDialect Dialect
         {
-            get { return _dialect ?? ( _dialect = new SqlServerDialect() ); }
+            get { return _dialect ?? (_dialect = new SqlServerDialect()); }
         }
 
         public override string LoadSqlFile<TDbProvider>(string fileName)
@@ -33,7 +33,7 @@ namespace FutureState.AppCore.Data.SqlServer
 
             using (
                 var resourceStream =
-                    Assembly.GetExecutingAssembly().GetManifestResourceStream(RootSqlScriptPath + fileName))
+                    Assembly.GetExecutingAssembly().GetManifestResourceStream(_rootSqlScriptPath + fileName))
             {
                 if (resourceStream != null)
                 {
@@ -46,17 +46,20 @@ namespace FutureState.AppCore.Data.SqlServer
 
         public override bool CheckIfDatabaseExists()
         {
-            return ExecuteScalar<int>("USE master; ", string.Format(Dialect.CheckDatabaseExists, DatabaseName)) == 1;
+            return ExecuteScalar<int>("", string.Format(Dialect.CheckDatabaseExists, DatabaseName)) == 1;
+            //return ExecuteScalar<int>("USE master;", string.Format(Dialect.CheckDatabaseExists, DatabaseName)) == 1;
         }
 
         public override void CreateDatabase()
         {
-            ExecuteNonQuery("USE master; ", string.Format(Dialect.CreateDatabase, DatabaseName));
+            ExecuteNonQuery("", string.Format(Dialect.CreateDatabase, DatabaseName));
+            //ExecuteNonQuery("USE master; ", string.Format(Dialect.CreateDatabase, DatabaseName));
         }
 
         public override void DropDatabase()
         {
-            ExecuteNonQuery("USE master; ", string.Format(Dialect.DropDatabase, DatabaseName));
+            ExecuteNonQuery("", string.Format(Dialect.DropDatabase, DatabaseName));
+            //ExecuteNonQuery("USE master; ", string.Format(Dialect.DropDatabase, DatabaseName));
         }
 
         public override bool CheckIfTableExists(string tableName)
@@ -64,9 +67,9 @@ namespace FutureState.AppCore.Data.SqlServer
             return ExecuteScalar<int>(string.Format(Dialect.CheckTableExists, tableName)) == 1;
         }
 
-        public override bool CheckIfTableColumnExists ( string tableName, string columnName )
+        public override bool CheckIfTableColumnExists(string tableName, string columnName)
         {
-            return ExecuteScalar<int>( string.Format( Dialect.CheckTableColumnExists, tableName, columnName ) ) == 1;
+            return ExecuteScalar<int>(string.Format(Dialect.CheckTableColumnExists, tableName, columnName)) == 1;
         }
 
         #region ExecuteReader
@@ -187,21 +190,21 @@ namespace FutureState.AppCore.Data.SqlServer
 
                     var result = command.ExecuteScalar();
 
-                    if ( typeof( TKey ) == typeof( int ) )
-                        return (TKey)( result ?? 0 );
+                    if (typeof(TKey) == typeof(int))
+                        return (TKey)(result ?? 0);
 
-                    if (typeof (TKey) == typeof (DateTime))
+                    if (typeof(TKey) == typeof(DateTime))
                     {
                         DateTime retval;
-                        if (! DateTime.TryParse(result.ToString(), out retval))
+                        if (!DateTime.TryParse(result.ToString(), out retval))
                         {
                             return (TKey)(object)DateTimeHelper.MinSqlValue;
                         }
-                        
+
                         return (TKey)(object)retval;
                     }
 
-                    return (TKey) result;
+                    return (TKey)result;
                 }
             }
         }

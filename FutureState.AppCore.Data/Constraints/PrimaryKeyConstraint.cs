@@ -3,23 +3,15 @@
     public class PrimaryKeyConstraint : IConstraint
     {
         private static IDialect _dialect;
-        private readonly IndexType _indexType;
 
-        public PrimaryKeyConstraint(IDialect dialect, IndexType indexType)
+        public PrimaryKeyConstraint(IDialect dialect)
         {
             _dialect = dialect;
-            _indexType = indexType;
         }
 
         public override string ToString()
         {
-            switch (_indexType)
-            {
-                case IndexType.Clustered:
-                    return _dialect.ClusteredPrimaryKeyConstraint;
-                default:
-                    return _dialect.NonClusteredPrimaryKeyConstraint;
-            }
+            return _dialect.PrimaryKeyConstraint;
         }
     }
 }

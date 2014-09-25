@@ -1,6 +1,6 @@
 ﻿namespace FutureState.AppCore.Data
 {
-    public enum IndexType
+    public enum ClusterType
     {
         Clustered,
         NonClustered

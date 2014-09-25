@@ -30,7 +30,7 @@ namespace FutureState.AppCore.Data
                 var database = new Database(_dbProvider.DatabaseName, _dbProvider.Dialect);
 
                 var dbVersionTable = database.AddTable("DatabaseVersions");
-                dbVersionTable.AddColumn("VersionNumber", typeof (int)).PrimaryKey(IndexType.Clustered).NotNullable();
+                dbVersionTable.AddColumn("VersionNumber", typeof (int)).PrimaryKey().Clustered().NotNullable();
                 dbVersionTable.AddColumn("MigrationDate", typeof (DateTime)).NotNullable();
                 dbVersionTable.AddColumn("IsBeforeMigrationComplete", typeof (bool)).NotNullable(true);
                 dbVersionTable.AddColumn("IsMigrationComplete", typeof (bool)).NotNullable(true);

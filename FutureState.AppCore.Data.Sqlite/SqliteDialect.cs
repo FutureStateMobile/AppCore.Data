@@ -113,14 +113,9 @@
         }
 
         // Constraints
-        public string NonClusteredPrimaryKeyConstraint
+        public string PrimaryKeyConstraint
         {
             get { return "PRIMARY KEY"; }
-        }
-
-        public string ClusteredPrimaryKeyConstraint
-        {
-            get { return NonClusteredPrimaryKeyConstraint; }
         }
 
         public string ForeignKeyConstraint
@@ -176,6 +171,16 @@
         public string CompositeUniqueConstraint
         {
             get { return "UNIQUE ({0}, {1})"; }
+        }
+
+        public string ClusteredConstraint
+        {
+            get { return ""; }
+        }
+
+        public string NonClusteredConstraint
+        {
+            get { return ""; }
         }
 
         // Data Types

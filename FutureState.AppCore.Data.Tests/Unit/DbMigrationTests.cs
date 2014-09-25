@@ -78,11 +78,11 @@ CREATE TABLE [Courses] (
             var database = new Database("MyDatabase", dialect);
 
             var teacher = database.AddTable("Teachers");
-            teacher.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            teacher.AddColumn("Id", typeof (Guid)).PrimaryKey().NonClustered().NotNullable();
             teacher.AddColumn("TeacherName", typeof (String), 100).NotNullable();
 
             var course = database.AddTable("Courses");
-            course.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
+            course.AddColumn("Id", typeof (Guid)).PrimaryKey().NonClustered().NotNullable();
             course.AddColumn("CourseName", typeof (String), 100).NotNullable();
             course.AddColumn("CourseDescription", typeof (String));
             course.AddColumn("CourseTeacher", typeof (Guid)).ForeignKey("Teachers", "Id").NotNullable();

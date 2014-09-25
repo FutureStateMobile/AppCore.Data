@@ -29,8 +29,7 @@ namespace FutureState.AppCore.Data
         string SkipTake { get; }
 
         // Constraints
-        string NonClusteredPrimaryKeyConstraint { get; }
-        string ClusteredPrimaryKeyConstraint { get; }
+        string PrimaryKeyConstraint { get; }
         string ForeignKeyConstraint { get; }
         string NotNullableConstraint { get; }
         string NullableConstraint { get; }
@@ -42,6 +41,8 @@ namespace FutureState.AppCore.Data
         string DefaultStringConstraint { get; }
         string CompositeKeyConstraint { get; }
         string CompositeUniqueConstraint { get; }
+        string ClusteredConstraint { get; }
+        string NonClusteredConstraint { get; }
         
         // Data Types
         string Bool { get; }

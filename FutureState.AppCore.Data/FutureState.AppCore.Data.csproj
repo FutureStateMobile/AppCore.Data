@@ -39,13 +39,15 @@
   <ItemGroup>
     <Compile Include="Attributes\ManyToManyAttribute.cs" />
     <Compile Include="Attributes\OneToManyAttribute.cs" />
+    <Compile Include="ClusterType.cs" />
     <Compile Include="Column.cs" />
+    <Compile Include="Constraints\ClusteredConstraint.cs" />
     <Compile Include="Constraints\CompositeKeyConstraint.cs" />
     <Compile Include="Constraints\CompositeUniqueConstraint.cs" />
     <Compile Include="Constraints\DefaultConstraint.cs" />
     <Compile Include="Constraints\ForeignKeyConstraint.cs" />
     <Compile Include="Constraints\IConstraint.cs" />
-    <Compile Include="IndexType.cs" />
+    <Compile Include="Constraints\NonClusteredConstraint.cs" />
     <Compile Include="Constraints\NotNullableConstraint.cs" />
     <Compile Include="Constraints\NullableConstraint.cs" />
     <Compile Include="Constraints\OnDeleteNoActionConstraint.cs" />

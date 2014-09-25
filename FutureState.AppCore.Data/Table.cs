@@ -22,15 +22,15 @@ namespace FutureState.AppCore.Data
 
         public IList<Column> Columns { get; set; }
 
-        public Table CompositeKey(string key1, string key2)
+        public Table CompositeKey(string key1, string key2, ClusterType clusterType = ClusterType.NonClustered)
         {
-            Constraints.Add(new CompositeKeyConstraint(_dialect, Name, key1, key2));
+            Constraints.Add(new CompositeKeyConstraint(_dialect, Name, key1, key2, clusterType));
             return this;
         }
 
-        public Table CompositeUnique(string key1, string key2)
+        public Table CompositeUnique(string key1, string key2, ClusterType clusterType = ClusterType.NonClustered)
         {
-            Constraints.Add(new CompositeUniqueConstraint(_dialect, key1, key2));
+            Constraints.Add(new CompositeUniqueConstraint(_dialect, key1, key2, clusterType));
             return this;
         }
 

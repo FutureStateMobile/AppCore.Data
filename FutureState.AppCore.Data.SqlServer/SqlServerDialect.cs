@@ -117,14 +117,9 @@
         }
 
         // Constraints
-        public string NonClusteredPrimaryKeyConstraint
+        public string PrimaryKeyConstraint
         {
-            get { return "PRIMARY KEY NONCLUSTERED"; }
-        }
-
-        public string ClusteredPrimaryKeyConstraint
-        {
-            get { return "PRIMARY KEY CLUSTERED"; }
+            get { return "PRIMARY KEY"; }
         }
 
         public string ForeignKeyConstraint
@@ -174,12 +169,22 @@
 
         public string CompositeKeyConstraint
         {
-            get { return "CONSTRAINT PK_{0}_{1}_Composite PRIMARY KEY NONCLUSTERED ({2}, {3})"; }
+            get { return "CONSTRAINT PK_{0}_{1}_Composite PRIMARY KEY {4} ({2}, {3})"; }
         }
 
         public string CompositeUniqueConstraint
         {
-            get { return "CONSTRAINT PK_{0}_{1}_Composite UNIQUE NONCLUSTERED ({0}, {1})"; }
+            get { return "CONSTRAINT PK_{0}_{1}_Composite UNIQUE {2} ({0}, {1})"; }
+        }
+
+        public string ClusteredConstraint
+        {
+            get { return "CLUSTERED"; }
+        }
+
+        public string NonClusteredConstraint
+        {
+            get { return "NONCLUSTERED"; }
         }
 
         // Data Types

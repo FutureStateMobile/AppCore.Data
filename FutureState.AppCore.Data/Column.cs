@@ -26,9 +26,9 @@ namespace FutureState.AppCore.Data
             _tableName = tableName;
         }
 
-        public Column PrimaryKey(IndexType indexType = IndexType.NonClustered)
+        public Column PrimaryKey()
         {
-            Constraints.Add(new PrimaryKeyConstraint(_dialect, indexType));
+            Constraints.Add(new PrimaryKeyConstraint(_dialect));
             return this;
         }
 
@@ -68,6 +68,18 @@ namespace FutureState.AppCore.Data
         public Column Unique()
         {
             Constraints.Add(new UniqueConstraint(_dialect));
+            return this;
+        }
+
+        public Column Clustered()
+        {
+            Constraints.Add(new ClusteredConstraint(_dialect));
+            return this;
+        }
+
+        public Column NonClustered()
+        {
+            Constraints.Add(new NonClusteredConstraint(_dialect));
             return this;
         }
 

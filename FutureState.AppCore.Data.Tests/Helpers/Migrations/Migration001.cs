@@ -25,7 +25,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             var database = new Database(DbProvider.DatabaseName, DbProvider.Dialect);
 
             var studentTable = database.AddTable("Students");
-            studentTable.AddColumn("Id", typeof (Guid)).PrimaryKey(IndexType.Clustered).NotNullable();
+            studentTable.AddColumn("Id", typeof (Guid)).PrimaryKey().Clustered().NotNullable();
             studentTable.AddColumn("FirstName", typeof (string), 100);
             studentTable.AddColumn("LastName", typeof (string), 100);
             studentTable.AddColumn("Email", typeof (string), 100).NotNullable().Unique();
@@ -59,7 +59,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 
             // ManyToMany Join Tables are currently handled under the covers (without an associated model)
             // Naming convention used by ORM is to joing the 2 table names together in alphabetical order
-            var courseStudentTable = database.AddTable("Courses_Students").CompositeKey("StudentId", "CourseId");
+            var courseStudentTable = database.AddTable("Courses_Students").CompositeKey("StudentId", "CourseId", ClusterType.Clustered);
             courseStudentTable.AddColumn("CourseId", typeof (Guid)).ForeignKey("Courses", "Id").NotNullable();
             courseStudentTable.AddColumn("StudentId", typeof (Guid)).ForeignKey("Students", "Id").NotNullable();
 

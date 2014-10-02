@@ -99,7 +99,7 @@ task ? -Description "Helper to display task info.  In addition to passing a task
     Write-Documentation
 }
 
-task PostPackageCleanup {
+function PostPackageCleanup() {
     if (Test-Path $buildOutputDir) {
         Remove-Item $buildOutputDir -Recurse -Force -ErrorAction SilentlyContinue
     }

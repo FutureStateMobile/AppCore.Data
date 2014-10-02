@@ -29,7 +29,12 @@ This project is licensed under Ms-PL. Dependencies carry their own licenses.</de
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.dll" target="lib\net45\FutureState.AppCore.Data.Sqlite.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.Windows.dll" target="lib\net45\FutureState.AppCore.Data.Sqlite.Windows.dll" />
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.SqlServer.dll" target="lib\net45\FutureState.AppCore.Data.SqlServer.dll" />
+    <file src="..\build-artifacts\output\FutureState.AppCore.Data.pdb" target="lib\net45\FutureState.AppCore.Data.pdb" />
+    <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.pdb" target="lib\net45\FutureState.AppCore.Data.Sqlite.pdb" />
+    <file src="..\build-artifacts\output\FutureState.AppCore.Data.Sqlite.Windows.pdb" target="lib\net45\FutureState.AppCore.Data.Sqlite.Windows.pdb" />
+    <file src="..\build-artifacts\output\FutureState.AppCore.Data.SqlServer.pdb" target="lib\net45\FutureState.AppCore.Data.SqlServer.pdb" />
     <!-- PCL -->
     <file src="..\build-artifacts\output\FutureState.AppCore.Data.dll" target="lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\FutureState.AppCore.Data.dll" />
+    <file src="..\build-artifacts\output\FutureState.AppCore.Data.pdb" target="lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\FutureState.AppCore.Data.pdb" />
   </files>
 </package>

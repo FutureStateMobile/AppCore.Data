@@ -14,12 +14,13 @@ properties {
     $packagesDir = (Resolve-Path $rootDir\packages)
     $version = if ("$version".length -gt 0) { "$version" } else { '1.0.0' }
     $buildNumber = if ("$buildNumber".length -gt 0) { "$buildNumber" } else { '1' }
+    [string[]] $symbolsToCopy = @("FutureState.AppCore.Data.pdb", "FutureState.AppCore.Data.Sqlite.pdb","FutureState.AppCore.Data.Sqlite.Windows.pdb","FutureState.AppCore.Data.SqlServer.pdb")
     $informationalVersion = if ("$informationalVersion".length -gt 0) { "$informationalVersion" } else { 'Developer Build' }
     $nUnitVersion = "2.6.3"
     $nuGetVersion = "2.7.3"
 }
 
-task default -Depends Clean, Compile, UnitTest, IntegrationTest, Package #, PostPackageCleanup
+task default -Depends Clean, Compile, UnitTest, IntegrationTest, CopySymbols, Package #, PostPackageCleanup
 
 FormatTaskName {
     param($taskName)
@@ -82,7 +83,16 @@ task SetPackageVersion -Description "Task which sets the proper version informat
 }
 
 task Package -Depends SetPackageVersion -Description "Task which bundles the build artifacts into a NuGet package" {
-    Exec { & $packagesDir\NuGet.CommandLine.$nuGetVersion\tools\nuget.exe pack $nuspecFile -Version "$($version).$($buildNumber)" -OutputDirectory $buildArtifactsDir -NoPackageAnalysis }
+    Exec { & $packagesDir\NuGet.CommandLine.$nuGetVersion\tools\nuget.exe pack $nuspecFile -Version "$($version).$($buildNumber)" -OutputDirectory $buildArtifactsDir -NoPackageAnalysis -Symbols }
+    PostPackageCleanup
+}
+
+task CopySymbols -Depends Compile -Description "Copy symbols to the build artifacts directory"{
+    foreach($symbol in $symbolsToCopy)
+    {
+        Write-Host "Copying $symbol to $buildArtifactsDir"
+        Copy-Item $buildOutputDir\$symbol $buildArtifactsDir
+    }
 }
 
 task ? -Description "Helper to display task info.  In addition to passing a task into the build, you can pass parameters in the form of: -parameters @{env='local',version'X.X.X.X'}" {

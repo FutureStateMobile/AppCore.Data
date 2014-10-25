@@ -11,7 +11,7 @@ namespace FutureState.AppCore.Data
         where TModel : class, new()
     {
         private readonly IDbProvider _dbProvider;
-        private readonly AutoMapper<TModel> _mapper;
+        private readonly IAutoMapper<TModel> _mapper;
         private readonly string _tableName;
         private string _orderByClause;
         private OrderByExpressionVisitor _orderByExpressionVisitor;
@@ -25,6 +25,14 @@ namespace FutureState.AppCore.Data
             _dbProvider = dbProvider;
             _mapper = new AutoMapper<TModel>();
             _tableName = GetTableName(typeof (TModel).GetTypeInfo());
+            _parameters = new Dictionary<string, object>();
+        }
+
+        public DbQuery ( IDbProvider dbProvider, IAutoMapper<TModel> mapper  )
+        {
+            _dbProvider = dbProvider;
+            _mapper = mapper;
+            _tableName = GetTableName( typeof( TModel ).GetTypeInfo() );
             _parameters = new Dictionary<string, object>();
         }
 
@@ -73,7 +81,7 @@ namespace FutureState.AppCore.Data
 
         public IEnumerable<TModel> Select()
         {
-            return _dbProvider.ExecuteReader(ToString(), _parameters, _mapper.BuildQueueFrom);
+            return _dbProvider.ExecuteReader(ToString(), _parameters, _mapper.BuildListFrom);
         }
 
         public void Update(TModel model)

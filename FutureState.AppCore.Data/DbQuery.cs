@@ -84,6 +84,11 @@ namespace FutureState.AppCore.Data
             return _dbProvider.ExecuteReader(ToString(), _parameters, _mapper.BuildListFrom);
         }
 
+        public IEnumerable<TModel> Select ( Func<IDbReader, IList<TModel>> buildListFrom )
+        {
+            return _dbProvider.ExecuteReader( ToString(), _parameters, buildListFrom );
+        }
+
         public void Update(TModel model)
         {
             // TODO: Make the update only update specified feilds, this requires a lot more work though

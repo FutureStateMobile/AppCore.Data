@@ -28,6 +28,14 @@ namespace FutureState.AppCore.Data
                     }
                 }
 
+                if ( property.PropertyType == typeof( Guid ) )
+                {
+                    if ( (Guid)value == Guid.Empty )
+                    {
+                        value = null;
+                    }
+                }
+
                 // Check if the model object is to be ignored.
                 var ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
                              property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||

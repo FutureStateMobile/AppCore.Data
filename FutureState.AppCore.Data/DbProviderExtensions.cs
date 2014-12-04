@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -67,7 +65,7 @@ namespace FutureState.AppCore.Data
             var key = string.Format("@{0}Id", referenceTableNameSingular);
             var parameters = new Dictionary<string, object> {{key, id}};
 
-            return dbProvider.ExecuteReader(commandText, parameters, mapper.BuildQueueFrom);
+            return dbProvider.ExecuteReader(commandText, parameters, mapper.BuildListFrom);
         }
 
         /// <summary>

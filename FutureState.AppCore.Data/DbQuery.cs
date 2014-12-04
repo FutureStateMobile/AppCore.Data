@@ -73,7 +73,7 @@ namespace FutureState.AppCore.Data
             }
             else
             {
-                _whereClause += " && " + _whereExpressionVisitor.WhereExpression;
+                _whereClause += " AND " + _whereExpressionVisitor.WhereExpression;
             }
             return this;
         }

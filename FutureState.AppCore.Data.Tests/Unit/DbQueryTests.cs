@@ -90,7 +90,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // setup
             const string expectedQuery =
-                @"SELECT Students.* FROM Students WHERE ( [FirstName] LIKE @FirstName1 OR [FirstName] = @FirstName2 ) && ( [FirstName] <> @FirstName3 )";
+                @"SELECT Students.* FROM Students WHERE ( [FirstName] LIKE @FirstName1 OR [FirstName] = @FirstName2 ) AND ( [FirstName] <> @FirstName3 )";
 
             // execute
             var actualQuery = dbProvider.Query<StudentModel>()

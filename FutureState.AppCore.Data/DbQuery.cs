@@ -7,8 +7,7 @@ using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
-    public class DbQuery<TModel> : IDbQuery<TModel>
-        where TModel : class, new()
+    public class DbQuery<TModel> : IDbQuery<TModel> where TModel : class, new()
     {
         private readonly IDbProvider _dbProvider;
         private readonly IAutoMapper<TModel> _mapper;
@@ -52,9 +51,7 @@ namespace FutureState.AppCore.Data
         }
 
         // Used for OneToMany and OneToOne joins, we will use and Expression to build the Join clause
-        public IDbQuery<TModel, TJoinTo> Join<TJoinTo>(JoinType joinType,
-                                                       Expression<Func<TModel, TJoinTo, object>> joinExpression)
-            where TJoinTo : class, new()
+        public IDbQuery<TModel, TJoinTo> Join<TJoinTo>(JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression) where TJoinTo : class, new()
         {
             return new DbQuery<TModel, TJoinTo>(_dbProvider, joinType, joinExpression);
         }
@@ -67,10 +64,17 @@ namespace FutureState.AppCore.Data
 
         public IDbQuery<TModel> Where(Expression<Func<TModel, object>> expression)
         {
-            _whereExpressionVisitor = new WhereExpressionVisitor().Visit(expression);
-            _whereClause = string.Format(_dbProvider.Dialect.Where, _whereExpressionVisitor.WhereExpression);
+            _whereExpressionVisitor = new WhereExpressionVisitor(_parameters).Visit(expression);
             _parameters = _whereExpressionVisitor.Parameters;
 
+            if (string.IsNullOrEmpty(_whereClause))
+            {
+                _whereClause = string.Format(_dbProvider.Dialect.Where, _whereExpressionVisitor.WhereExpression);
+            }
+            else
+            {
+                _whereClause += " && " + _whereExpressionVisitor.WhereExpression;
+            }
             return this;
         }
 
@@ -142,9 +146,7 @@ namespace FutureState.AppCore.Data
         }
     }
 
-    public class DbQuery<TModel, TJoinTo> : IDbQuery<TModel, TJoinTo>
-        where TModel : class, new()
-        where TJoinTo : class, new()
+    public class DbQuery<TModel, TJoinTo> : IDbQuery<TModel, TJoinTo>where TModel : class, new() where TJoinTo : class, new()
     {
         private readonly IDbProvider _dbProvider;
         private readonly string _joinTableName;
@@ -166,9 +168,7 @@ namespace FutureState.AppCore.Data
         }
 
         // Called for OneToOne and OneToMany joins, we need to look at the express to build Join clause
-        public DbQuery(IDbProvider dbProvider, JoinType joinType,
-                       Expression<Func<TModel, TJoinTo, object>> joinExpression)
-            : this(dbProvider, joinType)
+        public DbQuery(IDbProvider dbProvider, JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression) : this(dbProvider, joinType)
         {
             _joinExpressionVisitor = new JoinExpressionVisitor().Visit(joinType, joinExpression);
         }

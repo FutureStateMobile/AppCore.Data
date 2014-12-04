@@ -20,9 +20,15 @@ namespace FutureState.AppCore.Data
             _strings = new StringBuilder();
         }
 
+        public WhereExpressionVisitor (Dictionary<string, object> parameters)
+        {
+            Parameters = parameters;
+            _strings = new StringBuilder();
+        }
+
         public string WhereExpression
         {
-            get { return _strings.ToString().Trim(); }
+            get { return "( " + _strings.ToString().Trim() + " )"; }
         }
 
         public WhereExpressionVisitor Visit(Expression expression)

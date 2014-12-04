@@ -12,7 +12,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildQueryForUsersGettingCount ( IDbProvider dbProvider )
         {
             // setup
-            const string expectedQuery = @"SELECT COUNT(*) FROM Students WHERE [FirstName] LIKE @FirstName1";
+            const string expectedQuery = @"SELECT COUNT(*) FROM Students WHERE ( [FirstName] LIKE @FirstName1 )";
 
             // execute
             var actualQuery = dbProvider.Query<StudentModel>()
@@ -31,11 +31,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
             switch (dbProvider.GetType().ToString())
             {
                 case "FutureState.AppCore.Data.Sqlite.DbProvider":
-                    expectedQuery = @"SELECT Students.* FROM Students WHERE [Id] = @Id1 ORDER BY [Email] DESC LIMIT 10 OFFSET 20";
+                    expectedQuery = @"SELECT Students.* FROM Students WHERE ( [Id] = @Id1 ) ORDER BY [Email] DESC LIMIT 10 OFFSET 20";
                     break;
                 case "FutureState.AppCore.Data.SqlServer.DbProvider":
                     expectedQuery =
-                        @"SELECT Students.* FROM Students WHERE [Id] = @Id1 ORDER BY [Email] DESC OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY";
+                        @"SELECT Students.* FROM Students WHERE ( [Id] = @Id1 ) ORDER BY [Email] DESC OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY";
                     break;
             }
 
@@ -56,7 +56,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildQueryForUsersById(IDbProvider dbProvider)
         {
             // setup
-            const string expectedQuery = @"SELECT Students.* FROM Students WHERE [Id] = @Id1";
+            const string expectedQuery = @"SELECT Students.* FROM Students WHERE ( [Id] = @Id1 )";
             var testGuid = Guid.NewGuid();
 
             // execute
@@ -74,7 +74,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // setup
             const string expectedQuery =
-                @"SELECT Students.* FROM Students WHERE [FirstName] LIKE @FirstName1 AND [FirstName] <> @FirstName2";
+                @"SELECT Students.* FROM Students WHERE ( [FirstName] LIKE @FirstName1 AND [FirstName] <> @FirstName2 )";
 
             // execute
             var actualQuery = dbProvider.Query<StudentModel>()
@@ -86,10 +86,27 @@ namespace FutureState.AppCore.Data.Tests.Unit
         }
 
         [Test, TestCaseSource( "Repositories" )]
+        public void ShouldBuildQueryForUsersByNameAndNotNameWithBrackets ( IDbProvider dbProvider )
+        {
+            // setup
+            const string expectedQuery =
+                @"SELECT Students.* FROM Students WHERE ( [FirstName] LIKE @FirstName1 OR [FirstName] = @FirstName2 ) && ( [FirstName] <> @FirstName3 )";
+
+            // execute
+            var actualQuery = dbProvider.Query<StudentModel>()
+                                        .Where( u => u.FirstName.Contains( "Bo" ) || u.FirstName == "Kevin" )
+                                        .Where( u => u.FirstName != "Bob" )
+                                        .ToString();
+
+            // assert
+            Assert.AreEqual( expectedQuery, actualQuery );
+        }
+
+        [Test, TestCaseSource( "Repositories" )]
         public void ShouldBuildQueryForUsersByNameNotNull ( IDbProvider dbProvider )
         {
             // setup
-            const string expectedQuery = @"SELECT Students.* FROM Students WHERE [FirstName] IS NOT NULL";
+            const string expectedQuery = @"SELECT Students.* FROM Students WHERE ( [FirstName] IS NOT NULL )";
 
             // execute
             var actualQuery = dbProvider.Query<StudentModel>()
@@ -107,7 +124,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             // TODO: Joe to implement
             // setup
             const string expectedQuery =
-                @"SELECT Students.* FROM Students WHERE [FirstName] LIKE @FirstName1 ORDER BY [Email] ASC";
+                @"SELECT Students.* FROM Students WHERE ( [FirstName] LIKE @FirstName1 ) ORDER BY [Email] ASC";
 
             // execute
             var actualQuery = dbProvider.Query<StudentModel>()
@@ -125,7 +142,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             // TODO: Joe to implement
             // setup
             const string expectedQuery =
-                @"SELECT Students.* FROM Students WHERE [FirstName] LIKE @FirstName1 ORDER BY [Email] DESC";
+                @"SELECT Students.* FROM Students WHERE ( [FirstName] LIKE @FirstName1 ) ORDER BY [Email] DESC";
 
             // execute
             var actualQuery = dbProvider.Query<StudentModel>()

@@ -9,8 +9,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
     [TestFixture]
     public class WhereExpressionVisitorTests
     {
-        public static WhereExpressionVisitor TestExpression<TModel>(Expression<Func<TModel, object>> expression)
-            where TModel : class, new()
+        public static WhereExpressionVisitor TestExpression<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new()
         {
             var visitor = new WhereExpressionVisitor().Visit(expression);
             return visitor;
@@ -24,7 +23,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildAWhereClauseWithAnOr()
         {
             // Setup
-            const string expectedString = "[FirstName] LIKE @FirstName1 OR [LastName] LIKE @LastName1";
+            const string expectedString = "( [FirstName] LIKE @FirstName1 OR [LastName] LIKE @LastName1 )";
             const string name = "ues";
             var expectedParameters = new Dictionary<string, object>
                 {
@@ -56,7 +55,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildAWhereClauseWithSameFieldUsedMoreThanOnce()
         {
             // Setup
-            const string expectedString = "[Email] <> @Email1 AND [Email] <> @Email2";
+            const string expectedString = "( [Email] <> @Email1 AND [Email] <> @Email2 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", "thing"}, {"@Email2", ""}};
             var actualExpression = TestExpression<StudentModel>(u => u.Email != "thing" && u.Email != "");
 
@@ -74,7 +73,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var date = DateTime.UtcNow;
-            const string expectedString = "[CreatedDate] = @CreatedDate1";
+            const string expectedString = "( [CreatedDate] = @CreatedDate1 )";
             var expectedParameters = new Dictionary<string, object> {{"@CreatedDate1", date}};
 
             // Execute
@@ -92,7 +91,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var id = new Guid("CCAF57D9-88A4-4DCD-87C7-DB875E0D4E66");
-            const string expectedString = "[Id] = @Id1";
+            const string expectedString = "( [Id] = @Id1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Id1", id}};
 
             // Execute
@@ -109,7 +108,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldVisitExpressionByStringLiteral()
         {
             // Setup
-            const string expectedString = "[Email] = @Email1";
+            const string expectedString = "( [Email] = @Email1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", "john@doe.com"}};
 
             // Execute
@@ -127,7 +126,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             const string email = "john@doe.com";
-            const string expectedString = "[Email] = @Email1";
+            const string expectedString = "( [Email] = @Email1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", email}};
 
             // Execute
@@ -146,7 +145,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             // Setup
             var expectedUser = new StudentModel {Email = "john@doe.com"};
 
-            const string expectedString = "[Email] = @Email1";
+            const string expectedString = "( [Email] = @Email1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", expectedUser.Email}};
 
             // Execute
@@ -171,7 +170,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
                 };
 
             const string email = "john@doe.com";
-            const string expectedString = "[Email] = @Email1 AND [FirstName] = @FirstName1";
+            const string expectedString = "( [Email] = @Email1 AND [FirstName] = @FirstName1 )";
             var expectedParameters = new Dictionary<string, object>
                 {
                     {"@Email1", email},

@@ -17,55 +17,33 @@ namespace FutureState.AppCore.Data
         /// <param name="dbProvider">Database Provider</param>
         /// <param name="model">Model Object</param>
         /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
-        public static void Create<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
+        public static void Create<TModel> ( this IDbProvider dbProvider, TModel model ) where TModel : class, new()
         {
-            var mapper = new AutoMapper<TModel>();
-
-            var tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
-            var fieldNameList = mapper.GetFieldNameList(model).Select(field => field).ToList();
-            var parameters = "@" + string.Join(",@", fieldNameList);
-            var fields = string.Join(",", fieldNameList);
-            var commandText = string.Format(dbProvider.Dialect.InsertInto, tableName, fields, parameters);
-            var commandParams = mapper.BuildDbParametersFrom(model);
-
-            dbProvider.ExecuteNonQuery(commandText, commandParams);
-
-            // Update the Join Table
-            UpdateJoins(dbProvider, model, tableName, mapper);
+            Create(dbProvider, model, new AutoMapper<TModel>());
         }
 
-//        /// <summary>
-//        ///     Query the database based on a ManyToMany relationship.
-//        ///     `TModel` will be the Model that you're extracting.
-//        ///     `TJoin` will be the joined model.
-//        ///     Your query will be based the Id field of the `TJoin` model.
-//        /// </summary>
-//        /// <typeparam name="TModel">The model object you're returning</typeparam>
-//        /// <typeparam name="TJoinTo">The joined model</typeparam>
-//        /// <param name="dbProvider">The Database Provider</param>
-//        /// <param name="id">The record Id of the joined model</param>
-//        /// <returns>An Enumerable list of TModel</returns>
-//        public static IEnumerable<TModel> Query<TModel, TJoinTo>(this IDbProvider dbProvider, Guid id) where TModel : class, new()
-//        {
-//            var mapper = new AutoMapper<TModel>();
-//            var tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName(); // Users
-//            var tableNameSingular = tableName.Remove(tableName.Length - 1); // User
-//            var referenceTableName = typeof( TJoinTo ).GetTypeInfo().Name.BuildTableName(); // Roles
-//            var referenceTableNameSingular = referenceTableName.Remove(referenceTableName.Length - 1); // Role
-//            var joinTableName = GetJoinTableName(tableName, referenceTableName); // Roles_Users
-//            var joinText = string.Format(dbProvider.Dialect.OldManyToManyJoin, joinTableName, tableNameSingular, tableName,
-//                                         referenceTableName,
-//                                         referenceTableNameSingular);
-//
-//            var whereExpression = string.Format("{0}.{1}Id = @{1}Id", joinTableName, referenceTableNameSingular);
-//            var whereClause = string.Format(dbProvider.Dialect.Where, whereExpression);
-//            var commandText = string.Format(dbProvider.Dialect.SelectFrom, tableName, joinText + " " + whereClause);
-//
-//            var key = string.Format("@{0}Id", referenceTableNameSingular);
-//            var parameters = new Dictionary<string, object> {{key, id}};
-//
-//            return dbProvider.ExecuteReader(commandText, parameters, mapper.BuildListFrom);
-//        }
+        /// <summary>
+        ///     Create a new record based on a Model
+        /// </summary>
+        /// <typeparam name="TModel">Model Type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="model">Model Object</param>
+        /// <param name="mapper"></param>
+        /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
+        public static void Create<TModel> ( this IDbProvider dbProvider, TModel model, IMapper<TModel> mapper ) where TModel : class, new()
+        {
+            var tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
+            var fieldNameList = mapper.GetFieldNameList( model ).Select( field => field ).ToList();
+            var parameters = "@" + string.Join( ",@", fieldNameList );
+            var fields = string.Join( ",", fieldNameList );
+            var commandText = string.Format( dbProvider.Dialect.InsertInto, tableName, fields, parameters );
+            var commandParams = mapper.BuildDbParametersFrom( model );
+
+            dbProvider.ExecuteNonQuery( commandText, commandParams );
+
+            // Update the Join Table
+            UpdateManyToManyRecords( dbProvider, model, tableName, mapper );
+        }
 
         /// <summary>
         ///     Query the Database for ALL records.
@@ -75,8 +53,7 @@ namespace FutureState.AppCore.Data
         /// <returns>IEnumerable model</returns>
         public static IDbQuery<TModel> Query<TModel>(this IDbProvider dbProvider) where TModel : class, new()
         {
-            var query = new DbQuery<TModel>(dbProvider, new AutoMapper<TModel>());
-            return query;
+            return Query(dbProvider, new AutoMapper<TModel>());
         }
 
         /// <summary>
@@ -84,11 +61,11 @@ namespace FutureState.AppCore.Data
         /// </summary>
         /// <typeparam name="TModel">Model Type</typeparam>
         /// <param name="dbProvider">Database Provider</param>
+        /// <param name="mapper">The mapper to be used to map to and from database</param>
         /// <returns>IEnumerable model</returns>
         public static IDbQuery<TModel> Query<TModel> ( this IDbProvider dbProvider, IMapper<TModel> mapper  ) where TModel : class, new()
         {
-            var query = new DbQuery<TModel>(dbProvider, mapper);
-            return query;
+            return new DbQuery<TModel>(dbProvider, mapper);
         }
 
         /// <summary>
@@ -113,18 +90,27 @@ namespace FutureState.AppCore.Data
         /// <remarks>We're using the Id field to check the update.</remarks>
         public static void Update<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
         {
-            var mapper = new AutoMapper<TModel>();
-            var dbFields = mapper.GetFieldNameList(model).Select(field => string.Format("[{0}] = @{0}", field)).ToList();
+            Update(dbProvider, model, new AutoMapper<TModel>());
+        }
+
+        /// <summary>
+        ///     Update the Database Record of a specified model.
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="model">Model Object to update</param>
+        /// <param name="mapper">The mapper to be used to map to and from database</param>
+        /// <remarks>We're using the Id field to check the update.</remarks>
+        public static void Update<TModel> ( this IDbProvider dbProvider, TModel model, IMapper<TModel> mapper ) where TModel : class, new()
+        {
+            var dbFields = mapper.GetFieldNameList( model ).Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
 
             var tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
-            var whereClause = string.Format(dbProvider.Dialect.Where, "Id = @Id");
-            var commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", dbFields),
-                                            whereClause);
+            var whereClause = string.Format( dbProvider.Dialect.Where, "Id = @Id" );
+            var commandText = string.Format( dbProvider.Dialect.Update, tableName, string.Join( ",", dbFields ), whereClause );
 
-            dbProvider.ExecuteNonQuery(commandText, mapper.BuildDbParametersFrom(model));
-
-            // Update the Join Table
-            UpdateJoins(dbProvider, model, tableName, mapper);
+            dbProvider.ExecuteNonQuery( commandText, mapper.BuildDbParametersFrom( model ) );
+            UpdateManyToManyRecords( dbProvider, model, tableName, mapper );
         }
 
         /// <summary>
@@ -156,20 +142,20 @@ namespace FutureState.AppCore.Data
         /// <param name="mapper">
         ///     An instance of IAutoMapper
         /// </param>
-        private static void UpdateJoins<TModel>(IDbProvider dbProvider, TModel model, string tableName, IMapper<TModel> mapper) where TModel : class, new()
+        private static void UpdateManyToManyRecords<TModel>(IDbProvider dbProvider, TModel model, string tableName, IMapper<TModel> mapper) where TModel : class, new()
         {
             var leftModel = mapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
             var leftKey = typeof (TModel).Name.Replace("Model", string.Empty) + "Id";
             var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
-            // loop through all the model properties, and grab ONLY the ones that are decorated with "[ManyToMany]"
-            foreach (
-                var collection in typeof(TModel).GetRuntimeProperties()
-                                       .Where(
-                                           property =>
-                                           property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()))
+            var manyToManyFields = typeof(TModel).GetRuntimeProperties().Where(property => property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any());
+
+            foreach (var collection in manyToManyFields)
             {
                 if (!IsGenericList(collection.PropertyType))
-                    throw new ArgumentException("The property must be an ICollection<>");
+                {
+                    throw new ArgumentException( "The property must be an ICollection<>" );
+                }
+
                 var joinTableName = GetJoinTableName(tableName, collection.Name);
                 var deleteWhereClause = string.Format(dbProvider.Dialect.Where, string.Format("{0} = @{0}", leftKey));
                 var deleteCommandText = string.Format(dbProvider.Dialect.DeleteFrom, joinTableName, deleteWhereClause);

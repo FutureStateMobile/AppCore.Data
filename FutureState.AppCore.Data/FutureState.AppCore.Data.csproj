@@ -61,6 +61,7 @@
     <Compile Include="DbQuery.cs" />
     <Compile Include="DbScalar.cs" />
     <Compile Include="Exceptions\DuplicateRecordException.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Inflector.cs" />
     <Compile Include="IDbScalar.cs" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Transactions;
 using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Migrations;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
@@ -393,7 +394,6 @@ namespace FutureState.AppCore.Data.Tests.Integration
             var mathCourseId = Migration001.MathCourseId;
 
             // Execute Query
-            //var actualUsers = db.Query<StudentModel, CourseModel>(mathCourseId).ToList();
             var actualUsers = db.Query<StudentModel>()
                 .ManyJoin<CourseModel>()
                 .Where( ( s, b ) => b.Id == mathCourseId )
@@ -414,7 +414,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             studentToUpdate.Courses.Add(CourseFixture.ThirdCourse);
 
             // execute
-            db.Update(studentToUpdate);
+            db.Update( studentToUpdate );
 
             var studentCourses = db.Query<CourseModel>()
                 .ManyJoin<StudentModel>()
@@ -423,7 +423,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 .ToList();
 
             // assert
-            Assert.That(studentCourses.Count(), Is.EqualTo(2));
+            Assert.That( studentCourses.Count(), Is.EqualTo( 2 ) );
             Assert.That( studentCourses.Any( p => p.Id == CourseFixture.ThirdCourse.Id ) );
         }
 

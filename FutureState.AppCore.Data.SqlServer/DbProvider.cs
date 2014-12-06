@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
+using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data.SqlServer
@@ -31,9 +32,7 @@ namespace FutureState.AppCore.Data.SqlServer
         {
             var sqlStatement = string.Empty;
 
-            using (
-                var resourceStream =
-                    Assembly.GetExecutingAssembly().GetManifestResourceStream(_rootSqlScriptPath + fileName))
+            using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(_rootSqlScriptPath + fileName))
             {
                 if (resourceStream != null)
                 {
@@ -73,46 +72,34 @@ namespace FutureState.AppCore.Data.SqlServer
         }
 
         #region ExecuteReader
-
         public override TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper)
         {
             return ExecuteReader(_useStatement, commandText, readerMapper);
         }
 
-        public override TResult ExecuteReader<TResult>(string commandText,
-                                                       IDictionary<string, object> parameters,
-                                                       Func<IDbReader, TResult> readerMapper)
+        public override TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper)
         {
             return ExecuteReader(_useStatement, commandText, parameters, readerMapper);
         }
 
-        private TResult ExecuteReader<TResult>(string useStatement, string commandText,
-                                               Func<IDbReader, TResult> readerMapper)
+        private TResult ExecuteReader<TResult>(string useStatement, string commandText, Func<IDbReader, TResult> readerMapper)
         {
             return ExecuteReader(useStatement, commandText, new Dictionary<string, object>(), readerMapper);
         }
 
-        private TResult ExecuteReader<TResult>(string useStatement,
-                                               string commandText,
-                                               IEnumerable<KeyValuePair<string, object>> parameters,
-                                               Func<IDbReader, TResult> readerMapper)
+        private TResult ExecuteReader<TResult>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters, Func<IDbReader, TResult> readerMapper)
         {
-            using (var connection = _connectionProvider.GetOpenConnection())
+            using (IDbConnection connection = _connectionProvider.GetOpenConnection())
+            using (IDbCommand command = connection.CreateCommand())
             {
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = useStatement + commandText;
-                    foreach (var parameter in parameters)
-                    {
-                        command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value));
-                    }
+                command.CommandType = CommandType.Text;
+                command.CommandText = useStatement + commandText;
+                parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                    using (var reader = command.ExecuteReader())
-                    {
-                        var r = new DbReader(reader);
-                        return readerMapper(r);
-                    }
+                using (IDataReader reader = command.ExecuteReader())
+                {
+                    var r = new DbReader(reader);
+                    return readerMapper(r);
                 }
             }
         }
@@ -136,22 +123,16 @@ namespace FutureState.AppCore.Data.SqlServer
             ExecuteNonQuery(useStatement, commandText, new Dictionary<string, object>());
         }
 
-        private void ExecuteNonQuery(string useStatement, string commandText,
-                                     IEnumerable<KeyValuePair<string, object>> parameters)
+        private void ExecuteNonQuery(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            using (var connection = _connectionProvider.GetOpenConnection())
+            using (IDbConnection connection = _connectionProvider.GetOpenConnection())
+            using (IDbCommand command = connection.CreateCommand())
             {
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = useStatement + commandText;
-                    foreach (var parameter in parameters)
-                    {
-                        command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value));
-                    }
+                command.CommandType = CommandType.Text;
+                command.CommandText = useStatement + commandText;
+                parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                    command.ExecuteNonQuery();
-                }
+                command.ExecuteNonQuery();
             }
         }
 
@@ -174,38 +155,32 @@ namespace FutureState.AppCore.Data.SqlServer
             return ExecuteScalar<TKey>(useStatement, commandText, new Dictionary<string, object>());
         }
 
-        private TKey ExecuteScalar<TKey>(string useStatement, string commandText,
-                                         IEnumerable<KeyValuePair<string, object>> parameters)
+        private TKey ExecuteScalar<TKey>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            using (var connection = _connectionProvider.GetOpenConnection())
+            using (IDbConnection connection = _connectionProvider.GetOpenConnection())
+            using (IDbCommand command = connection.CreateCommand())
             {
-                using (var command = connection.CreateCommand())
+                command.CommandType = CommandType.Text;
+                command.CommandText = useStatement + commandText;
+                parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+
+                object result = command.ExecuteScalar();
+
+                if (typeof (TKey) == typeof (int))
+                    return (TKey) (result ?? 0);
+
+                if (typeof (TKey) == typeof (DateTime))
                 {
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = useStatement + commandText;
-                    foreach (var parameter in parameters)
+                    DateTime retval;
+                    if (!DateTime.TryParse(result.ToString(), out retval))
                     {
-                        command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value));
+                        return (TKey) (object) DateTimeHelper.MinSqlValue;
                     }
 
-                    var result = command.ExecuteScalar();
-
-                    if (typeof(TKey) == typeof(int))
-                        return (TKey)(result ?? 0);
-
-                    if (typeof(TKey) == typeof(DateTime))
-                    {
-                        DateTime retval;
-                        if (!DateTime.TryParse(result.ToString(), out retval))
-                        {
-                            return (TKey)(object)DateTimeHelper.MinSqlValue;
-                        }
-
-                        return (TKey)(object)retval;
-                    }
-
-                    return (TKey)result;
+                    return (TKey) (object) retval;
                 }
+
+                return (TKey) result;
             }
         }
 

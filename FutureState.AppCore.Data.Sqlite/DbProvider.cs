@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
 using Mono.Data.Sqlite;
 
@@ -76,22 +77,17 @@ namespace FutureState.AppCore.Data.Sqlite
                                                        Func<IDbReader, TResult> readerMapper)
         {
             using (var connection = _connectionProvider.GetOpenConnection())
+            using (var command = connection.CreateCommand())
             {
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandType = CommandType.Text;
-                    EnableForeignKeys(command);
-                    command.CommandText = commandText;
-                    foreach (var parameter in parameters)
-                    {
-                        command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value));
-                    }
+                command.CommandType = CommandType.Text;
+                EnableForeignKeys(command);
+                command.CommandText = commandText;
+                parameters.ForEach(parameter => command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                    using (var reader = command.ExecuteReader())
-                    {
-                        var r = new DbReader(reader);
-                        return readerMapper(r);
-                    }
+                using (var reader = command.ExecuteReader())
+                {
+                    var r = new DbReader(reader);
+                    return readerMapper(r);
                 }
             }
         }
@@ -108,19 +104,14 @@ namespace FutureState.AppCore.Data.Sqlite
         public override void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters)
         {
             using (var connection = _connectionProvider.GetOpenConnection())
+            using (var command = connection.CreateCommand())
             {
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandType = CommandType.Text;
-                    EnableForeignKeys(command);
-                    command.CommandText = commandText;
-                    foreach (var parameter in parameters)
-                    {
-                        command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value));
-                    }
+                command.CommandType = CommandType.Text;
+                EnableForeignKeys(command);
+                command.CommandText = commandText;
+                parameters.ForEach(parameter => command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                    command.ExecuteNonQuery();
-                }
+                command.ExecuteNonQuery();
             }
         }
 
@@ -136,50 +127,45 @@ namespace FutureState.AppCore.Data.Sqlite
         public override TKey ExecuteScalar<TKey>(string commandText, IDictionary<string, object> parameters)
         {
             using (var connection = _connectionProvider.GetOpenConnection())
+            using (var command = connection.CreateCommand())
             {
-                using (var command = connection.CreateCommand())
+                command.CommandType = CommandType.Text;
+                EnableForeignKeys(command);
+                command.CommandText = commandText;
+                parameters.ForEach(parameter => command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+
+                var result = command.ExecuteScalar();
+
+                if (typeof(TKey) == typeof(Guid))
                 {
-                    command.CommandType = CommandType.Text;
-                    EnableForeignKeys(command);
-                    command.CommandText = commandText;
-                    foreach (var parameter in parameters)
-                    {
-                        command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value));
-                    }
-
-                    var result = command.ExecuteScalar();
-
-                    if (typeof(TKey) == typeof(Guid))
-                    {
-                        return (TKey)(object)new Guid((byte[])result);
-                    }
-
-                    if (typeof(TKey) == typeof(int))
-                    {
-                        if (result == null)
-                        {
-                            return (TKey)(object)0;
-                        }
-                        int retVal;
-                        if (!int.TryParse(result.ToString(), out retVal))
-                        {
-                            return (TKey)(object)0;
-                        }
-                        return (TKey)(object)retVal;
-                    }
-
-                    if (typeof(TKey) == typeof(DateTime))
-                    {
-                        DateTime retval;
-                        if (!DateTime.TryParse(result.ToString(), out retval))
-                        {
-                            return (TKey)(object)DateTimeHelper.MinSqlValue;
-                        }
-                        return (TKey)(object)retval;
-                    }
-
-                    return (TKey)result;
+                    return (TKey)(object)new Guid((byte[])result);
                 }
+
+                if (typeof(TKey) == typeof(int))
+                {
+                    if (result == null)
+                    {
+                        return (TKey)(object)0;
+                    }
+                    int retVal;
+                    if (!int.TryParse(result.ToString(), out retVal))
+                    {
+                        return (TKey)(object)0;
+                    }
+                    return (TKey)(object)retVal;
+                }
+
+                if (typeof(TKey) == typeof(DateTime))
+                {
+                    DateTime retval;
+                    if (!DateTime.TryParse(result.ToString(), out retval))
+                    {
+                        return (TKey)(object)DateTimeHelper.MinSqlValue;
+                    }
+                    return (TKey)(object)retval;
+                }
+
+                return (TKey)result;
             }
         }
 

@@ -39,11 +39,7 @@
 
         public string CreateDatabase
         {
-            get
-            {
-                return
-                    "CREATE DATABASE [{0}] ALTER DATABASE [{0}] MODIFY FILE ( NAME = N'{0}' , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB ) ALTER DATABASE [{0}] MODIFY FILE ( NAME = N'{0}_log' , MAXSIZE = 1024GB , FILEGROWTH = 10%)";
-            }
+            get { return "CREATE DATABASE [{0}] ALTER DATABASE [{0}] MODIFY FILE ( NAME = N'{0}' , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB ) ALTER DATABASE [{0}] MODIFY FILE ( NAME = N'{0}_log' , MAXSIZE = 1024GB , FILEGROWTH = 10%)"; }
         }
 
         public string DropDatabase
@@ -58,37 +54,72 @@
 
         public string SelectFrom
         {
-            get { return "SELECT {0}.* FROM {0} {1}"; }
+            get { return "SELECT [{0}].* FROM [{0}] {1}"; }
         }
 
         public string SelectCountFrom
         {
-            get { return "SELECT COUNT(*) FROM {0} {1}"; }
+            get { return "SELECT COUNT([{0}].*) FROM [{0}] {1}"; }
         }
 
         public string SelectMaxFrom
         {
-            get { return "SELECT MAX({2}) FROM {0} {1}"; }
+            get { return "SELECT MAX([{0}].[{2}]) FROM [{0}] {1}"; }
         }
 
         public string SelectMinFrom
         {
-            get { return "SELECT MIN({2}) FROM {0} {1}"; }
+            get { return "SELECT MIN([{0}].[{2}]) FROM [{0}] {1}"; }
         }
 
         public string SelectSumFrom
         {
-            get { return "SELECT SUM({2}) FROM {0} {1}"; }
+            get { return "SELECT SUM([{0}].[{2}]) FROM [{0}] {1}"; }
         }
 
         public string DeleteFrom
         {
-            get { return "DELETE FROM {0} {1}"; }
+            get { return "DELETE FROM [{0}] {1}"; }
         }
 
         public string Update
         {
             get { return "UPDATE [{0}] SET {1} {2}"; }
+        }
+
+        public string SelectFromJoin
+        {
+            get { return "SELECT [{0}].* FROM [{0}] {1} {2}"; }
+        }
+
+        public string SelectCountFromJoin
+        {
+            get { return "SELECT COUNT([0].*) FROM [{0}] {1} {2}"; }
+        }
+
+        public string SelectMaxFromJoin
+        {
+            get { return "SELECT MAX([0].[{3}]) FROM [{0}] {1} {2}"; }
+        }
+
+        public string SelectMinFromJoin
+        {
+            get { return "SELECT MIN([0].[{3}]) FROM [{0}] {1} {2}"; }
+        }
+
+        public string SelectSumFromJoin
+        {
+            get { return "SELECT SUM([0].[{3}]) FROM [{0}] {1} {2}"; }
+        }
+
+        public string DeleteFromJoin
+        {
+            get { return "DELETE FROM [{0}] {1} {2}"; }
+        }
+
+        public string UpdateJoin
+        {
+            get { return "UPDATE [{0}] SET {1} {2} {3}"; }
         }
 
         public string Where
@@ -108,7 +139,22 @@
 
         public string InnerJoin
         {
-            get { return "INNER JOIN {0} ON {0}.{1}Id = {2}.Id INNER JOIN {3} ON {0}.{4}Id = {3}.Id"; }
+            get { return "INNER JOIN [{2}] ON [{0}].[{1}] = [{2}].[{3}]"; }
+        }
+
+        public string LeftJoin
+        {
+            get { return "LEFT OUTER JOIN [{2}] ON [{0}].[{1}] = [{2}].[{3}]"; }
+        }
+
+        public string OldManyToManyJoin
+        {
+            get { return "INNER JOIN [{0}] ON [{0}].[{1}Id] = [{2}].[Id] INNER JOIN [{3}] ON [{0}].[{4}Id] = [{3}].[Id]"; }
+        }
+
+        public string ManyToManyJoin
+        {
+            get { return "INNER JOIN [{2}] ON [{2}].[{3}] = [{0}].[{1}] INNER JOIN [{4}] ON [{2}].[{5}] = [{4}].[{1}]"; }
         }
 
         public string SkipTake

@@ -61,6 +61,7 @@
     <Compile Include="DbQuery.cs" />
     <Compile Include="DbScalar.cs" />
     <Compile Include="Exceptions\DuplicateRecordException.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Inflector.cs" />
     <Compile Include="IDbScalar.cs" />
     <Compile Include="JoinExpressionVisitor.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Extensions\GenericNullCheck.cs" />
     <Compile Include="Extensions\PropertyEqualityComparer.cs" />
     <Compile Include="AutoMapper.cs" />
-    <Compile Include="IAutoMapper.cs" />
+    <Compile Include="IMapper.cs" />
     <Compile Include="IMigration.cs" />
     <Compile Include="IMigrationRunner.cs" />
     <Compile Include="IServiceLocator.cs" />

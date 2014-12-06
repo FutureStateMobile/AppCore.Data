@@ -8,7 +8,7 @@ using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
-    public class AutoMapper<TMapTo> : IAutoMapper<TMapTo> where TMapTo : class, new()
+    public class AutoMapper<TMapTo> : IMapper<TMapTo> where TMapTo : class, new()
     {
         private readonly DateTime _minSqlDateTime = DateTime.Parse("1/1/1753 12:00:00 AM");
 

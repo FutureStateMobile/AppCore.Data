@@ -22,11 +22,22 @@ namespace FutureState.AppCore.Data
         string SelectSumFrom { get; }
         string DeleteFrom { get; }
         string Update { get; }
+        string SelectFromJoin { get; }
+        string SelectCountFromJoin { get; }
+        string SelectMaxFromJoin { get; }
+        string SelectMinFromJoin { get; }
+        string SelectSumFromJoin { get; }
+        string DeleteFromJoin { get; }
+        string UpdateJoin { get; }
         string Where { get; }
         string JoinFields { get; }
         string JoinParameters { get; }
         string InnerJoin { get; }
+        string LeftJoin { get; }
+        string OldManyToManyJoin { get; }
+        string ManyToManyJoin { get; }
         string SkipTake { get; }
+
 
         // Constraints
         string PrimaryKeyConstraint { get; }

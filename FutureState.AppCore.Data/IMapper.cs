@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace FutureState.AppCore.Data
 {
-    public interface IAutoMapper<TMapTo> where TMapTo : class, new()
+    public interface IMapper<TMapTo> where TMapTo : class, new()
     {
         IDictionary<string, object> BuildDbParametersFrom(TMapTo model);
         IList<string> GetFieldNameList(TMapTo model);

@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Text;
 using FutureState.AppCore.Data.Exceptions;
+using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data
 {
@@ -58,7 +59,8 @@ namespace FutureState.AppCore.Data
 
         private void VisitMemberAccess(MemberExpression expression)
         {
-            _strings.AppendFormat("[{0}]", expression.Member.Name);
+            var tableName = expression.Expression.Type.Name.BuildTableName();
+            _strings.AppendFormat( "[{0}].[{1}]", tableName, expression.Member.Name );
         }
     }
 }

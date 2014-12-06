@@ -55,7 +55,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
                 FirstName = "updatable User",
                 LastName = "updatable user last",
                 Email = "updatable@user.email",
-                Courses = new List<CourseModel> {CourseFixture.FirstCourse}
+                Courses = new List<CourseModel> {CourseFixture.CourseToUpdate}
             };
 
         public static StudentModel StudentToDelete = new StudentModel
@@ -64,7 +64,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
                 FirstName = "deletable User",
                 LastName = "deletable user last",
                 Email = "deletable@user.email",
-                Courses = new List<CourseModel> {CourseFixture.FirstCourse}
+                Courses = new List<CourseModel> {CourseFixture.CourseToDelete}
             };
 
         public static void SetupFixtureDataInDatabase(IDbProvider dbProvider)

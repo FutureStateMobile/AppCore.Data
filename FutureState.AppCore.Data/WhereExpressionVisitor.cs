@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using FutureState.AppCore.Data.Exceptions;
 using FutureState.AppCore.Data.Extensions;
+using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
@@ -212,32 +213,31 @@ namespace FutureState.AppCore.Data
             else
                 expressionValue = constantExpression.Value;
 
-            var key = memberExpression.Member.Name;
+            var tableName = memberExpression.Expression.Type.Name.BuildTableName();
+            var fieldName = memberExpression.Member.Name;
             var value = string.Format(parameterFormat, expressionValue);
+            var number = AddParameter("@" + fieldName, value, 1);
+            var parameterName = fieldName + number;
 
             // Format the Method string to include the Key/Parameter
-            var number = AddParameter("@" + key, value, 1);
-            _strings.Append(string.Format(commandText, key, String.Format(key + "{0}", number)));
+            _strings.Append(string.Format(commandText, tableName, fieldName, parameterName));
             _strings.Append(" ");
-
-            // add parameter value
-            //Parameters.Add("@" + key, value);
         }
 
         private void VisitConstant(ConstantExpression expression, MemberExpression left)
         {
-            var key = "@" + left.Member.Name;
-            // add the parameter value
+            var parameterName = "@" + left.Member.Name;
             var value = expression.Value;
-            var number = AddParameter(key, value, 1);
+            var number = AddParameter(parameterName, value, 1);
+
             // add the string parameter
-            _strings.Append( value.IsNull() ? "NULL" : String.Format( key + "{0}", number ) );
-            //_strings.Append(String.Format(key + "{0}", number));
+            _strings.Append(value.IsNull() ? "NULL" : parameterName + number);
             _strings.Append(" ");
         }
 
         private int AddParameter(string key, object value, int times)
         {
+            // Recurse to find how many times a parameter of this name has been added
             var newTimes = times;
             var newKey = String.Format(key + "{0}", times);
             if (Parameters.ContainsKey(newKey))
@@ -257,22 +257,23 @@ namespace FutureState.AppCore.Data
             // To preserve Case between key/value pairs, we always want to use the LEFT side of the expression.
             // therefore, if left is null, then expression is actually left. 
             // Doing this ensures that our `key` matches between parameter names and database fields
-            var key = left != null ? left.Member.Name : expression.Member.Name;
+            var fieldName = left != null ? left.Member.Name : expression.Member.Name;
+            var tableName = left != null ? left.Expression.Type.Name.BuildTableName() : expression.Expression.Type.Name.BuildTableName();
 
             // If the NodeType is a `Parameter`, we want to add the key as a DB Field name to our string collection
             // Otherwise, we want to add the key as a DB Parameter to our string collection
             if (expression.Expression.NodeType.ToString() == "Parameter")
             {
-                _strings.Append(string.Format("[{0}]", key));
+                _strings.Append(string.Format("[{0}].[{1}]", tableName, fieldName));
                 _strings.Append(" ");
             }
             else
             {
                 // if the parameter is null, we want to just put the key word "NULL" in rather that the value
                 var value = GetMemberExpressionValue(expression);
-                var paramNo = AddParameter("@" + key, value, 1);
+                var paramNo = AddParameter("@" + fieldName, value, 1);
 
-                _strings.Append(value.IsNull() ? "NULL" : String.Format("@" + key + "{0}", paramNo));
+                _strings.Append(value.IsNull() ? "NULL" : "@" + fieldName + paramNo);
                 _strings.Append(" ");
                 //Parameters.Add("@" + key, GetMemberExpressionValue(expression));
             }
@@ -391,12 +392,13 @@ namespace FutureState.AppCore.Data
                 case "EndsWith":
                 case "StartsWith":
                 case "Contains":
-                    return "[{0}] LIKE @{1}";
+                    return "[{0}].[{1}] LIKE @{2}";
                 case "Equals":
-                    return "[{0}] = @{1}";
+                    return "[{0}].[{1}] = @{2}";
                 default:
                     throw new ExpressionMethodCallNotSupportedException(expression);
             }
         }
     }
 }
+

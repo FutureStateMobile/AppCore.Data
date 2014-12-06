@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Migrations;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
@@ -299,28 +298,27 @@ namespace FutureState.AppCore.Data.Tests.Integration
             //Assert.AreEqual( expectedSelect, actualSelect );
         }
 
-        [Ignore, Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource("DbProviders")]
         public void ShouldJoinToAnotherManyToManyTableAndBuildWhereClauseAndOrderByClause(IDbProvider db)
         {
             // TODO: Implement This, data-dependent
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var expectedUsers = new List<StudentModel>
-            {
-                new StudentModel {FirstName = "Bob"}
-            };
+            var expectedStudents = StudentFixture.FirstStudent;
+            var expectedCourse = CourseFixture.FirstCourse;
 
             // Execute
-            var actualUsers = db.Query<StudentModel>()
-                .Join<CourseModel>(JoinType.ManyToMany)
-                .Where((s, c) => c.Name == "Math 101")
+            var actualStudents = db.Query<StudentModel>()
+                .ManyJoin<CourseModel>()
+                .Where( ( s, c ) => c.Name == expectedCourse.Name )
                 .OrderBy((s, c) => s.FirstName, OrderDirection.Descending)
                 .Select()
                 .ToList();
 
             // Assert
-            Assert.AreEqual(expectedUsers[0].FirstName, actualUsers[0].FirstName);
+            Assert.AreEqual(1, actualStudents.Count());
+            Assert.AreEqual(expectedStudents.Id, actualStudents[0].Id);
         }
 
         [Ignore, Test, TestCaseSource("DbProviders")]
@@ -330,13 +328,13 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var expectedUsers = new List<StudentModel>
+            var expectedStudents = new List<StudentModel>
             {
-                new StudentModel {FirstName = "User1"}
+                StudentFixture.FirstStudent
             };
 
             // Execute
-            var actualUsers = db.Query<StudentModel>()
+            var actualStudents = db.Query<StudentModel>()
                 .Join<BookModel>(JoinType.Left, (u, b) => u.Id == b.StudentId)
                 .Where((u, b) => b.Name == "Book1Name")
                 .OrderBy((u, b) => u.FirstName, OrderDirection.Descending)
@@ -344,7 +342,32 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 .ToList();
 
             // Assert
-            Assert.AreEqual(expectedUsers[0].FirstName, actualUsers[0].FirstName);
+            Assert.AreEqual( expectedStudents[0].FirstName, actualStudents[0].FirstName );
+        }
+
+        [Test, TestCaseSource( "DbProviders" )]
+        public void ShouldJoinToAnotherOneToManyTableAndBuildDefaultWhereClauseAndOrderByClause ( IDbProvider db )
+        {
+            // TODO: Implement This
+            Trace.WriteLine( TraceObjectGraphInfo( db ) );
+
+            // Setup
+            var expectedStudents = new List<StudentModel>
+            {
+                StudentFixture.FirstStudent
+            };
+
+            // Execute
+            var actualStudents = db.Query<StudentModel>()
+                .LeftJoin<BookModel>()
+                .Where( ( s, b ) => b.Name == "FirstBookTitle" )
+                .OrderBy( ( s, b ) => s.FirstName, OrderDirection.Descending )
+                .Select()
+                .ToList();
+
+            // Assert
+            Assert.AreEqual(1, actualStudents.Count());
+            Assert.AreEqual( expectedStudents[0].Id, actualStudents[0].Id );
         }
 
         [Test, TestCaseSource("DbProviders")]
@@ -359,7 +382,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
         }
 
         [Test, TestCaseSource("DbProviders")]
-        public void ShouldVisitExpressionUsingAnInnerJoin(IDbProvider db)
+        public void ShouldJoinManyToManyTablesTogether(IDbProvider db)
         {
             // don't run against SQLite becase it's not seeded.
             if (db.GetType().ToString() == "FutureState.AppCore.Data.Sqlite.Windows.DbProvider") return;
@@ -367,10 +390,15 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var roleId = Migration001.MathCourseId;
+            var mathCourseId = Migration001.MathCourseId;
 
             // Execute Query
-            var actualUsers = db.Query<StudentModel, CourseModel>(roleId).ToList();
+            //var actualUsers = db.Query<StudentModel, CourseModel>(mathCourseId).ToList();
+            var actualUsers = db.Query<StudentModel>()
+                .ManyJoin<CourseModel>()
+                .Where( ( s, b ) => b.Id == mathCourseId )
+                .Select()
+                .ToList();
 
             // Assert
             Assert.IsNotEmpty(actualUsers);
@@ -387,15 +415,38 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // execute
             db.Update(studentToUpdate);
-            var studentFromDb = db.Query<StudentModel>().Where(s => s.Id == studentToUpdate.Id).Select().FirstOrDefault();
 
-            studentFromDb.Courses = db.Query<CourseModel, StudentModel>(studentFromDb.Id)
-                .Where(x => x.IsDeleted == false)
+            var studentCourses = db.Query<CourseModel>()
+                .ManyJoin<StudentModel>()
+                .Where( ( c, s ) => c.IsDeleted == false && s.Id == studentToUpdate.Id )
+                .Select()
                 .ToList();
 
             // assert
-            Assert.IsNotNull(studentFromDb);
-            Assert.That(studentFromDb.Courses.Any(p => p.Id == CourseFixture.ThirdCourse.Id));
+            Assert.That(studentCourses.Count(), Is.EqualTo(2));
+            Assert.That( studentCourses.Any( p => p.Id == CourseFixture.ThirdCourse.Id ) );
+        }
+
+        [Test, TestCaseSource( "DbProviders" )]
+        public void ShouldRemoveFromCollection ( IDbProvider db )
+        {
+            Trace.WriteLine( TraceObjectGraphInfo( db ) );
+
+            // setup
+            var studentToDelete = StudentFixture.StudentToDelete;
+            studentToDelete.Courses.Remove(CourseFixture.CourseToDelete);
+
+            // execute
+            db.Update( studentToDelete );
+
+            var studentCourses = db.Query<CourseModel>()
+                .ManyJoin<StudentModel>()
+                .Where( ( c, s ) => c.IsDeleted == false && s.Id == studentToDelete.Id )
+                .Select()
+                .ToList();
+
+            // assert
+            Assert.That( studentCourses.Count(), Is.EqualTo( 0 ) );
         }
 
         [Test, TestCaseSource("DbProviders")]

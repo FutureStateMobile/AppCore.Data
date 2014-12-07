@@ -1,24 +1,35 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 using FutureState.AppCore.Data.Attributes;
 using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
-    public class AutoMapper<TMapTo> : IMapper<TMapTo> where TMapTo : class, new()
+    public class AutoMapper<TMapTo> : IModelMapper<TMapTo> where TMapTo : class, new()
     {
         private readonly DateTime _minSqlDateTime = DateTime.Parse("1/1/1753 12:00:00 AM");
+        private readonly IList<PropertyInfo> _properties;
+
+        public AutoMapper()
+        {
+            _properties = (from property in typeof (TMapTo).GetRuntimeProperties().OrderBy(p => p.Name)
+                let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
+                where !ignore
+                select property).ToList();
+        }
 
         public IDictionary<string, object> BuildDbParametersFrom(TMapTo model)
         {
             var dictionary = new Dictionary<string, object>();
 
-            foreach ( var property in typeof( TMapTo ).GetRuntimeProperties().OrderBy( p => p.Name ) )
+            _properties.OrderBy(p => p.Name).ForEach(property =>
             {
-                var value = property.GetValue(model, null);
+                object value = property.GetValue(model, null);
 
                 if (property.PropertyType == typeof (DateTime))
                 {
@@ -27,44 +38,30 @@ namespace FutureState.AppCore.Data
                         value = DateTimeHelper.MinSqlValue;
                     }
                 }
-
-                if ( property.PropertyType == typeof( Guid ) )
+                else if (property.PropertyType == typeof (Guid))
                 {
-                    if ( (Guid)value == Guid.Empty )
+                    if ((Guid) value == Guid.Empty)
                     {
                         value = null;
                     }
                 }
 
-                // Check if the model object is to be ignored.
-                var ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
-                             property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
-                             property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any();
-
-                if (!ignore)
-                {
-                    dictionary.Add(property.Name, value);
-                }
-            }
+                dictionary.Add(property.Name, value);
+            });
 
             return dictionary;
         }
 
-        public IList<string> GetFieldNameList(TMapTo model)
+        public IList<string> GetFieldNameList()
         {
-            return ( from property in typeof( TMapTo ).GetRuntimeProperties().OrderBy( p => p.Name )
-                    let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
-                                 property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
-                                 property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
-                    where !ignore
-                    select property.Name).ToList();
+            return _properties.Select(p => p.Name).ToList();
         }
 
         public IList<TMapTo> BuildListFrom(IDbReader reader)
         {
             var list = new List<TMapTo>();
 
-            var model = BuildFrom(reader);
+            TMapTo model = BuildFrom(reader);
 
             while (model != null)
             {
@@ -84,18 +81,13 @@ namespace FutureState.AppCore.Data
 
             var model = new TMapTo();
 
-            foreach ( var property in typeof( TMapTo ).GetRuntimeProperties() )
+            _properties.ForEach(property =>
             {
-                // hack: a try/catch to handle DBNull to String converstion.
-                try
+                if (!reader.IsDbNull(property.Name))
                 {
-                    property.SetValue(model, reader[property.Name], null);
+                    property.SetValue(model, reader[property.Name]);
                 }
-                catch (ArgumentException)
-                {
-                    property.SetValue(model, null, null);
-                }
-            }
+            });
 
             return model;
         }
@@ -114,14 +106,14 @@ namespace FutureState.AppCore.Data
 
             var model = new TMapTo();
 
-            foreach ( var prop in typeof( TMapTo ).GetRuntimeProperties() )
+            _properties.ForEach(property =>
             {
-                var getProp = typeof(TInput).GetRuntimeProperty(prop.Name);
-                if (getProp != null)
+                var inputProperty = typeof (TInput).GetRuntimeProperty(property.Name);
+                if (inputProperty != null)
                 {
-                    prop.SetValue(model, getProp.GetValue(input, null), null);
+                    property.SetValue(model, inputProperty.GetValue(input, null), null);
                 }
-            }
+            });
 
             return model;
         }
@@ -130,7 +122,7 @@ namespace FutureState.AppCore.Data
         {
             var queue = new Queue<TMapTo>();
 
-            var model = BuildFrom(reader);
+            TMapTo model = BuildFrom(reader);
 
             while (model != null)
             {

@@ -28,21 +28,21 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model Type</typeparam>
         /// <param name="dbProvider">Database Provider</param>
         /// <param name="model">Model Object</param>
-        /// <param name="mapper"></param>
+        /// <param name="modelMapper"></param>
         /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
-        public static void Create<TModel> ( this IDbProvider dbProvider, TModel model, IMapper<TModel> mapper ) where TModel : class, new()
+        public static void Create<TModel> ( this IDbProvider dbProvider, TModel model, IModelMapper<TModel> modelMapper ) where TModel : class, new()
         {
             var tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
-            var fieldNameList = mapper.GetFieldNameList( model ).Select( field => field ).ToList();
+            var fieldNameList = modelMapper.GetFieldNameList();
             var parameters = "@" + string.Join( ",@", fieldNameList );
             var fields = string.Join( ",", fieldNameList );
             var commandText = string.Format( dbProvider.Dialect.InsertInto, tableName, fields, parameters );
-            var commandParams = mapper.BuildDbParametersFrom( model );
+            var commandParams = modelMapper.BuildDbParametersFrom( model );
 
             dbProvider.ExecuteNonQuery( commandText, commandParams );
 
             // Update the Join Table
-            UpdateManyToManyRecords( dbProvider, model, tableName, mapper );
+            UpdateManyToManyRecords( dbProvider, model, tableName, modelMapper );
         }
 
         /// <summary>
@@ -61,11 +61,11 @@ namespace FutureState.AppCore.Data
         /// </summary>
         /// <typeparam name="TModel">Model Type</typeparam>
         /// <param name="dbProvider">Database Provider</param>
-        /// <param name="mapper">The mapper to be used to map to and from database</param>
+        /// <param name="modelMapper">The mapper to be used to map to and from database</param>
         /// <returns>IEnumerable model</returns>
-        public static IDbQuery<TModel> Query<TModel> ( this IDbProvider dbProvider, IMapper<TModel> mapper  ) where TModel : class, new()
+        public static IDbQuery<TModel> Query<TModel> ( this IDbProvider dbProvider, IModelMapper<TModel> modelMapper  ) where TModel : class, new()
         {
-            return new DbQuery<TModel>(dbProvider, mapper);
+            return new DbQuery<TModel>(dbProvider, modelMapper);
         }
 
         /// <summary>
@@ -99,18 +99,18 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="dbProvider">Database Provider</param>
         /// <param name="model">Model Object to update</param>
-        /// <param name="mapper">The mapper to be used to map to and from database</param>
+        /// <param name="modelMapper">The mapper to be used to map to and from database</param>
         /// <remarks>We're using the Id field to check the update.</remarks>
-        public static void Update<TModel> ( this IDbProvider dbProvider, TModel model, IMapper<TModel> mapper ) where TModel : class, new()
+        public static void Update<TModel> ( this IDbProvider dbProvider, TModel model, IModelMapper<TModel> modelMapper ) where TModel : class, new()
         {
-            var dbFields = mapper.GetFieldNameList( model ).Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
+            var dbFields = modelMapper.GetFieldNameList().Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
 
             var tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
             var whereClause = string.Format( dbProvider.Dialect.Where, "Id = @Id" );
             var commandText = string.Format( dbProvider.Dialect.Update, tableName, string.Join( ",", dbFields ), whereClause );
 
-            dbProvider.ExecuteNonQuery( commandText, mapper.BuildDbParametersFrom( model ) );
-            UpdateManyToManyRecords( dbProvider, model, tableName, mapper );
+            dbProvider.ExecuteNonQuery( commandText, modelMapper.BuildDbParametersFrom( model ) );
+            UpdateManyToManyRecords( dbProvider, model, tableName, modelMapper );
         }
 
         /// <summary>
@@ -139,12 +139,12 @@ namespace FutureState.AppCore.Data
         /// <param name="dbProvider">DB Provider</param>
         /// <param name="model">Actual object model</param>
         /// <param name="tableName">The name of the table</param>
-        /// <param name="mapper">
+        /// <param name="modelMapper">
         ///     An instance of IAutoMapper
         /// </param>
-        private static void UpdateManyToManyRecords<TModel>(IDbProvider dbProvider, TModel model, string tableName, IMapper<TModel> mapper) where TModel : class, new()
+        private static void UpdateManyToManyRecords<TModel>(IDbProvider dbProvider, TModel model, string tableName, IModelMapper<TModel> modelMapper) where TModel : class, new()
         {
-            var leftModel = mapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
+            var leftModel = modelMapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
             var leftKey = typeof (TModel).Name.Replace("Model", string.Empty) + "Id";
             var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
             var manyToManyFields = typeof(TModel).GetRuntimeProperties().Where(property => property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any());

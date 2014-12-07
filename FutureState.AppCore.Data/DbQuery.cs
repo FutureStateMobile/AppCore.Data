@@ -11,7 +11,7 @@ namespace FutureState.AppCore.Data
     public class DbQuery<TModel> : IDbQuery<TModel> where TModel : class, new()
     {
         private readonly IDbProvider _dbProvider;
-        private readonly IMapper<TModel> _mapper;
+        private readonly IModelMapper<TModel> _modelMapper;
         private readonly string _tableName;
         private string _orderByClause;
         private string _whereClause;
@@ -28,10 +28,10 @@ namespace FutureState.AppCore.Data
 //            _parameters = new Dictionary<string, object>();
 //        }
 
-        public DbQuery ( IDbProvider dbProvider, IMapper<TModel> mapper  )
+        public DbQuery ( IDbProvider dbProvider, IModelMapper<TModel> modelMapper  )
         {
             _dbProvider = dbProvider;
-            _mapper = mapper;
+            _modelMapper = modelMapper;
             _tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
         }
@@ -95,7 +95,7 @@ namespace FutureState.AppCore.Data
 
         public IEnumerable<TModel> Select()
         {
-            return _dbProvider.ExecuteReader(ToString(), _parameters, _mapper.BuildListFrom);
+            return _dbProvider.ExecuteReader(ToString(), _parameters, _modelMapper.BuildListFrom);
         }
 
         public IEnumerable<TModel> Select ( Func<IDbReader, IList<TModel>> mapperFunc )
@@ -107,7 +107,7 @@ namespace FutureState.AppCore.Data
         {
             // TODO: Make the update only update specified feilds, this requires a lot more work though
             var mapper = new AutoMapper<TModel>();
-            var dbFields = mapper.GetFieldNameList( model ).Where(field => field != "ID").Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
+            var dbFields = mapper.GetFieldNameList().Where(field => field != "ID").Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
 
             var whereClause = GetExtendedWhereClause();
             var commandText = string.Format( _dbProvider.Dialect.Update, _tableName, string.Join( ",", dbFields ), whereClause );
@@ -155,7 +155,7 @@ namespace FutureState.AppCore.Data
     {
         private readonly IDbProvider _dbProvider;
         private readonly string _joinTableName;
-        private readonly AutoMapper<TModel> _mapper;
+        private readonly AutoMapper<TModel> _modelMapper;
         private readonly string _tableName;
         private string _joinExpression;
         private string _orderByClause;
@@ -170,7 +170,7 @@ namespace FutureState.AppCore.Data
         public DbQuery(IDbProvider dbProvider, JoinType joinType)
         {
             _dbProvider = dbProvider;
-            _mapper = new AutoMapper<TModel>();
+            _modelMapper = new AutoMapper<TModel>();
             _tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
             _joinTableName = typeof (TJoinTo).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
@@ -237,7 +237,7 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
-        public int Count ()
+        public int Count()
         {
             return _dbProvider.ExecuteScalar<int>( ToStringCount(), _parameters );
         }
@@ -245,7 +245,7 @@ namespace FutureState.AppCore.Data
         public IEnumerable<TModel> Select ()
         {
             var commandText = ToString();
-            return _dbProvider.ExecuteReader( commandText, _parameters, _mapper.BuildListFrom );
+            return _dbProvider.ExecuteReader( commandText, _parameters, _modelMapper.BuildListFrom );
         }
 
         public IEnumerable<TModel> Select ( Func<IDbReader, IList<TModel>> mapperFunc )
@@ -256,7 +256,7 @@ namespace FutureState.AppCore.Data
         public void Update(TModel model)
         {
             var mapper = new AutoMapper<TModel>();
-            var dbFields = mapper.GetFieldNameList( model ).Where( field => field != "ID" ).Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
+            var dbFields = mapper.GetFieldNameList().Where( field => field != "ID" ).Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
 
             var whereClause = GetExtendedWhereClause();
             var commandText = string.Format( _dbProvider.Dialect.UpdateJoin, _tableName, string.Join( ",", dbFields ), _joinExpression, whereClause );

@@ -361,8 +361,8 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Execute
             var actualStudents = db.Query<StudentModel>()
                 .LeftJoin<BookModel>()
-                .Where( ( s, b ) => b.Name == "FirstBookTitle" )
-                .OrderBy( ( s, b ) => s.FirstName, OrderDirection.Descending )
+                .Where( ( student, book ) => book.Name == "FirstBookTitle" )
+                .OrderBy( ( student, book ) => student.FirstName, OrderDirection.Descending )
                 .Select()
                 .ToList();
 

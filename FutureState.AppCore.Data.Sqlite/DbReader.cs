@@ -48,6 +48,16 @@ namespace FutureState.AppCore.Data.Sqlite
             get { return _reader.IsClosed; }
         }
 
+        public bool IsDbNull ( string name )
+        {
+            return IsDbNull(_reader.GetOrdinal(name));
+        }
+
+        public bool IsDbNull(int ordinal)
+        {
+            return _reader.IsDBNull(ordinal);
+        }
+
         public int RecordsAffected
         {
             get { return _reader.RecordsAffected; }

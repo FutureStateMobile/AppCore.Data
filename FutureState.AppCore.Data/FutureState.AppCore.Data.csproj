@@ -93,7 +93,7 @@
     <Compile Include="Extensions\GenericNullCheck.cs" />
     <Compile Include="Extensions\PropertyEqualityComparer.cs" />
     <Compile Include="AutoMapper.cs" />
-    <Compile Include="IMapper.cs" />
+    <Compile Include="IModelMapper.cs" />
     <Compile Include="IMigration.cs" />
     <Compile Include="IMigrationRunner.cs" />
     <Compile Include="IServiceLocator.cs" />

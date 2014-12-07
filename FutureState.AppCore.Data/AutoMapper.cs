@@ -29,7 +29,7 @@ namespace FutureState.AppCore.Data
 
             _properties.OrderBy(p => p.Name).ForEach(property =>
             {
-                object value = property.GetValue(model, null);
+                var value = property.GetValue(model, null);
 
                 if (property.PropertyType == typeof (DateTime))
                 {
@@ -60,8 +60,7 @@ namespace FutureState.AppCore.Data
         public IList<TMapTo> BuildListFrom(IDbReader reader)
         {
             var list = new List<TMapTo>();
-
-            TMapTo model = BuildFrom(reader);
+            var model = BuildFrom(reader);
 
             while (model != null)
             {
@@ -121,8 +120,7 @@ namespace FutureState.AppCore.Data
         public IEnumerable<TMapTo> BuildQueueFrom(IDbReader reader)
         {
             var queue = new Queue<TMapTo>();
-
-            TMapTo model = BuildFrom(reader);
+            var model = BuildFrom(reader);
 
             while (model != null)
             {

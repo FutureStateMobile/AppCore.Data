@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using System.Data;
 
 namespace FutureState.AppCore.Data.SqlServer
@@ -6,7 +6,7 @@ namespace FutureState.AppCore.Data.SqlServer
     public class DbReader : IDbReader
     {
         private readonly IDataReader _reader;
-        private Hashtable _hashOfNames;
+        private Dictionary<string, int> _hashOfNames;
 
         public DbReader(IDataReader reader)
         {
@@ -67,7 +67,7 @@ namespace FutureState.AppCore.Data.SqlServer
         {
             if (_hashOfNames == null)
             {
-                _hashOfNames = new Hashtable();
+                _hashOfNames = new Dictionary<string, int>();
                 for (var i = 0; i < _reader.FieldCount; i++)
                 {
                     _hashOfNames.Add(_reader.GetName(i), i);

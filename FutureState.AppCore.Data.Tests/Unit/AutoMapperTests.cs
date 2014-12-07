@@ -26,7 +26,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
                     IsDeleted = true
                 };
 
-            var mapper = new AutoMapper<StudentModel>();
+            var mapper = new AutoDbMapper<StudentModel>();
 
             // Execute
             var actual = mapper.BuildDbParametersFrom(expectedUser);
@@ -68,7 +68,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             dataReader.SetupSequence(dr => dr["UpdatedDate"]).Returns(expectedDate).Returns(expectedDate).Returns(null);
             dataReader.SetupSequence(dr => dr["IsDeleted"]).Returns(true).Returns(null).Returns(false);
 
-            var mapper = new AutoMapper<StudentModel>();
+            var mapper = new AutoDbMapper<StudentModel>();
 
             // Execute
             var actualUser = mapper.BuildListFrom(dataReader.Object);
@@ -104,7 +104,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
                     new BookModel {Name = "bob", Id = new Guid("645301E1-EC02-47BC-A99C-330A77FC6A4E")},
                     new BookModel {Name = "Joe", Id = new Guid("02CEF568-4130-457C-A34C-268585AFB939")},
                 };
-            var autoMapper = new AutoMapper<CourseModel>();
+            var autoMapper = new AutoModelMapper<CourseModel>();
 
             // Execute
             var courses = autoMapper.BuildListFrom(books);
@@ -130,7 +130,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             dataReader.SetupSequence(dr => dr["UpdatedDate"]).Returns(expectedDate);
             dataReader.SetupSequence(dr => dr["IsDeleted"]).Returns(true);
 
-            var mapper = new AutoMapper<StudentModel>();
+            var mapper = new AutoDbMapper<StudentModel>();
 
             // Execute
             var actualUser = mapper.BuildFrom(dataReader.Object);
@@ -152,7 +152,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var book = new BookModel {Name = "bob", Id = new Guid("645301E1-EC02-47BC-A99C-330A77FC6A4E")};
-            var autoMapper = new AutoMapper<CourseModel>();
+            var autoMapper = new AutoModelMapper<CourseModel>();
 
             // Execute
             var course = autoMapper.BuildFrom(book);
@@ -166,7 +166,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             BookModel book = null;
-            var autoMapper = new AutoMapper<CourseModel>();
+            var autoMapper = new AutoModelMapper<CourseModel>();
 
             // Execute
             var course = autoMapper.BuildFrom(book);

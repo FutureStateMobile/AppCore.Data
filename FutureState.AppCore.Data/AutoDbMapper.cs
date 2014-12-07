@@ -8,12 +8,12 @@ using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
-    public class AutoMapper<TMapTo> : IModelMapper<TMapTo> where TMapTo : class, new()
+    public class AutoDbMapper<TMapTo> : IDbMapper<TMapTo> where TMapTo : class, new()
     {
         private readonly DateTime _minSqlDateTime = DateTime.Parse("1/1/1753 12:00:00 AM");
         private readonly IList<PropertyInfo> _properties;
 
-        public AutoMapper()
+        public AutoDbMapper()
         {
             _properties = (from property in typeof (TMapTo).GetRuntimeProperties().OrderBy(p => p.Name)
                 let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
@@ -85,32 +85,6 @@ namespace FutureState.AppCore.Data
                 if (!reader.IsDbNull(property.Name))
                 {
                     property.SetValue(model, reader[property.Name]);
-                }
-            });
-
-            return model;
-        }
-
-        public IList<TMapTo> BuildListFrom<TInput>(IList<TInput> inputList) where TInput : class
-        {
-            return inputList.Select(BuildFrom).ToList();
-        }
-
-        public TMapTo BuildFrom<TInput>(TInput input) where TInput : class
-        {
-            if (input.IsNull())
-            {
-                return null;
-            }
-
-            var model = new TMapTo();
-
-            _properties.ForEach(property =>
-            {
-                var inputProperty = typeof (TInput).GetRuntimeProperty(property.Name);
-                if (inputProperty != null)
-                {
-                    property.SetValue(model, inputProperty.GetValue(input, null), null);
                 }
             });
 

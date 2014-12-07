@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="Attributes\ManyToManyAttribute.cs" />
     <Compile Include="Attributes\OneToManyAttribute.cs" />
+    <Compile Include="AutoModelMapper.cs" />
     <Compile Include="ClusterType.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="Constraints\ClusteredConstraint.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Inflector.cs" />
     <Compile Include="IDbScalar.cs" />
+    <Compile Include="IModelMapper.cs" />
     <Compile Include="JoinExpressionVisitor.cs" />
     <Compile Include="JoinType.cs" />
     <Compile Include="OrderByExpressionVisitor.cs" />
@@ -92,8 +94,8 @@
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Extensions\GenericNullCheck.cs" />
     <Compile Include="Extensions\PropertyEqualityComparer.cs" />
-    <Compile Include="AutoMapper.cs" />
-    <Compile Include="IModelMapper.cs" />
+    <Compile Include="AutoDbMapper.cs" />
+    <Compile Include="IDbMapper.cs" />
     <Compile Include="IMigration.cs" />
     <Compile Include="IMigrationRunner.cs" />
     <Compile Include="IServiceLocator.cs" />

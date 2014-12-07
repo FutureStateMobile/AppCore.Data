@@ -11,7 +11,7 @@ namespace FutureState.AppCore.Data
     public class DbQuery<TModel> : IDbQuery<TModel> where TModel : class, new()
     {
         private readonly IDbProvider _dbProvider;
-        private readonly IModelMapper<TModel> _modelMapper;
+        private readonly IDbMapper<TModel> _dbMapper;
         private readonly string _tableName;
         private string _orderByClause;
         private string _whereClause;
@@ -28,10 +28,10 @@ namespace FutureState.AppCore.Data
 //            _parameters = new Dictionary<string, object>();
 //        }
 
-        public DbQuery ( IDbProvider dbProvider, IModelMapper<TModel> modelMapper  )
+        public DbQuery ( IDbProvider dbProvider, IDbMapper<TModel> dbMapper  )
         {
             _dbProvider = dbProvider;
-            _modelMapper = modelMapper;
+            _dbMapper = dbMapper;
             _tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
         }
@@ -95,7 +95,7 @@ namespace FutureState.AppCore.Data
 
         public IEnumerable<TModel> Select()
         {
-            return _dbProvider.ExecuteReader(ToString(), _parameters, _modelMapper.BuildListFrom);
+            return _dbProvider.ExecuteReader(ToString(), _parameters, _dbMapper.BuildListFrom);
         }
 
         public IEnumerable<TModel> Select ( Func<IDbReader, IList<TModel>> mapperFunc )
@@ -106,7 +106,7 @@ namespace FutureState.AppCore.Data
         public void Update(TModel model)
         {
             // TODO: Make the update only update specified feilds, this requires a lot more work though
-            var mapper = new AutoMapper<TModel>();
+            var mapper = new AutoDbMapper<TModel>();
             var dbFields = mapper.GetFieldNameList().Where(field => field != "ID").Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
 
             var whereClause = GetExtendedWhereClause();
@@ -155,7 +155,7 @@ namespace FutureState.AppCore.Data
     {
         private readonly IDbProvider _dbProvider;
         private readonly string _joinTableName;
-        private readonly AutoMapper<TModel> _modelMapper;
+        private readonly AutoDbMapper<TModel> _modelDbMapper;
         private readonly string _tableName;
         private string _joinExpression;
         private string _orderByClause;
@@ -170,7 +170,7 @@ namespace FutureState.AppCore.Data
         public DbQuery(IDbProvider dbProvider, JoinType joinType)
         {
             _dbProvider = dbProvider;
-            _modelMapper = new AutoMapper<TModel>();
+            _modelDbMapper = new AutoDbMapper<TModel>();
             _tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
             _joinTableName = typeof (TJoinTo).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
@@ -245,7 +245,7 @@ namespace FutureState.AppCore.Data
         public IEnumerable<TModel> Select ()
         {
             var commandText = ToString();
-            return _dbProvider.ExecuteReader( commandText, _parameters, _modelMapper.BuildListFrom );
+            return _dbProvider.ExecuteReader( commandText, _parameters, _modelDbMapper.BuildListFrom );
         }
 
         public IEnumerable<TModel> Select ( Func<IDbReader, IList<TModel>> mapperFunc )
@@ -255,7 +255,7 @@ namespace FutureState.AppCore.Data
 
         public void Update(TModel model)
         {
-            var mapper = new AutoMapper<TModel>();
+            var mapper = new AutoDbMapper<TModel>();
             var dbFields = mapper.GetFieldNameList().Where( field => field != "ID" ).Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
 
             var whereClause = GetExtendedWhereClause();

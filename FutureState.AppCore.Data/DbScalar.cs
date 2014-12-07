@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using FutureState.AppCore.Data.Helpers;
+using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data
 {
@@ -19,7 +19,7 @@ namespace FutureState.AppCore.Data
         {
             _propertyName = GetPropertyName( propertyExpression );
             _dbProvider = dbProvider;
-            _tableName = GetTableName(typeof (TModel).GetTypeInfo());
+            _tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
         }
 
@@ -60,11 +60,6 @@ namespace FutureState.AppCore.Data
         public string ToStringSum ()
         {
             return string.Format( _dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName ).Trim();
-        }
-
-        private static string GetTableName ( MemberInfo type )
-        {
-            return type.Name.Replace( "Model", "" ).Pluralize();
         }
 
         private static string GetPropertyName( Expression<Func<TModel, TReturnType>> propertyExpression )

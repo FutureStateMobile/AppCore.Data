@@ -10,12 +10,12 @@ namespace FutureState.AppCore.Data
     {
         public AutoModelMapper()
         {
-            _properties = ( from property in typeof( TMapTo ).GetRuntimeProperties().OrderBy( p => p.Name )
-                let ignore = property.GetCustomAttributes( typeof( OneToManyAttribute ), true ).Any() ||
-                             property.GetCustomAttributes( typeof( OneToOneAttribute ), true ).Any() ||
-                             property.GetCustomAttributes( typeof( ManyToManyAttribute ), true ).Any()
-                where !ignore
-                select property ).ToList();
+            _properties = ( from property in typeof( TMapTo ).GetRuntimeProperties().OrderBy( p => p.Name ) select property ).ToList();
+//                let ignore = property.GetCustomAttributes( typeof( OneToManyAttribute ), true ).Any() ||
+//                             property.GetCustomAttributes( typeof( OneToOneAttribute ), true ).Any() ||
+//                             property.GetCustomAttributes( typeof( ManyToManyAttribute ), true ).Any()
+//                where !ignore
+//                select property ).ToList();
         }
 
         private readonly IList<PropertyInfo> _properties;

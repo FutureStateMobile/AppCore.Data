@@ -52,11 +52,6 @@ namespace FutureState.AppCore.Data
             return dictionary;
         }
 
-        public IList<string> GetFieldNameList()
-        {
-            return _properties.Select(p => p.Name).ToList();
-        }
-
         public IList<TMapTo> BuildListFrom(IDbReader reader)
         {
             var list = new List<TMapTo>();

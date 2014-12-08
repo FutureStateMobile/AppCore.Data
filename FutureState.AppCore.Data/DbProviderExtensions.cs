@@ -10,6 +10,16 @@ namespace FutureState.AppCore.Data
 {
     public static class DbProviderExtensions
     {
+        public static IList<string> GetFieldNameList<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
+        {
+            return ( from property in typeof(TModel).GetRuntimeProperties().OrderBy( p => p.Name )
+                            let ignore = property.GetCustomAttributes( typeof( OneToManyAttribute ), true ).Any() ||
+                                         property.GetCustomAttributes( typeof( OneToOneAttribute ), true ).Any() ||
+                                         property.GetCustomAttributes( typeof( ManyToManyAttribute ), true ).Any()
+                            where !ignore
+                            select property.Name ).ToList();
+        }
+
         /// <summary>
         ///     Create a new record based on a Model
         /// </summary>
@@ -32,9 +42,8 @@ namespace FutureState.AppCore.Data
         /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
         public static void Create<TModel> ( this IDbProvider dbProvider, TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters ) where TModel : class, new()
         {
-            var dbMapper = new AutoDbMapper<TModel>();
             var tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
-            var fieldNameList = dbMapper.GetFieldNameList();
+            var fieldNameList = dbProvider.GetFieldNameList(model);
             var parameters = "@" + string.Join( ",@", fieldNameList );
             var fields = string.Join( ",", fieldNameList );
             var commandText = string.Format( dbProvider.Dialect.InsertInto, tableName, fields, parameters );
@@ -92,8 +101,7 @@ namespace FutureState.AppCore.Data
         /// <remarks>We're using the Id field to check the update.</remarks>
         public static void Update<TModel>(this IDbProvider dbProvider, TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters) where TModel : class, new()
         {
-            var dbMapper = new AutoDbMapper<TModel>();
-            var dbFields = dbMapper.GetFieldNameList().Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
+            var dbFields = dbProvider.GetFieldNameList(model).Select( field => string.Format( "[{0}] = @{0}", field ) ).ToList();
 
             var tableName = typeof( TModel ).GetTypeInfo().Name.BuildTableName();
             var whereClause = string.Format( dbProvider.Dialect.Where, "Id = @Id" );

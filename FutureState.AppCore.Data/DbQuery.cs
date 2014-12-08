@@ -105,7 +105,7 @@ namespace FutureState.AppCore.Data
 
         public void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters)
         {
-            var dbFields = _dbMapper.GetFieldNameList()
+            var dbFields = _dbProvider.GetFieldNameList(model)
                 .Where(field => field != "ID")
                 .Select(field => string.Format("[{0}] = @{0}", field)).ToList();
             
@@ -241,7 +241,7 @@ namespace FutureState.AppCore.Data
 
         public void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters)
         {
-            var dbFields = _dbMapper.GetFieldNameList()
+            var dbFields = _dbProvider.GetFieldNameList(model)
                 .Where(field => field != "ID")
                 .Select(field => string.Format("[{0}] = @{0}", field))
                 .ToList();

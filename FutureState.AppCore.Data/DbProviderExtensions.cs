@@ -50,8 +50,7 @@ namespace FutureState.AppCore.Data
             var commandParams = mapToDbParameters( model );
 
             dbProvider.ExecuteNonQuery( commandText, commandParams );
-
-            // Update the Join Table
+            // TODO: I think this should happen in the base repository, not here, that way we can override this behaviour
             UpdateManyToManyRecords( dbProvider, model, tableName, mapToDbParameters );
         }
 
@@ -108,6 +107,7 @@ namespace FutureState.AppCore.Data
             var commandText = string.Format( dbProvider.Dialect.Update, tableName, string.Join( ",", dbFields ), whereClause );
 
             dbProvider.ExecuteNonQuery( commandText, mapToDbParameters( model ) );
+            // TODO: I think this should happen in the base repository, not here, that way we can override this behaviour
             UpdateManyToManyRecords( dbProvider, model, tableName, mapToDbParameters );
         }
 

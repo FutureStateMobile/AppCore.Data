@@ -11,7 +11,7 @@ namespace FutureState.AppCore.Data.SqlServer
 {
     public class DbProvider : DbProviderBase
     {
-        private const string _rootSqlScriptPath = "FutureState.AppCore.Data.SqlServer.SqlScripts.";
+        private const string RootSqlScriptPath = "FutureState.AppCore.Data.SqlServer.SqlScripts.";
         private static string _useStatement;
         private readonly IDbConnectionProvider _connectionProvider;
         private IDialect _dialect;
@@ -32,7 +32,7 @@ namespace FutureState.AppCore.Data.SqlServer
         {
             var sqlStatement = string.Empty;
 
-            using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(_rootSqlScriptPath + fileName))
+            using (var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(RootSqlScriptPath + fileName))
             {
                 if (resourceStream != null)
                 {
@@ -89,14 +89,14 @@ namespace FutureState.AppCore.Data.SqlServer
 
         private TResult ExecuteReader<TResult>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters, Func<IDbReader, TResult> readerMapper)
         {
-            using (IDbConnection connection = _connectionProvider.GetOpenConnection())
-            using (IDbCommand command = connection.CreateCommand())
+            using (var connection = _connectionProvider.GetOpenConnection())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = useStatement + commandText;
                 parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                using (IDataReader reader = command.ExecuteReader())
+                using (var reader = command.ExecuteReader())
                 {
                     var r = new DbReader(reader);
                     return readerMapper(r);
@@ -125,8 +125,8 @@ namespace FutureState.AppCore.Data.SqlServer
 
         private void ExecuteNonQuery(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            using (IDbConnection connection = _connectionProvider.GetOpenConnection())
-            using (IDbCommand command = connection.CreateCommand())
+            using (var connection = _connectionProvider.GetOpenConnection())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = useStatement + commandText;
@@ -157,14 +157,14 @@ namespace FutureState.AppCore.Data.SqlServer
 
         private TKey ExecuteScalar<TKey>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            using (IDbConnection connection = _connectionProvider.GetOpenConnection())
-            using (IDbCommand command = connection.CreateCommand())
+            using (var connection = _connectionProvider.GetOpenConnection())
+            using (var command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
                 command.CommandText = useStatement + commandText;
                 parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                object result = command.ExecuteScalar();
+                var result = command.ExecuteScalar();
 
                 if (typeof (TKey) == typeof (int))
                     return (TKey) (result ?? 0);

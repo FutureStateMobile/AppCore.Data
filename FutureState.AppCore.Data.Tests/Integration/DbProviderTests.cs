@@ -325,25 +325,25 @@ namespace FutureState.AppCore.Data.Tests.Integration
         [Ignore, Test, TestCaseSource("DbProviders")]
         public void ShouldJoinToAnotherOneToManyTableAndBuildWhereClauseAndOrderByClause(IDbProvider db)
         {
-            // TODO: Implement This
-            Trace.WriteLine(TraceObjectGraphInfo(db));
-
-            // Setup
-            var expectedStudents = new List<StudentModel>
-            {
-                StudentFixture.FirstStudent
-            };
-
-            // Execute
-            var actualStudents = db.Query<StudentModel>()
-                .Join<BookModel>(JoinType.Left, (u, b) => u.Id == b.StudentId)
-                .Where((u, b) => b.Name == "Book1Name")
-                .OrderBy((u, b) => u.FirstName, OrderDirection.Descending)
-                .Select()
-                .ToList();
-
-            // Assert
-            Assert.AreEqual( expectedStudents[0].FirstName, actualStudents[0].FirstName );
+//            // TODO: Implement This
+//            Trace.WriteLine(TraceObjectGraphInfo(db));
+//
+//            // Setup
+//            var expectedStudents = new List<StudentModel>
+//            {
+//                StudentFixture.FirstStudent
+//            };
+//
+//            // Execute
+//            var actualStudents = db.Query<StudentModel>()
+//                .InnerJoin<BookModel>(JoinType.Left, (u, b) => u.Id == b.StudentId)
+//                .Where((u, b) => b.Name == "Book1Name")
+//                .OrderBy((u, b) => u.FirstName, OrderDirection.Descending)
+//                .Select()
+//                .ToList();
+//
+//            // Assert
+//            Assert.AreEqual( expectedStudents[0].FirstName, actualStudents[0].FirstName );
         }
 
         [Test, TestCaseSource( "DbProviders" )]

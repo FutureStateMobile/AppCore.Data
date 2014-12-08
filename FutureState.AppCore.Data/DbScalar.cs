@@ -9,24 +9,24 @@ namespace FutureState.AppCore.Data
     public class DbScalar<TModel, TReturnType> : IDbScalar<TModel, TReturnType> where TModel : class, new()
     {
         private readonly IDbProvider _dbProvider;
-        private Dictionary<string, object> _parameters;
-        private string _whereClause;
         private readonly string _propertyName;
         private readonly string _tableName;
+        private Dictionary<string, object> _parameters;
+        private string _whereClause;
         private WhereExpressionVisitor _whereExpressionVisitor;
 
-        public DbScalar ( IDbProvider dbProvider, Expression<Func<TModel, TReturnType>> propertyExpression )
+        public DbScalar(IDbProvider dbProvider, Expression<Func<TModel, TReturnType>> propertyExpression)
         {
-            _propertyName = GetPropertyName( propertyExpression );
+            _propertyName = GetPropertyName(propertyExpression);
             _dbProvider = dbProvider;
             _tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
         }
 
-        public IDbScalar<TModel, TReturnType> Where ( Expression<Func<TModel, object>> expression )
+        public IDbScalar<TModel, TReturnType> Where(Expression<Func<TModel, object>> expression)
         {
-            _whereExpressionVisitor = new WhereExpressionVisitor().Visit( expression );
-            _whereClause = string.Format( _dbProvider.Dialect.Where, _whereExpressionVisitor.WhereExpression );
+            _whereExpressionVisitor = new WhereExpressionVisitor().Visit(expression);
+            _whereClause = string.Format(_dbProvider.Dialect.Where, _whereExpressionVisitor.WhereExpression);
             _parameters = _whereExpressionVisitor.Parameters;
 
             return this;
@@ -34,63 +34,65 @@ namespace FutureState.AppCore.Data
 
         public TReturnType Max()
         {
-            return _dbProvider.ExecuteScalar<TReturnType>( ToStringMax(), _parameters );
+            return _dbProvider.ExecuteScalar<TReturnType>(ToStringMax(), _parameters);
         }
 
         public TReturnType Min()
         {
-            return _dbProvider.ExecuteScalar<TReturnType>( ToStringMin(), _parameters );
+            return _dbProvider.ExecuteScalar<TReturnType>(ToStringMin(), _parameters);
         }
 
         public TReturnType Sum()
         {
-            return _dbProvider.ExecuteScalar<TReturnType>( ToStringSum(), _parameters );
+            return _dbProvider.ExecuteScalar<TReturnType>(ToStringSum(), _parameters);
         }
 
         public string ToStringMax()
         {
-            return string.Format( _dbProvider.Dialect.SelectMaxFrom, _tableName, _whereClause, _propertyName ).Trim();
-        }
-        
-        public string ToStringMin ()
-        {
-            return string.Format( _dbProvider.Dialect.SelectMinFrom, _tableName, _whereClause, _propertyName ).Trim();
+            return string.Format(_dbProvider.Dialect.SelectMaxFrom, _tableName, _whereClause, _propertyName).Trim();
         }
 
-        public string ToStringSum ()
+        public string ToStringMin()
         {
-            return string.Format( _dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName ).Trim();
+            return string.Format(_dbProvider.Dialect.SelectMinFrom, _tableName, _whereClause, _propertyName).Trim();
         }
 
-        private static string GetPropertyName( Expression<Func<TModel, TReturnType>> propertyExpression )
+        public string ToStringSum()
         {
-            var expression = GetMemberInfo( propertyExpression );
-            return expression.Member.Name;
+            return string.Format(_dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName).Trim();
         }
 
-        private static MemberExpression GetMemberInfo ( Expression method )
+        private static string GetPropertyName(Expression<Func<TModel, TReturnType>> propertyExpression)
+        {
+            return GetMemberInfo(propertyExpression).Member.Name;
+        }
+
+        private static MemberExpression GetMemberInfo(Expression method)
         {
             var lambda = method as LambdaExpression;
-            if ( lambda == null )
+
+            if (lambda == null)
+            {
                 throw new ArgumentNullException( "method" );
+            }
 
             MemberExpression memberExpr = null;
 
-            if ( lambda.Body.NodeType == ExpressionType.Convert )
+            if (lambda.Body.NodeType == ExpressionType.Convert)
             {
-                memberExpr =
-                    ( (UnaryExpression)lambda.Body ).Operand as MemberExpression;
+                memberExpr = ((UnaryExpression)lambda.Body).Operand as MemberExpression;
             }
-            else if ( lambda.Body.NodeType == ExpressionType.MemberAccess )
+            else if (lambda.Body.NodeType == ExpressionType.MemberAccess)
             {
                 memberExpr = lambda.Body as MemberExpression;
             }
 
-            if ( memberExpr == null )
+            if (memberExpr == null)
+            {
                 throw new ArgumentException( "method" );
+            }
 
             return memberExpr;
         }
-
     }
 }

@@ -38,6 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes\ManyToManyAttribute.cs" />
+    <Compile Include="Attributes\ManyToOneAttribute.cs" />
     <Compile Include="Attributes\OneToManyAttribute.cs" />
     <Compile Include="AutoModelMapper.cs" />
     <Compile Include="ClusterType.cs" />

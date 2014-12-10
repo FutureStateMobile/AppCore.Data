@@ -14,11 +14,12 @@ namespace FutureState.AppCore.Data
             where TModel : class, new()
         {
             return (from property in typeof (TModel).GetRuntimeProperties().OrderBy(p => p.Name)
-                    let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
-                                 property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
-                                 property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
-                    where !ignore
-                    select property.Name).ToList();
+                let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (ManyToOneAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
+                where !ignore
+                select property.Name).ToList();
         }
 
         /// <summary>
@@ -48,7 +49,6 @@ namespace FutureState.AppCore.Data
             var fieldNameList = dbProvider.GetFieldNameList(model);
             var commandParams = mapToDbParameters(model);
 
-            // Add ManyToOne data
             AddManyToOneRelations(model, fieldNameList, commandParams);
 
             var parameters = "@" + string.Join(",@", fieldNameList);
@@ -80,7 +80,7 @@ namespace FutureState.AppCore.Data
         /// <param name="propertyExpression">The expression to use for the query</param>
         /// <returns>IEnumerable model</returns>
         public static IDbScalar<TModel, TReturnType> Scalar<TModel, TReturnType>(this IDbProvider dbProvider,
-                                                                                 Expression<Func<TModel, TReturnType>> propertyExpression)
+            Expression<Func<TModel, TReturnType>> propertyExpression)
             where TModel : class, new()
         {
             return new DbScalar<TModel, TReturnType>(dbProvider, propertyExpression);
@@ -109,13 +109,17 @@ namespace FutureState.AppCore.Data
         public static void Update<TModel>(this IDbProvider dbProvider, TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters)
             where TModel : class, new()
         {
-            var dbFields = dbProvider.GetFieldNameList(model).Select(field => string.Format("[{0}] = @{0}", field)).ToList();
-
             var tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
-            var whereClause = string.Format(dbProvider.Dialect.Where, "Id = @Id");
-            var commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", dbFields), whereClause);
+            var fieldNameList = dbProvider.GetFieldNameList(model);
+            var commandParams = mapToDbParameters(model);
 
-            dbProvider.ExecuteNonQuery(commandText, mapToDbParameters(model));
+            AddManyToOneRelations(model, fieldNameList, commandParams);
+
+            var setFieldText = fieldNameList.Select(field => string.Format("[{0}] = @{0}", field)).ToList();
+            var whereClause = string.Format(dbProvider.Dialect.Where, "Id = @Id");
+            var commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", setFieldText), whereClause);
+
+            dbProvider.ExecuteNonQuery(commandText, commandParams);
             UpdateManyToManyRelations(dbProvider, model, tableName, mapToDbParameters);
         }
 
@@ -140,22 +144,41 @@ namespace FutureState.AppCore.Data
 
         private static void AddManyToOneRelations<TModel>(TModel model, IList<string> fieldNameList, IDictionary<string, object> commandParams)
         {
-            var manyToOneFields = typeof (TModel).GetRuntimeProperties().Where(property => property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any());
+            var manyToOneFields =
+                typeof (TModel).GetRuntimeProperties().Where(property => property.GetCustomAttributes(typeof (ManyToOneAttribute), true).Any());
 
             foreach (var propertyInfo in manyToOneFields)
             {
-                var value = propertyInfo.GetValue(model);
-                fieldNameList.Add(propertyInfo.Name);
+                var manyToOneObject = propertyInfo.GetValue(model);
+                var dbColumnName = propertyInfo.Name + "Id";
+                fieldNameList.Add(dbColumnName);
+                var manyToOneObjectType = manyToOneObject.GetType();
+                var idPropertyInfo = manyToOneObjectType.GetRuntimeProperty("Id");
+                var idValue = idPropertyInfo.GetValue(manyToOneObject, null);
 
-                if (propertyInfo.PropertyType == typeof (Guid))
+                if (idPropertyInfo.PropertyType == typeof (Guid))
                 {
-                    if ((Guid) value == Guid.Empty)
+                    if ((Guid) idValue == Guid.Empty)
                     {
-                        value = null;
+                        idValue = null;
+                    }
+                }
+                else if (idPropertyInfo.PropertyType == typeof (int))
+                {
+                    if ((int) idValue == 0)
+                    {
+                        idValue = null;
+                    }
+                }
+                else if (idPropertyInfo.PropertyType == typeof (long))
+                {
+                    if ((long) idValue == 0)
+                    {
+                        idValue = null;
                     }
                 }
 
-                commandParams.Add(propertyInfo.Name, value);
+                commandParams.Add(dbColumnName, idValue);
             }
         }
 
@@ -168,7 +191,7 @@ namespace FutureState.AppCore.Data
         /// <param name="tableName">The name of the table</param>
         /// <param name="mapToDbParameters">Used to map the data in the model object to parameters to be used in database calls</param>
         private static void UpdateManyToManyRelations<TModel>(IDbProvider dbProvider, TModel model, string tableName,
-                                                              Func<TModel, IDictionary<string, object>> mapToDbParameters) where TModel : class, new()
+            Func<TModel, IDictionary<string, object>> mapToDbParameters) where TModel : class, new()
         {
             var leftModel = mapToDbParameters(model).FirstOrDefault(k => k.Key == "Id");
             var leftKey = typeof (TModel).Name.Replace("Model", string.Empty) + "Id";
@@ -212,8 +235,8 @@ namespace FutureState.AppCore.Data
                         var parametersToSet = string.Format(dbProvider.Dialect.JoinParameters, leftKey, rightKey);
                         // "@{0}, @{1}"
                         var insertCommandText = string.Format(dbProvider.Dialect.InsertInto, joinTableName,
-                                                              fieldsToInsert,
-                                                              parametersToSet);
+                            fieldsToInsert,
+                            parametersToSet);
                         dbProvider.ExecuteNonQuery(insertCommandText, parameters);
                         // Remove the parameter for the next iteration.
                         parameters.Remove("@" + rightKey);
@@ -235,8 +258,8 @@ namespace FutureState.AppCore.Data
                 throw new ArgumentNullException("type");
 
             return type.GetTypeInfo().ImplementedInterfaces
-                       .Where(i => i.IsConstructedGenericType)
-                       .Any(i => i.GetGenericTypeDefinition() == typeof (ICollection<>));
+                .Where(i => i.IsConstructedGenericType)
+                .Any(i => i.GetGenericTypeDefinition() == typeof (ICollection<>));
         }
     }
 }

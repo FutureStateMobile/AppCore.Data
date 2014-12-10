@@ -7,7 +7,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers
         public static void SetupFixtureDataInDatabase(IDbProvider dbProvider)
         {
             CourseFixture.SetupFixtureDataInDatabase(dbProvider);
-            StudentFixture.SetupFixtureDataInDatabase(dbProvider);
+            AuthorFixture.SetupFixtureDataInDatabase(dbProvider);
             BookFixture.SetupFixtureDataInDatabase(dbProvider);
             GooseFixture.SetupFixtureDataInDatabase(dbProvider);
         }

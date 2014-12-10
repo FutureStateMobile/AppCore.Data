@@ -19,8 +19,8 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildTheOrderExpressionFeildList()
         {
             // Setup
-            const string expectedString = "[Students].[Email]";
-            var actualExpression = OrderByExpression<StudentModel>(u => u.Email);
+            const string expectedString = "[Authors].[Email]";
+            var actualExpression = OrderByExpression<AuthorModel>(u => u.Email);
 
             // Execute
             var actualString = actualExpression.OrderByExpression;
@@ -33,8 +33,8 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildTheOrderExpressionFeildListForDateTime()
         {
             // Setup
-            const string expectedString = "[Students].[CreatedDate]";
-            var actualExpression = OrderByExpression<StudentModel>(u => u.CreatedDate);
+            const string expectedString = "[Authors].[CreatedDate]";
+            var actualExpression = OrderByExpression<AuthorModel>(u => u.CreatedDate);
 
             // Execute
             var actualString = actualExpression.OrderByExpression;

@@ -17,13 +17,13 @@ namespace FutureState.AppCore.Data.Tests.Unit
 
         private delegate void TestMethod(string searchString);
 
-        public StudentModel TestProperty { get; set; }
+        public AuthorModel TestProperty { get; set; }
 
         [Test]
         public void ShouldBuildAWhereClauseWithAnOr()
         {
             // Setup
-            const string expectedString = "( [Students].[FirstName] LIKE @FirstName1 OR [Students].[LastName] LIKE @LastName1 )";
+            const string expectedString = "( [Authors].[FirstName] LIKE @FirstName1 OR [Authors].[LastName] LIKE @LastName1 )";
             const string name = "ues";
             var expectedParameters = new Dictionary<string, object>
                 {
@@ -38,7 +38,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             TestMethod testMethod = delegate(string item)
                 {
                     var actualExpression =
-                        TestExpression<StudentModel>(u => u.FirstName.Contains(item) || u.LastName.Contains(item));
+                        TestExpression<AuthorModel>(u => u.FirstName.Contains(item) || u.LastName.Contains(item));
                     actualString = actualExpression.WhereExpression;
                     actualParameters = actualExpression.Parameters;
                 };
@@ -55,9 +55,9 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildAWhereClauseWithSameFieldUsedMoreThanOnce()
         {
             // Setup
-            const string expectedString = "( [Students].[Email] <> @Email1 AND [Students].[Email] <> @Email2 )";
+            const string expectedString = "( [Authors].[Email] <> @Email1 AND [Authors].[Email] <> @Email2 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", "thing"}, {"@Email2", ""}};
-            var actualExpression = TestExpression<StudentModel>(u => u.Email != "thing" && u.Email != "");
+            var actualExpression = TestExpression<AuthorModel>(u => u.Email != "thing" && u.Email != "");
 
             // Execute
             var actualString = actualExpression.WhereExpression;
@@ -73,11 +73,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var date = DateTime.UtcNow;
-            const string expectedString = "( [Students].[CreatedDate] = @CreatedDate1 )";
+            const string expectedString = "( [Authors].[CreatedDate] = @CreatedDate1 )";
             var expectedParameters = new Dictionary<string, object> {{"@CreatedDate1", date}};
 
             // Execute
-            var actualExpression = TestExpression<StudentModel>(u => u.CreatedDate == date);
+            var actualExpression = TestExpression<AuthorModel>(u => u.CreatedDate == date);
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 
@@ -91,11 +91,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var id = new Guid("CCAF57D9-88A4-4DCD-87C7-DB875E0D4E66");
-            const string expectedString = "( [Students].[Id] = @Id1 )";
+            const string expectedString = "( [Authors].[Id] = @Id1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Id1", id}};
 
             // Execute
-            var actualExpression = TestExpression<StudentModel>(u => u.Id == id);
+            var actualExpression = TestExpression<AuthorModel>(u => u.Id == id);
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 
@@ -108,11 +108,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldVisitExpressionByStringLiteral()
         {
             // Setup
-            const string expectedString = "( [Students].[Email] = @Email1 )";
+            const string expectedString = "( [Authors].[Email] = @Email1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", "john@doe.com"}};
 
             // Execute
-            var actualExpression = TestExpression<StudentModel>(u => u.Email == "john@doe.com");
+            var actualExpression = TestExpression<AuthorModel>(u => u.Email == "john@doe.com");
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 
@@ -126,11 +126,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             const string email = "john@doe.com";
-            const string expectedString = "( [Students].[Email] = @Email1 )";
+            const string expectedString = "( [Authors].[Email] = @Email1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", email}};
 
             // Execute
-            var actualExpression = TestExpression<StudentModel>(u => u.Email.Equals(email));
+            var actualExpression = TestExpression<AuthorModel>(u => u.Email.Equals(email));
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 
@@ -143,13 +143,13 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldVisitExpressionByStringObject()
         {
             // Setup
-            var expectedUser = new StudentModel {Email = "john@doe.com"};
+            var expectedUser = new AuthorModel {Email = "john@doe.com"};
 
-            const string expectedString = "( [Students].[Email] = @Email1 )";
+            const string expectedString = "( [Authors].[Email] = @Email1 )";
             var expectedParameters = new Dictionary<string, object> {{"@Email1", expectedUser.Email}};
 
             // Execute
-            var actualExpression = TestExpression<StudentModel>(u => u.Email == expectedUser.Email);
+            var actualExpression = TestExpression<AuthorModel>(u => u.Email == expectedUser.Email);
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 
@@ -162,7 +162,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldVisitExpressionOnPublicProperties()
         {
             // Setup
-            TestProperty = new StudentModel
+            TestProperty = new AuthorModel
                 {
                     Id = new Guid("91191CA1-74D7-4751-B6AA-11F060403FBA"),
                     FirstName = "Bob",
@@ -170,7 +170,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
                 };
 
             const string email = "john@doe.com";
-            const string expectedString = "( [Students].[Email] = @Email1 AND [Students].[FirstName] = @FirstName1 )";
+            const string expectedString = "( [Authors].[Email] = @Email1 AND [Authors].[FirstName] = @FirstName1 )";
             var expectedParameters = new Dictionary<string, object>
                 {
                     {"@Email1", email},
@@ -179,7 +179,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
 
             // Execute
             var actualExpression =
-                TestExpression<StudentModel>(u => u.Email.Equals(email) && u.FirstName == TestProperty.FirstName);
+                TestExpression<AuthorModel>(u => u.Email.Equals(email) && u.FirstName == TestProperty.FirstName);
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 

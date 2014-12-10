@@ -12,7 +12,8 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
         public static BookModel FirstBook = new BookModel
             {
                 Id = new Guid(FirstBookId),
-                StudentId = new Guid(StudentFixture.FirstStudentId),
+                Author = AuthorFixture.FirstAuthor,
+                //StudentId = new Guid(AuthorFixture.FirstAuthorId),
                 Name = "FirstBookTitle",
                 BookNumber = 1
             };
@@ -20,7 +21,8 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
         public static BookModel BookToUpdate = new BookModel
             {
                 Id = new Guid(BookToUpdateId),
-                StudentId = new Guid(StudentFixture.StudentToUpdateId),
+                Author = AuthorFixture.AuthorToUpdate,
+                //StudentId = new Guid(AuthorFixture.AuthorToUpdateId),
                 Name = "BookTitleToUpdate",
                 BookNumber = 2
             };
@@ -28,7 +30,8 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
         public static BookModel BookToDelete = new BookModel
             {
                 Id = new Guid(BookToDeleteId),
-                StudentId = new Guid(StudentFixture.StudentToDeleteId),
+                Author = AuthorFixture.AuthorToDelete,
+                //StudentId = new Guid(AuthorFixture.AuthorToDeleteId),
                 Name = "BookTitleToDelete",
                 BookNumber = 3
             };

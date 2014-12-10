@@ -8,12 +8,10 @@ namespace FutureState.AppCore.Data.Tests.Unit
     [TestFixture]
     public class JoinExpressionVisitorTests
     {
-        public static JoinExpressionVisitor JoinExpression<TModel, TJoinTo>(JoinType joinType,
-                                                                            Expression<Func<TModel, TJoinTo, object>>
-                                                                                joinExpression)
+        public static JoinExpressionVisitor JoinExpression<TModel, TJoinTo>(JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression)
             where TModel : class, new()
         {
-            var visitor = new JoinExpressionVisitor().Visit(joinType, joinExpression);
+            JoinExpressionVisitor visitor = new JoinExpressionVisitor().Visit(joinType, joinExpression);
             return visitor;
         }
 
@@ -21,11 +19,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildInnerJoinExpression()
         {
             // Setup
-            const string expectedString = "INNER JOIN Students.Id == Books.StudentId";
-            var actualExpression = JoinExpression<StudentModel, BookModel>(JoinType.Inner, (s, b) => s.Id == b.StudentId);
+            const string expectedString = "INNER JOIN Authors.Id == Books.AuthorId";
+            JoinExpressionVisitor actualExpression = JoinExpression<AuthorModel, BookModel>(JoinType.Inner, (s, b) => s.Id == b.Author.Id);
 
             // Execute
-            var actualString = actualExpression.JoinExpression;
+            string actualString = actualExpression.JoinExpression;
 
             // Test
             Assert.AreEqual(expectedString, actualString);
@@ -35,11 +33,11 @@ namespace FutureState.AppCore.Data.Tests.Unit
         public void ShouldBuildLeftJoinExpression()
         {
             // Setup
-            const string expectedString = "LEFT JOIN Students.Id == Books.StudentId";
-            var actualExpression = JoinExpression<StudentModel, BookModel>(JoinType.Left, (s, b) => s.Id == b.StudentId);
+            const string expectedString = "LEFT JOIN Authors.Id == Books.AuthorId";
+            JoinExpressionVisitor actualExpression = JoinExpression<AuthorModel, BookModel>(JoinType.Left, (s, b) => s.Id == b.Author.Id);
 
             // Execute
-            var actualString = actualExpression.JoinExpression;
+            string actualString = actualExpression.JoinExpression;
 
             // Test
             Assert.AreEqual(expectedString, actualString);

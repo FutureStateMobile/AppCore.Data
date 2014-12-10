@@ -36,7 +36,11 @@ namespace FutureState.AppCore.Data.Tests.Integration
         public void TearDown()
         {
             // Drop the Database after all tests pass AppCore
-            //_migrationRunner.DropDatabase();
+            foreach (var dbProvider in DbProviders())
+            {
+                var migrationRunner = new MigrationRunner(dbProvider);
+                migrationRunner.DropDatabase();
+            }
         }
     }
 }

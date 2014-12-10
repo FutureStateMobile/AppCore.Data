@@ -97,7 +97,7 @@
     <Compile Include="Helpers\Models\GooseModel.cs" />
     <Compile Include="Helpers\Models\ModelBase.cs" />
     <Compile Include="Helpers\Models\CourseModel.cs" />
-    <Compile Include="Helpers\Models\StudentModel.cs" />
+    <Compile Include="Helpers\Models\AuthorModel.cs" />
     <Compile Include="Helpers\Models\BookModel.cs" />
     <Compile Include="Unit\InflectionTests.cs" />
     <Compile Include="Unit\JoinExpressionVisitorTests.cs" />
@@ -107,7 +107,7 @@
     <Compile Include="Integration\DbProviderTestSetup.cs" />
     <Compile Include="Helpers\Fixtures\FixtureBase.cs" />
     <Compile Include="Helpers\Fixtures\CourseFixture.cs" />
-    <Compile Include="Helpers\Fixtures\StudentFixture.cs" />
+    <Compile Include="Helpers\Fixtures\AuthorFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Integration\DbProviderTests.cs" />
     <Compile Include="Helpers\Fixtures\BookFixture.cs" />

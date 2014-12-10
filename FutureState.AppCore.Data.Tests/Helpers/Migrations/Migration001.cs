@@ -8,8 +8,8 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
     public class Migration001 : Migration
     {
         public const string BobEmail = "bob@futurestatemobile.com";
-        public static readonly Guid StudentBobId = new Guid("427A1F2D-2D1A-4492-BD2C-2CF569C46FBB");
-        public static readonly Guid StudentJillId = new Guid("6C83DDEC-5E58-4F28-BDE2-61EBF1B49691");
+        public static readonly Guid AuthorBobId = new Guid("427A1F2D-2D1A-4492-BD2C-2CF569C46FBB");
+        public static readonly Guid AuthorJillId = new Guid("6C83DDEC-5E58-4F28-BDE2-61EBF1B49691");
         public static readonly Guid MathCourseId = new Guid("0F9D7D41-BBCA-4663-873C-AE2B5F31BEA4");
         public static readonly Guid EnglishCourseId = new Guid("78CB8CFD-0A09-4385-ABFE-38B4A087220A");
         public static string JillEmail = "jill@futurestatemobile.com";
@@ -24,7 +24,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             var migration = new DbMigration(DbProvider.Dialect);
             var database = new Database(DbProvider.DatabaseName, DbProvider.Dialect);
 
-            var studentTable = database.AddTable("Students");
+            var studentTable = database.AddTable("Authors");
             studentTable.AddColumn("Id", typeof (Guid)).PrimaryKey().Clustered().NotNullable();
             studentTable.AddColumn("FirstName", typeof (string), 100);
             studentTable.AddColumn("LastName", typeof (string), 100);
@@ -45,7 +45,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             // OneToMany Relationship to Student
             var bookTable = database.AddTable("Books");
             bookTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
-            bookTable.AddColumn("StudentId", typeof(Guid)).NotNullable().ForeignKey("Students", "Id");
+            bookTable.AddColumn("AuthorId", typeof(Guid)).NotNullable().ForeignKey("Authors", "Id");
             bookTable.AddColumn("Name", typeof(string), 100).NotNullable();
             bookTable.AddColumn("BookNumber", typeof(int)).Nullable();
             bookTable.AddColumn("PublishDate", typeof (DateTime)).NotNullable();
@@ -59,9 +59,9 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 
             // ManyToMany Join Tables are currently handled under the covers (without an associated model)
             // Naming convention used by ORM is to joing the 2 table names together in alphabetical order
-            var courseStudentTable = database.AddTable("Courses_Students").CompositeKey("StudentId", "CourseId", ClusterType.Clustered);
+            var courseStudentTable = database.AddTable("Authors_Courses").CompositeKey("AuthorId", "CourseId", ClusterType.Clustered);
             courseStudentTable.AddColumn("CourseId", typeof (Guid)).ForeignKey("Courses", "Id").NotNullable();
-            courseStudentTable.AddColumn("StudentId", typeof (Guid)).ForeignKey("Students", "Id").NotNullable();
+            courseStudentTable.AddColumn("AuthorId", typeof (Guid)).ForeignKey("Authors", "Id").NotNullable();
 
             DbProvider.ExecuteNonQuery(migration.GenerateDDL(database));
         }
@@ -87,18 +87,18 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             DbProvider.Create(FixtureBase.UpdateBaseFields(mathCourse));
 
             // Add the users (depends on roles)
-            var jill = new StudentModel
+            var jill = new AuthorModel
                 {
-                    Id = StudentJillId,
+                    Id = AuthorJillId,
                     FirstName = "Jill",
                     LastName = "",
                     Email = JillEmail,
                     Courses = new List<CourseModel> {englishCourse},
                 };
 
-            var bob = new StudentModel
+            var bob = new AuthorModel
                 {
-                    Id = StudentBobId,
+                    Id = AuthorBobId,
                     FirstName = "Bob",
                     LastName = "",
                     Email = BobEmail,

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Transactions;
 using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Migrations;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
@@ -19,7 +18,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var expectedUser = new StudentModel
+            var expectedUser = new AuthorModel
             {
                 Id = new Guid("57F98915-DBDF-41C7-9D24-F4BB1C0D9D0C"),
                 FirstName = "Joe",
@@ -29,9 +28,9 @@ namespace FutureState.AppCore.Data.Tests.Integration
             db.Create(expectedUser);
 
             // Execute
-            db.Delete<StudentModel>(u => u.Email == expectedUser.Email);
+            db.Delete<AuthorModel>(u => u.Email == expectedUser.Email);
 
-            var actualUser = db.Query<StudentModel>().Where(u => u.Email == expectedUser.Email).Select().ToList();
+            var actualUser = db.Query<AuthorModel>().Where(u => u.Email == expectedUser.Email).Select().ToList();
 
             // Assert
             Assert.IsEmpty(actualUser);
@@ -47,7 +46,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var expectedUser = new StudentModel
+            var expectedUser = new AuthorModel
             {
                 Id = new Guid("381BC8C2-AF5D-40E1-81DD-620B4DCCEDBB"),
                 FirstName = "SQL",
@@ -57,15 +56,15 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Execute Create
             db.Create(expectedUser);
-            var student = db.Query<StudentModel>().Where(u => u.Id == expectedUser.Id).Select().FirstOrDefault();
+            var author = db.Query<AuthorModel>().Where(u => u.Id == expectedUser.Id).Select().FirstOrDefault();
 
             // Assert Create
-            Assert.IsNotNull(student);
-            Assert.IsNotNull(student.Id);
-            Assert.AreNotEqual(Guid.Empty, student.Id);
+            Assert.IsNotNull(author);
+            Assert.IsNotNull(author.Id);
+            Assert.AreNotEqual(Guid.Empty, author.Id);
 
             // Execute Find IEnumerable
-            var actualUsers1 = db.Query<StudentModel>().Where(x => x.FirstName.Contains("jil")).Select();
+            var actualUsers1 = db.Query<AuthorModel>().Where(x => x.FirstName.Contains("jil")).Select();
             // this returns an IEnumerable
 
             // Assert Find IEnumerable
@@ -73,7 +72,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Execute Find List
             var actualUsers2 =
-                db.Query<StudentModel>().Where(x => x.FirstName.Contains("jil") && x.LastName == "").Select().ToList();
+                db.Query<AuthorModel>().Where(x => x.FirstName.Contains("jil") && x.LastName == "").Select().ToList();
             // ToList converts IEnumerable to a list
 
             // Assert Find List
@@ -81,13 +80,13 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Execute Find List
             var stamp = DateTime.UtcNow.AddDays(-10);
-            var actualUsers3 = db.Query<StudentModel>().Where(x => x.UpdatedDate >= stamp).Select().ToList();
+            var actualUsers3 = db.Query<AuthorModel>().Where(x => x.UpdatedDate >= stamp).Select().ToList();
 
             // Assert Find List
             Assert.True(actualUsers3.Count > 0);
 
             // Execute Read
-            var actualUser = db.Query<StudentModel>().Where(x => x.Id == student.Id).Select().FirstOrDefault();
+            var actualUser = db.Query<AuthorModel>().Where(x => x.Id == author.Id).Select().FirstOrDefault();
 
             // Assert Read
             Assert.IsNotNull(actualUser);
@@ -98,7 +97,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Execute Update
             actualUser.FirstName = "NewName";
             db.Update(actualUser);
-            actualUser = db.Query<StudentModel>().Where(x => x.Id == student.Id).Select().FirstOrDefault();
+            actualUser = db.Query<AuthorModel>().Where(x => x.Id == author.Id).Select().FirstOrDefault();
 
             //// Assert Update
             Assert.IsNotNull(actualUser);
@@ -107,8 +106,8 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Assert.AreEqual(expectedUser.Email, actualUser.Email);
 
             // Execute Delete
-            db.Query<StudentModel>().Where(u => u.Id == student.Id).Delete();
-            actualUser = db.Query<StudentModel>().Where(x => x.Id == student.Id).Select().FirstOrDefault();
+            db.Query<AuthorModel>().Where(u => u.Id == author.Id).Delete();
+            actualUser = db.Query<AuthorModel>().Where(x => x.Id == author.Id).Select().FirstOrDefault();
 
             // Assert Delete
             Assert.IsNull(actualUser);
@@ -179,7 +178,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Setup
             var stamp = DateTime.UtcNow.AddDays(-10);
             // Execute
-            var actualUsers = db.Query<StudentModel>().Where(u => u.CreatedDate > stamp).Select().ToList();
+            var actualUsers = db.Query<AuthorModel>().Where(u => u.CreatedDate > stamp).Select().ToList();
 
             // Assert
             Assert.Greater(actualUsers.Count, 0);
@@ -191,14 +190,14 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var expectedUsers = new List<StudentModel>
+            var expectedUsers = new List<AuthorModel>
             {
-                new StudentModel {FirstName = "Jill"},
-                new StudentModel {FirstName = "Bob"}
+                new AuthorModel {FirstName = "Jill"},
+                new AuthorModel {FirstName = "Bob"}
             };
 
             // Execute
-            var actualUsers = db.Query<StudentModel>()
+            var actualUsers = db.Query<AuthorModel>()
                 .Where(u => u.FirstName.Contains("jil") || u.FirstName == "Bob")
                 .Select()
                 .ToList();
@@ -211,6 +210,23 @@ namespace FutureState.AppCore.Data.Tests.Integration
         }
 
         [Test, TestCaseSource("DbProviders")]
+        public void ShouldCreateBookWithReferenceToItsAuthor(IDbProvider db)
+        {
+            var book = BookFixture.FirstBook;
+            var id = new Guid("F6949DAD-810D-4724-A391-5C01DD9D66E8");
+            book.Id = id;
+            book.BookNumber = 1919;
+
+            // Execute
+            db.Create(book);
+            var actualBook = db.Query<BookModel>().Where(b => b.Id == id).Select().FirstOrDefault();
+
+            Assert.That(actualBook, Is.Not.Null);
+            Assert.That(actualBook.Id, Is.EqualTo(id));
+            Assert.That(actualBook.Author.Id, Is.EqualTo(AuthorFixture.FirstAuthor.Id));
+        }
+
+        [Test, TestCaseSource("DbProviders")]
         public void ShouldFindUsersWithLikeAndEqualsComparers(IDbProvider db)
         {
             // don't run against SQLite becase it's not seeded.
@@ -219,11 +235,11 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var expectedUsers = new List<StudentModel> {new StudentModel {FirstName = "Jill"}};
+            var expectedUsers = new List<AuthorModel> {new AuthorModel {FirstName = "Jill"}};
 
             // Execute
             var actualUsers =
-                db.Query<StudentModel>().Where(u => u.FirstName.Contains("il") && u.LastName == "").Select().ToList();
+                db.Query<AuthorModel>().Where(u => u.FirstName.Contains("il") && u.LastName == "").Select().ToList();
 
             // Assert
             Assert.AreEqual(expectedUsers[0].FirstName, actualUsers[0].FirstName);
@@ -235,7 +251,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Execute Query
-            var actualUsers = db.Query<StudentModel>().Select().ToList();
+            var actualUsers = db.Query<AuthorModel>().Select().ToList();
 
             // Assert
             Assert.IsNotEmpty(actualUsers);
@@ -246,7 +262,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
-            var expectedUser = new StudentModel
+            var expectedUser = new AuthorModel
             {
                 Id = new Guid("5A7685A2-3EEC-442D-902F-D2022F28DD33"),
                 FirstName = "test",
@@ -258,7 +274,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             db.Create(expectedUser);
 
             // Execute Query
-            var actualUser = db.Query<StudentModel>().Where(u => u.Id == expectedUser.Id).Select().FirstOrDefault();
+            var actualUser = db.Query<AuthorModel>().Where(u => u.Id == expectedUser.Id).Select().FirstOrDefault();
 
             // Assert
             Assert.IsNotNull(actualUser);
@@ -272,7 +288,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             //const string expectedSelect = "SELECT MAX(CreatedDate) FROM Students";
 
             // Execute Query
-            var actualSelect = db.Scalar<StudentModel, DateTime>(s => s.CreatedDate).Max();
+            var actualSelect = db.Scalar<AuthorModel, DateTime>(s => s.CreatedDate).Max();
 
             // Assert
             Assert.IsNotNull(actualSelect);
@@ -306,11 +322,11 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // Setup
-            var expectedStudents = StudentFixture.FirstStudent;
+            var expectedStudents = AuthorFixture.FirstAuthor;
             var expectedCourse = CourseFixture.FirstCourse;
 
             // Execute
-            var actualStudents = db.Query<StudentModel>()
+            var actualStudents = db.Query<AuthorModel>()
                 .ManyJoin<CourseModel>()
                 .Where( ( s, c ) => c.Name == expectedCourse.Name )
                 .OrderBy((s, c) => s.FirstName, OrderDirection.Descending)
@@ -329,13 +345,13 @@ namespace FutureState.AppCore.Data.Tests.Integration
 //            Trace.WriteLine(TraceObjectGraphInfo(db));
 //
 //            // Setup
-//            var expectedStudents = new List<StudentModel>
+//            var expectedStudents = new List<AuthorModel>
 //            {
-//                StudentFixture.FirstStudent
+//                AuthorFixture.FirstAuthor
 //            };
 //
 //            // Execute
-//            var actualStudents = db.Query<StudentModel>()
+//            var actualStudents = db.Query<AuthorModel>()
 //                .InnerJoin<BookModel>(JoinType.Left, (u, b) => u.Id == b.StudentId)
 //                .Where((u, b) => b.Name == "Book1Name")
 //                .OrderBy((u, b) => u.FirstName, OrderDirection.Descending)
@@ -353,16 +369,16 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine( TraceObjectGraphInfo( db ) );
 
             // Setup
-            var expectedStudents = new List<StudentModel>
+            var expectedStudents = new List<AuthorModel>
             {
-                StudentFixture.FirstStudent
+                AuthorFixture.FirstAuthor
             };
 
             // Execute
-            var actualStudents = db.Query<StudentModel>()
+            var actualStudents = db.Query<AuthorModel>()
                 .LeftJoin<BookModel>()
-                .Where( ( student, book ) => book.Name == "FirstBookTitle" )
-                .OrderBy( ( student, book ) => student.FirstName, OrderDirection.Descending )
+                .Where( ( author, book ) => book.Name == "FirstBookTitle" )
+                .OrderBy( ( author, book ) => author.FirstName, OrderDirection.Descending )
                 .Select()
                 .ToList();
 
@@ -394,7 +410,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             var mathCourseId = Migration001.MathCourseId;
 
             // Execute Query
-            var actualUsers = db.Query<StudentModel>()
+            var actualUsers = db.Query<AuthorModel>()
                 .ManyJoin<CourseModel>()
                 .Where( ( s, b ) => b.Id == mathCourseId )
                 .Select()
@@ -410,14 +426,14 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
             // setup
-            var studentToUpdate = StudentFixture.StudentToUpdate;
+            var studentToUpdate = AuthorFixture.AuthorToUpdate;
             studentToUpdate.Courses.Add(CourseFixture.ThirdCourse);
 
             // execute
             db.Update( studentToUpdate );
 
             var studentCourses = db.Query<CourseModel>()
-                .ManyJoin<StudentModel>()
+                .ManyJoin<AuthorModel>()
                 .Where( ( c, s ) => c.IsDeleted == false && s.Id == studentToUpdate.Id )
                 .Select()
                 .ToList();
@@ -433,14 +449,14 @@ namespace FutureState.AppCore.Data.Tests.Integration
             Trace.WriteLine( TraceObjectGraphInfo( db ) );
 
             // setup
-            var studentToDelete = StudentFixture.StudentToDelete;
+            var studentToDelete = AuthorFixture.AuthorToDelete;
             studentToDelete.Courses.Remove(CourseFixture.CourseToDelete);
 
             // execute
             db.Update( studentToDelete );
 
             var studentCourses = db.Query<CourseModel>()
-                .ManyJoin<StudentModel>()
+                .ManyJoin<AuthorModel>()
                 .Where( ( c, s ) => c.IsDeleted == false && s.Id == studentToDelete.Id )
                 .Select()
                 .ToList();

@@ -15,7 +15,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var expectedDate = DateTime.UtcNow;
-            var expectedUser = new StudentModel
+            var expectedUser = new AuthorModel
                 {
                     Id = Guid.NewGuid(),
                     FirstName = "firstname",
@@ -26,7 +26,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
                     IsDeleted = true
                 };
 
-            var mapper = new AutoDbMapper<StudentModel>();
+            var mapper = new AutoDbMapper<AuthorModel>();
 
             // Execute
             var actual = mapper.BuildDbParametersFrom(expectedUser);
@@ -68,7 +68,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             dataReader.SetupSequence(dr => dr["UpdatedDate"]).Returns(expectedDate).Returns(expectedDate).Returns(null);
             dataReader.SetupSequence(dr => dr["IsDeleted"]).Returns(true).Returns(null).Returns(false);
 
-            var mapper = new AutoDbMapper<StudentModel>();
+            var mapper = new AutoDbMapper<AuthorModel>();
 
             // Execute
             var actualUser = mapper.BuildListFrom(dataReader.Object);
@@ -130,7 +130,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             dataReader.SetupSequence(dr => dr["UpdatedDate"]).Returns(expectedDate);
             dataReader.SetupSequence(dr => dr["IsDeleted"]).Returns(true);
 
-            var mapper = new AutoDbMapper<StudentModel>();
+            var mapper = new AutoDbMapper<AuthorModel>();
 
             // Execute
             var actualUser = mapper.BuildFrom(dataReader.Object);

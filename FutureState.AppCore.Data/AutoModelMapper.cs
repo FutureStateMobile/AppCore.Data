@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FutureState.AppCore.Data.Attributes;
 using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data

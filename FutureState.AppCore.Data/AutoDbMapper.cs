@@ -12,15 +12,22 @@ namespace FutureState.AppCore.Data
     {
         private readonly DateTime _minSqlDateTime = DateTime.Parse("1/1/1753 12:00:00 AM");
         private readonly IList<PropertyInfo> _properties;
+        private readonly IList<PropertyInfo> _manyToOneProperties;
 
         public AutoDbMapper()
         {
             _properties = (from property in typeof (TMapTo).GetRuntimeProperties().OrderBy(p => p.Name)
                 let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
                              property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
+                             property.GetCustomAttributes(typeof (ManyToOneAttribute), true).Any() ||
                              property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
                 where !ignore
                 select property).ToList();
+            
+            _manyToOneProperties = typeof(TMapTo)
+                .GetRuntimeProperties()
+                .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
+                .ToList();
         }
 
         public IDictionary<string, object> BuildDbParametersFrom(TMapTo model)
@@ -29,7 +36,7 @@ namespace FutureState.AppCore.Data
 
             _properties.OrderBy(p => p.Name).ForEach(property =>
             {
-                var value = property.GetValue(model, null);
+                object value = property.GetValue(model);
 
                 if (property.PropertyType == typeof (DateTime))
                 {
@@ -55,7 +62,7 @@ namespace FutureState.AppCore.Data
         public IList<TMapTo> BuildListFrom(IDbReader reader)
         {
             var list = new List<TMapTo>();
-            var model = BuildFrom(reader);
+            TMapTo model = BuildFrom(reader);
 
             while (model != null)
             {
@@ -79,7 +86,21 @@ namespace FutureState.AppCore.Data
             {
                 if (!reader.IsDbNull(property.Name))
                 {
-                    property.SetValue(model, reader[property.Name]);
+                    property.SetValue(model, reader[property.Name], null);
+                }
+            });
+
+            _manyToOneProperties.ForEach(property =>
+            {
+                var propertyName = property.Name + "Id";
+
+                if (!reader.IsDbNull(propertyName))
+                {
+                    var manyToOneObject = Activator.CreateInstance(property.PropertyType);
+                    var idProperty = property.PropertyType.GetRuntimeProperty("Id");
+                    idProperty.SetValue(manyToOneObject, reader[propertyName], null);
+                    
+                    property.SetValue(model, manyToOneObject, null);
                 }
             });
 
@@ -89,7 +110,7 @@ namespace FutureState.AppCore.Data
         public IEnumerable<TMapTo> BuildQueueFrom(IDbReader reader)
         {
             var queue = new Queue<TMapTo>();
-            var model = BuildFrom(reader);
+            TMapTo model = BuildFrom(reader);
 
             while (model != null)
             {

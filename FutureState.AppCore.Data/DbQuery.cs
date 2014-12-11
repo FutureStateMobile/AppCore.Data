@@ -105,7 +105,7 @@ namespace FutureState.AppCore.Data
 
         public void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters)
         {
-            var dbFields = _dbProvider.GetFieldNameList(model)
+            var dbFields = _dbMapper.GetFieldNames()
                 .Where(field => field != "ID")
                 .Select(field => string.Format("[{0}] = @{0}", field)).ToList();
             
@@ -178,7 +178,7 @@ namespace FutureState.AppCore.Data
             _joinExpression = BuildJoinExpression(joinType);
         }
 
-        // Called for joins, where the user specifies the join fields, need expression visitor to implement this
+//        Called for joins, where the user specifies the join fields, need expression visitor to implement this
 //        public DbQuery(IDbProvider dbProvider, JoinType joinType, Expression<Func<TModel, TJoinTo, object>> joinExpression) : this(dbProvider, joinType)
 //        {
 //            throw new NotImplementedException();
@@ -241,7 +241,7 @@ namespace FutureState.AppCore.Data
 
         public void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters)
         {
-            var dbFields = _dbProvider.GetFieldNameList(model)
+            var dbFields = _dbMapper.GetFieldNames()
                 .Where(field => field != "ID")
                 .Select(field => string.Format("[{0}] = @{0}", field))
                 .ToList();

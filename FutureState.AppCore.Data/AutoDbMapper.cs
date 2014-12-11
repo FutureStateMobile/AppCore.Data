@@ -23,11 +23,18 @@ namespace FutureState.AppCore.Data
                              property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
                 where !ignore
                 select property).ToList();
-            
+
             _manyToOneProperties = typeof(TMapTo)
                 .GetRuntimeProperties()
                 .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
                 .ToList();
+        }
+
+        public IList<string> GetFieldNames()
+        {
+            var fieldNames = _properties.Select(prop => prop.Name).ToList();
+            fieldNames.AddRange(_manyToOneProperties.Select(prop => prop.Name + "Id"));
+            return fieldNames;
         }
 
         public IDictionary<string, object> BuildDbParametersFrom(TMapTo model)
@@ -54,6 +61,39 @@ namespace FutureState.AppCore.Data
                 }
 
                 dictionary.Add(property.Name, value);
+            });
+
+            _manyToOneProperties.ForEach(propertyInfo =>
+            {
+                var manyToOneObject = propertyInfo.GetValue(model);
+                var dbColumnName = propertyInfo.Name + "Id";
+                var manyToOneObjectType = manyToOneObject.GetType();
+                var idPropertyInfo = manyToOneObjectType.GetRuntimeProperty("Id");
+                var idValue = idPropertyInfo.GetValue(manyToOneObject, null);
+
+                if (idPropertyInfo.PropertyType == typeof(Guid))
+                {
+                    if ((Guid)idValue == Guid.Empty)
+                    {
+                        idValue = null;
+                    }
+                }
+                else if (idPropertyInfo.PropertyType == typeof(int))
+                {
+                    if ((int)idValue == 0)
+                    {
+                        idValue = null;
+                    }
+                }
+                else if (idPropertyInfo.PropertyType == typeof(long))
+                {
+                    if ((long)idValue == 0)
+                    {
+                        idValue = null;
+                    }
+                }
+
+                dictionary.Add(dbColumnName, idValue);
             });
 
             return dictionary;

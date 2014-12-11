@@ -104,7 +104,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
                     new BookModel {Name = "bob", Id = new Guid("645301E1-EC02-47BC-A99C-330A77FC6A4E")},
                     new BookModel {Name = "Joe", Id = new Guid("02CEF568-4130-457C-A34C-268585AFB939")},
                 };
-            var autoMapper = new AutoModelMapper<CourseModel>();
+            var autoMapper = new AutoModelMapper<PublisherModel>();
 
             // Execute
             var courses = autoMapper.BuildListFrom(books);
@@ -152,7 +152,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var book = new BookModel {Name = "bob", Id = new Guid("645301E1-EC02-47BC-A99C-330A77FC6A4E")};
-            var autoMapper = new AutoModelMapper<CourseModel>();
+            var autoMapper = new AutoModelMapper<PublisherModel>();
 
             // Execute
             var course = autoMapper.BuildFrom(book);
@@ -166,7 +166,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             BookModel book = null;
-            var autoMapper = new AutoModelMapper<CourseModel>();
+            var autoMapper = new AutoModelMapper<PublisherModel>();
 
             // Execute
             var course = autoMapper.BuildFrom(book);

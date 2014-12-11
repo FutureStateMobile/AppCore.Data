@@ -5,42 +5,79 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Fixtures
 {
     public class BookFixture : FixtureBase
     {
-        public const string FirstBookId = "6DB6BA38-9B01-4A64-A227-CC69A51BF57B";
-        public const string BookToUpdateId = "486652C0-7E6E-43D3-A9F3-950B66BFFCC6";
-        public const string BookToDeleteId = "3C1F3E58-8CFD-4FB9-A5D5-FCCDFFFDB73B";
+        private static readonly DateTime Date = new DateTime(2014, 12, 1);
 
-        public static BookModel FirstBook = new BookModel
-            {
-                Id = new Guid(FirstBookId),
-                Author = AuthorFixture.FirstAuthor,
-                //StudentId = new Guid(AuthorFixture.FirstAuthorId),
-                Name = "FirstBookTitle",
-                BookNumber = 1
-            };
-
-        public static BookModel BookToUpdate = new BookModel
-            {
-                Id = new Guid(BookToUpdateId),
-                Author = AuthorFixture.AuthorToUpdate,
-                //StudentId = new Guid(AuthorFixture.AuthorToUpdateId),
-                Name = "BookTitleToUpdate",
-                BookNumber = 2
-            };
-
-        public static BookModel BookToDelete = new BookModel
-            {
-                Id = new Guid(BookToDeleteId),
-                Author = AuthorFixture.AuthorToDelete,
-                //StudentId = new Guid(AuthorFixture.AuthorToDeleteId),
-                Name = "BookTitleToDelete",
-                BookNumber = 3
-            };
-
-        public static void SetupFixtureDataInDatabase(IDbProvider dbProvider)
+        public static BookModel GetFirstBook(PublisherModel publisher = null)
         {
-            dbProvider.Create(UpdateBaseFields(FirstBook));
-            dbProvider.Create(UpdateBaseFields(BookToUpdate));
-            dbProvider.Create(UpdateBaseFields(BookToDelete));
+            return UpdateBaseFields(new BookModel
+            {
+                Id = Guid.NewGuid(),
+                Name = "FirstBookTitle",
+                ISBN = 1,
+                Publisher = publisher,
+                PublishDate = Date
+            });
+        }
+
+        public static BookModel GetSecondBook(PublisherModel publisher = null)
+        {
+            return UpdateBaseFields(new BookModel
+            {
+                Id = Guid.NewGuid(),
+                Name = "SecondBookTitle",
+                ISBN = 1,
+                Publisher = publisher,
+                PublishDate = Date
+            });
+        }
+
+        public static BookModel GetThirdBook(PublisherModel publisher = null)
+        {
+            return UpdateBaseFields(new BookModel
+            {
+                Id = Guid.NewGuid(),
+                Name = "ThirdBookTitle",
+                ISBN = 1,
+                Publisher = publisher,
+                PublishDate = Date
+            });
+        }
+
+        public static BookModel GetFourthBook(PublisherModel publisher = null)
+        {
+            return UpdateBaseFields(new BookModel
+            {
+                Id = Guid.NewGuid(),
+                Name = "FourthBookTitle",
+                ISBN = 1,
+                Publisher = publisher,
+                PublishDate = Date
+            });
+        }
+
+        public static BookModel GetBookToUpdate(PublisherModel publisher = null)
+        {
+            return UpdateBaseFields(new BookModel
+            {
+                Id = Guid.NewGuid(),
+                Name = "BookTitleToUpdate",
+                ISBN = 2,
+                Publisher = publisher,
+                PublishDate = Date
+            });
+        }
+
+
+        public static BookModel GetBookToDelete(PublisherModel publisher = null)
+        {
+            return UpdateBaseFields(new BookModel
+            {
+                Id = Guid.NewGuid(),
+                Name = "BookTitleToDelete",
+                ISBN = 3,
+                Publisher = publisher,
+                PublishDate = Date
+            });
         }
     }
 }

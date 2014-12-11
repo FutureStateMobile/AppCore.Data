@@ -19,7 +19,6 @@ CREATE TABLE [Test] (
 [Foo] nvarchar(max) );";
 
             var dialect = new SqlServerDialect();
-            var migration = new DbMigration(dialect);
             var database = new Database("MyDatabase", dialect);
 
             var testTable = database.AddTable("Test");
@@ -27,7 +26,7 @@ CREATE TABLE [Test] (
             testTable.AddColumn("Foo", typeof (string));
 
             // Execute
-            var actualDDL = migration.GenerateDDL(database);
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
@@ -44,7 +43,6 @@ ALTER TABLE [Test] ADD
 [Foo] int DEFAULT(1);";
 
             var dialect = new SqlServerDialect();
-            var migration = new DbMigration( dialect );
             var database = new Database( "MyDatabase", dialect );
 
             var testTable = database.UpdateTable( "Test" );
@@ -52,7 +50,7 @@ ALTER TABLE [Test] ADD
             testTable.AddColumn( "Foo", typeof( int ) ).Default(1);
 
             // Execute
-            var actualDDL = migration.GenerateDDL( database );
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual( expectedDDL, actualDDL );
@@ -74,7 +72,6 @@ CREATE TABLE [Courses] (
 [IsAvailable] bit NOT NULL DEFAULT(0));";
 
             var dialect = new SqlServerDialect();
-            var migration = new DbMigration(dialect);
             var database = new Database("MyDatabase", dialect);
 
             var teacher = database.AddTable("Teachers");
@@ -89,7 +86,7 @@ CREATE TABLE [Courses] (
             course.AddColumn("IsAvailable", typeof (bool)).NotNullable(false);
 
             // Execute
-            var actualDDL = migration.GenerateDDL(database);
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
@@ -111,7 +108,6 @@ CREATE TABLE [Courses] (
 [IsAvailable] bit NOT NULL DEFAULT(0));";
 
             var dialect = new SqliteDialect();
-            var migration = new DbMigration(dialect);
             var database = new Database("MyDatabase", dialect);
 
             var teacher = database.AddTable("Teachers");
@@ -126,7 +122,7 @@ CREATE TABLE [Courses] (
             course.AddColumn("IsAvailable", typeof (bool)).NotNullable(false);
 
             // Execute
-            var actualDDL = migration.GenerateDDL(database);
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
@@ -143,7 +139,6 @@ CREATE TABLE [Roles_Permissions] (
 CONSTRAINT PK_Roles_Permissions_Composite PRIMARY KEY NONCLUSTERED (RoleId, PermissionId));";
 
             var dialect = new SqlServerDialect();
-            var migration = new DbMigration(dialect);
             var database = new Database("MyDatabase", dialect);
 
             var rolesPermissionsTable = database.AddTable("Roles_Permissions").CompositeKey("RoleId", "PermissionId");
@@ -151,7 +146,7 @@ CONSTRAINT PK_Roles_Permissions_Composite PRIMARY KEY NONCLUSTERED (RoleId, Perm
             rolesPermissionsTable.AddColumn("PermissionId", typeof (Guid)).ForeignKey("Permissions", "Id");
 
             // Execute
-            var actualDDL = migration.GenerateDDL(database);
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
@@ -168,7 +163,6 @@ CONSTRAINT PK_RoleId_PermissionId_Composite UNIQUE NONCLUSTERED (RoleId, Permiss
 
 
             var dialect = new SqlServerDialect();
-            var migration = new DbMigration(dialect);
             var database = new Database("MyDatabase", dialect);
 
             var rolesPermissionsTable = database.AddTable("Roles_Permissions").CompositeUnique("RoleId", "PermissionId");
@@ -176,7 +170,7 @@ CONSTRAINT PK_RoleId_PermissionId_Composite UNIQUE NONCLUSTERED (RoleId, Permiss
             rolesPermissionsTable.AddColumn("PermissionId", typeof (Guid)).ForeignKey("Permissions", "Id");
 
             // Execute
-            var actualDDL = migration.GenerateDDL(database);
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
@@ -192,7 +186,6 @@ CREATE TABLE [Test] (
 [Foo] nvarchar(max) );";
 
             var dialect = new SqlServerDialect();
-            var migration = new DbMigration(dialect);
             var database = new Database("MyDatabase", dialect);
 
             var testTable = database.AddTable("Test");
@@ -200,7 +193,7 @@ CREATE TABLE [Test] (
             testTable.AddColumn("Foo", typeof (string));
 
             // Execute
-            var actualDDL = migration.GenerateDDL(database);
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);
@@ -216,14 +209,13 @@ CREATE TABLE [Test] (
 
             var dialect = new SqlServerDialect();
             var customDialect = new CustomDialect();
-            var migration = new DbMigration(dialect);
             var database = new Database("MyDatabase", dialect);
 
             var testTable = database.AddTable("Test");
             testTable.AddColumn("Latitude", typeof (LatLong)).AsCustomType(customDialect.LatLong);
 
             // Execute
-            var actualDDL = migration.GenerateDDL(database);
+            var actualDDL = database.ToString();
 
             // Assert
             Assert.AreEqual(expectedDDL, actualDDL);

@@ -57,7 +57,6 @@
     <Compile Include="Constraints\PrimaryKeyConstraint.cs" />
     <Compile Include="Constraints\UniqueConstraint.cs" />
     <Compile Include="Database.cs" />
-    <Compile Include="DbMigration.cs" />
     <Compile Include="DbProviderBase.cs" />
     <Compile Include="DbProviderExtensions.cs" />
     <Compile Include="DbQuery.cs" />
@@ -73,7 +72,6 @@
     <Compile Include="OrderByExpressionVisitor.cs" />
     <Compile Include="OrderDirection.cs" />
     <Compile Include="WhereExpressionVisitor.cs" />
-    <Compile Include="IDbMigration.cs" />
     <Compile Include="IDbProvider.cs" />
     <Compile Include="IDbQuery.cs" />
     <Compile Include="IDbReader.cs" />

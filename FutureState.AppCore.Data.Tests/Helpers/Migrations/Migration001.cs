@@ -7,12 +7,17 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 {
     public class Migration001 : Migration
     {
-        public const string BobEmail = "bob@futurestatemobile.com";
-        public static readonly Guid AuthorBobId = new Guid("427A1F2D-2D1A-4492-BD2C-2CF569C46FBB");
-        public static readonly Guid AuthorJillId = new Guid("6C83DDEC-5E58-4F28-BDE2-61EBF1B49691");
-        public static readonly Guid MathCourseId = new Guid("0F9D7D41-BBCA-4663-873C-AE2B5F31BEA4");
-        public static readonly Guid EnglishCourseId = new Guid("78CB8CFD-0A09-4385-ABFE-38B4A087220A");
-        public static string JillEmail = "jill@futurestatemobile.com";
+        public static readonly Guid TheHobbitId = new Guid("E4BA6C4A-92BC-4B53-A833-680CEC3686DB");
+        public static readonly Guid TheScrewTapeLettersId = new Guid("4C65C4BD-A87D-46E8-A39E-9B4D85078D52");
+        public static readonly Guid TheLionWitchWardrobeId = new Guid("4ED8ABDC-706A-4F02-9B02-7E8E6BEBD774");
+
+        public static readonly Guid AuthorCSLewisId = new Guid("427A1F2D-2D1A-4492-BD2C-2CF569C46FBB");
+        public const string CSLewisEmail = "cs@futurestatemobile.com";
+        public static readonly Guid AuthorJRTolkienId = new Guid("6C83DDEC-5E58-4F28-BDE2-61EBF1B49691");
+        public static string JRTolkien = "jr@futurestatemobile.com";
+
+        public static readonly Guid BobsPublishingId = new Guid("0F9D7D41-BBCA-4663-873C-AE2B5F31BEA4");
+        public static readonly Guid RandomHouseId = new Guid("78CB8CFD-0A09-4385-ABFE-38B4A087220A");
 
         public Migration001()
         {
@@ -21,7 +26,6 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 
         public override void Migrate()
         {
-            var migration = new DbMigration(DbProvider.Dialect);
             var database = new Database(DbProvider.DatabaseName, DbProvider.Dialect);
 
             var studentTable = database.AddTable("Authors");
@@ -33,7 +37,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             studentTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();
             studentTable.AddColumn("IsDeleted", typeof (bool)).NotNullable(false);
 
-            var courseTable = database.AddTable("Courses");
+            var courseTable = database.AddTable("Publishers");
             courseTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
             courseTable.AddColumn("Name", typeof (string), 100).NotNullable();
             courseTable.AddColumn("Description", typeof (string), 100).NotNullable();
@@ -41,71 +45,100 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             courseTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();
             courseTable.AddColumn("IsDeleted", typeof (bool)).NotNullable(false);
 
-
             // OneToMany Relationship to Student
             var bookTable = database.AddTable("Books");
             bookTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
-            bookTable.AddColumn("AuthorId", typeof(Guid)).NotNullable().ForeignKey("Authors", "Id");
+            bookTable.AddColumn("PublisherId", typeof(Guid)).Nullable().ForeignKey("Publishers", "Id");
             bookTable.AddColumn("Name", typeof(string), 100).NotNullable();
-            bookTable.AddColumn("BookNumber", typeof(int)).Nullable();
+            bookTable.AddColumn("ISBN", typeof(int)).Nullable();
             bookTable.AddColumn("PublishDate", typeof (DateTime)).NotNullable();
             bookTable.AddColumn("CreatedDate", typeof (DateTime)).NotNullable();
             bookTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();
             bookTable.AddColumn("IsDeleted", typeof (bool)).NotNullable(false);
 
-            var gooseTable = database.AddTable("Geese");
-            gooseTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
-            gooseTable.AddColumn("Name", typeof (string), 100).Nullable();
-
             // ManyToMany Join Tables are currently handled under the covers (without an associated model)
             // Naming convention used by ORM is to joing the 2 table names together in alphabetical order
-            var courseStudentTable = database.AddTable("Authors_Courses").CompositeKey("AuthorId", "CourseId", ClusterType.Clustered);
-            courseStudentTable.AddColumn("CourseId", typeof (Guid)).ForeignKey("Courses", "Id").NotNullable();
+            var courseStudentTable = database.AddTable("Authors_Books").CompositeKey("AuthorId", "BookId", ClusterType.Clustered);
+            courseStudentTable.AddColumn("BookId", typeof (Guid)).ForeignKey("Books", "Id").NotNullable();
             courseStudentTable.AddColumn("AuthorId", typeof (Guid)).ForeignKey("Authors", "Id").NotNullable();
 
-            DbProvider.ExecuteNonQuery(migration.GenerateDDL(database));
+            // Example of the inflection library at work
+            var gooseTable = database.AddTable("Geese");
+            gooseTable.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
+            gooseTable.AddColumn("Name", typeof(string), 100).Nullable();
+
+            DbProvider.ExecuteNonQuery(database.ToString());
         }
 
         public override void ServerAfterMigrate()
         {
             // Create some base data
-            var mathCourse = new CourseModel
+            var bobsPublishing = new PublisherModel
                 {
-                    Name = "Math 101",
-                    Id = MathCourseId,
-                    Description = "This is a math class",
+                    Id = BobsPublishingId,
+                    Name = "Bob's publishing",
+                    Description = "This is bobs publishing company.",
                 };
 
-            var englishCourse = new CourseModel
+            var randomHouse = new PublisherModel
                 {
-                    Id = EnglishCourseId,
-                    Name = "English 101",
-                    Description = "This is an english course.",
+                    Id = RandomHouseId,
+                    Name = "Random House",
+                    Description = "This is a Canadian book publisher.",
                 };
 
-            DbProvider.Create(FixtureBase.UpdateBaseFields(englishCourse));
-            DbProvider.Create(FixtureBase.UpdateBaseFields(mathCourse));
+            DbProvider.Create(FixtureBase.UpdateBaseFields(randomHouse));
+            DbProvider.Create(FixtureBase.UpdateBaseFields(bobsPublishing));
 
-            // Add the users (depends on roles)
-            var jill = new AuthorModel
+            var theHobbit = new BookModel
+            {
+                Id = TheHobbitId,
+                ISBN = 4444,
+                Publisher = randomHouse,
+                Name = "The Hobbit"
+            };
+
+            var screwTapeLetters = new BookModel
+            {
+                Id = TheScrewTapeLettersId,
+                ISBN = 1234,
+                Publisher = randomHouse,
+                Name = "The Screwtape Letters"
+            };
+
+            var theLionWitchWardrobe = new BookModel
+            {
+                Id = TheLionWitchWardrobeId,
+                ISBN = 1234,
+                Publisher = randomHouse,
+                Name = "The Lion the Witch and the Wardrobe"
+            };
+
+            DbProvider.Create(FixtureBase.UpdateBaseFields(theHobbit));
+            DbProvider.Create(FixtureBase.UpdateBaseFields(screwTapeLetters));
+            DbProvider.Create(FixtureBase.UpdateBaseFields(theLionWitchWardrobe));
+
+            var jrTolkien = new AuthorModel
                 {
-                    Id = AuthorJillId,
-                    FirstName = "Jill",
-                    LastName = "",
-                    Email = JillEmail,
-                    Courses = new List<CourseModel> {englishCourse},
+                    Id = AuthorJRTolkienId,
+                    FirstName = "JR",
+                    LastName = "Tolkien",
+                    Email = JRTolkien,
                 };
 
-            var bob = new AuthorModel
+            jrTolkien.AddBooks(theHobbit);
+            
+            var csLewis = new AuthorModel
                 {
-                    Id = AuthorBobId,
-                    FirstName = "Bob",
-                    LastName = "",
-                    Email = BobEmail,
-                    Courses = new List<CourseModel> {mathCourse},
+                    Id = AuthorCSLewisId,
+                    FirstName = "CS",
+                    LastName = "Lewis",
+                    Email = CSLewisEmail,
                 };
-            DbProvider.Create(FixtureBase.UpdateBaseFields(jill));
-            DbProvider.Create(FixtureBase.UpdateBaseFields(bob));
+            csLewis.AddBooks(screwTapeLetters, theLionWitchWardrobe);
+            
+            DbProvider.Create(FixtureBase.UpdateBaseFields(jrTolkien));
+            DbProvider.Create(FixtureBase.UpdateBaseFields(csLewis));
         }
     }
 }

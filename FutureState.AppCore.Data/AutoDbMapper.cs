@@ -63,31 +63,44 @@ namespace FutureState.AppCore.Data
                 dictionary.Add(property.Name, value);
             });
 
+            AddManyToOneRecords(model, dictionary);
+
+            return dictionary;
+        }
+
+        private void AddManyToOneRecords(TMapTo model, Dictionary<string, object> dictionary)
+        {
             _manyToOneProperties.ForEach(propertyInfo =>
             {
-                var manyToOneObject = propertyInfo.GetValue(model);
                 var dbColumnName = propertyInfo.Name + "Id";
+                var manyToOneObject = propertyInfo.GetValue(model);
+                if (manyToOneObject == null)
+                {
+                    dictionary.Add(dbColumnName, null);
+                    return;
+                }
+
                 var manyToOneObjectType = manyToOneObject.GetType();
                 var idPropertyInfo = manyToOneObjectType.GetRuntimeProperty("Id");
                 var idValue = idPropertyInfo.GetValue(manyToOneObject, null);
 
-                if (idPropertyInfo.PropertyType == typeof(Guid))
+                if (idPropertyInfo.PropertyType == typeof (Guid))
                 {
-                    if ((Guid)idValue == Guid.Empty)
+                    if ((Guid) idValue == Guid.Empty)
                     {
                         idValue = null;
                     }
                 }
-                else if (idPropertyInfo.PropertyType == typeof(int))
+                else if (idPropertyInfo.PropertyType == typeof (int))
                 {
-                    if ((int)idValue == 0)
+                    if ((int) idValue == 0)
                     {
                         idValue = null;
                     }
                 }
-                else if (idPropertyInfo.PropertyType == typeof(long))
+                else if (idPropertyInfo.PropertyType == typeof (long))
                 {
-                    if ((long)idValue == 0)
+                    if ((long) idValue == 0)
                     {
                         idValue = null;
                     }
@@ -95,8 +108,6 @@ namespace FutureState.AppCore.Data
 
                 dictionary.Add(dbColumnName, idValue);
             });
-
-            return dictionary;
         }
 
         public IList<TMapTo> BuildListFrom(IDbReader reader)

@@ -1,14 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
 using FutureState.AppCore.Data.Attributes;
 
 namespace FutureState.AppCore.Data.Tests.Helpers.Models
 {
     public class AuthorModel : ModelBase
     {
+        private List<BookModel> _books;
+
         public AuthorModel()
         {
-            Courses = new List<CourseModel>();
-            Books = new List<BookModel>();
+            _books = new List<BookModel>();
         }
 
         public string FirstName { get; set; }
@@ -16,9 +18,20 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Models
         public string Email { get; set; }
 
         [ManyToMany]
-        public IList<CourseModel> Courses { get; set; }
+        public IEnumerable<BookModel> Books
+        {
+            get { return _books; }
+            private set { _books = (List<BookModel>) value; }
+        }
 
-        [OneToMany]
-        public IList<BookModel> Books { get; set; }
+        public void AddBooks(params BookModel[] books)
+        {
+            _books.AddRange(books);
+        }
+
+        public void RemoveBooks(params BookModel[] books)
+        {
+            _books.RemoveAll(books.Contains);
+        }
     }
 }

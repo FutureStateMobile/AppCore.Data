@@ -144,10 +144,10 @@ namespace FutureState.AppCore.Data
 
             foreach (var collection in manyToManyFields)
             {
-                if (!IsGenericList(collection.PropertyType))
-                {
-                    throw new ArgumentException("The property must be an ICollection<>");
-                }
+//                if (!IsGenericList(collection))
+//                {
+//                    throw new ArgumentException("The property must be an ICollection<>");
+//                }
 
                 var joinTableName = GetJoinTableName(tableName, collection.Name);
                 var deleteWhereClause = string.Format(dbProvider.Dialect.Where, string.Format("{0} = @{0}", leftKey));
@@ -204,5 +204,20 @@ namespace FutureState.AppCore.Data
                 .Where(i => i.IsConstructedGenericType)
                 .Any(i => i.GetGenericTypeDefinition() == typeof (ICollection<>));
         }
+
+//        static Type CheckForEnumerable(PropertyInfo propertyInfo)
+//        {
+//            var x = propertyInfo.GetType().GetTypeInfo().GenericTypeArguments[0];
+//
+//
+//            foreach (Type intType in type.GenericTypeArguments)
+//            {
+//                if (intType.IsConstructedGenericType && intType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+//                {
+//                    return intType.GenericTypeArguments()[0];
+//                }
+//            }
+//            return null;
+//        }
     }
 }

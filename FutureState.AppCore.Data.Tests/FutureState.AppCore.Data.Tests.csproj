@@ -44,6 +44,12 @@
         <HintPath>\x64\sqlite3.dll</HintPath>
     </Reference>
     -->
+    <Reference Include="FluentAssertions">
+      <HintPath>..\packages\FluentAssertions.3.2.1\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core">
+      <HintPath>..\packages\FluentAssertions.3.2.1\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
     <Reference Include="mono.data.sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rd party\Mono.Data.SQLite.1.0.61.0\mono.data.sqlite.dll</HintPath>
@@ -96,20 +102,22 @@
     <Compile Include="Helpers\Models\FakeModel.cs" />
     <Compile Include="Helpers\Models\GooseModel.cs" />
     <Compile Include="Helpers\Models\ModelBase.cs" />
-    <Compile Include="Helpers\Models\CourseModel.cs" />
+    <Compile Include="Helpers\Models\PublisherModel.cs" />
     <Compile Include="Helpers\Models\AuthorModel.cs" />
     <Compile Include="Helpers\Models\BookModel.cs" />
+    <Compile Include="Integration\InflectionTests.cs" />
+    <Compile Include="Integration\ManyToManyTests.cs" />
+    <Compile Include="Integration\SimpleCrudTests.cs" />
     <Compile Include="Unit\InflectionTests.cs" />
     <Compile Include="Unit\JoinExpressionVisitorTests.cs" />
     <Compile Include="Unit\DbQueryTestBase.cs" />
     <Compile Include="Unit\DbQueryTests.cs" />
-    <Compile Include="Integration\DbProviderTestBase.cs" />
-    <Compile Include="Integration\DbProviderTestSetup.cs" />
+    <Compile Include="Integration\IntegrationTestBase.cs" />
     <Compile Include="Helpers\Fixtures\FixtureBase.cs" />
-    <Compile Include="Helpers\Fixtures\CourseFixture.cs" />
+    <Compile Include="Helpers\Fixtures\PublisherFixture.cs" />
     <Compile Include="Helpers\Fixtures\AuthorFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Integration\DbProviderTests.cs" />
+    <Compile Include="Integration\IntegrationTests.cs" />
     <Compile Include="Helpers\Fixtures\BookFixture.cs" />
     <Compile Include="Helpers\SeedData.cs" />
     <Compile Include="Unit\Extensions\PropertyEqualityComparerTests.cs" />

@@ -26,7 +26,6 @@ namespace FutureState.AppCore.Data
             // Check if DatabaseVersion table is setup, if not, create it.
             if (!_dbProvider.CheckIfTableExists("DatabaseVersions"))
             {
-                var migration = new DbMigration(_dbProvider.Dialect);
                 var database = new Database(_dbProvider.DatabaseName, _dbProvider.Dialect);
 
                 var dbVersionTable = database.AddTable("DatabaseVersions");
@@ -36,14 +35,13 @@ namespace FutureState.AppCore.Data
                 dbVersionTable.AddColumn("IsMigrationComplete", typeof (bool)).NotNullable(true);
                 dbVersionTable.AddColumn("IsAfterMigrationComplete", typeof (bool)).NotNullable(true);
 
-                _dbProvider.ExecuteNonQuery(migration.GenerateDDL(database));
+                _dbProvider.ExecuteNonQuery(database.ToString());
             }
             else
             {
                 // Check if the new fields have bee added to the DatabaseVersion table yet, if not add them.
                 if ( !_dbProvider.CheckIfTableColumnExists( "DatabaseVersions", "IsBeforeMigrationComplete" ) )
                 {
-                    var migration = new DbMigration( _dbProvider.Dialect );
                     var database = new Database( _dbProvider.DatabaseName, _dbProvider.Dialect );
 
                     var dbVersionTable = database.UpdateTable( "DatabaseVersions" );
@@ -51,7 +49,7 @@ namespace FutureState.AppCore.Data
                     dbVersionTable.AddColumn( "IsMigrationComplete", typeof( bool ) ).NotNullable( true );
                     dbVersionTable.AddColumn( "IsAfterMigrationComplete", typeof( bool ) ).NotNullable( true );
 
-                    _dbProvider.ExecuteNonQuery( migration.GenerateDDL( database ) );
+                    _dbProvider.ExecuteNonQuery( database.ToString() );
                 }
             }
         }

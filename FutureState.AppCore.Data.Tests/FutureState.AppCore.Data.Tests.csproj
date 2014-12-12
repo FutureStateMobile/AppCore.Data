@@ -99,7 +99,6 @@
     <Compile Include="Helpers\Fixtures\GooseFixture.cs" />
     <Compile Include="Helpers\Migrations\Migration002.cs" />
     <Compile Include="Helpers\Migrations\Migration001.cs" />
-    <Compile Include="Helpers\Models\FakeModel.cs" />
     <Compile Include="Helpers\Models\GooseModel.cs" />
     <Compile Include="Helpers\Models\ModelBase.cs" />
     <Compile Include="Helpers\Models\PublisherModel.cs" />
@@ -107,6 +106,7 @@
     <Compile Include="Helpers\Models\BookModel.cs" />
     <Compile Include="Integration\InflectionTests.cs" />
     <Compile Include="Integration\ManyToManyTests.cs" />
+    <Compile Include="Integration\ManyToOneTests.cs" />
     <Compile Include="Integration\SimpleCrudTests.cs" />
     <Compile Include="Unit\InflectionTests.cs" />
     <Compile Include="Unit\JoinExpressionVisitorTests.cs" />
@@ -119,7 +119,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Integration\IntegrationTests.cs" />
     <Compile Include="Helpers\Fixtures\BookFixture.cs" />
-    <Compile Include="Helpers\SeedData.cs" />
     <Compile Include="Unit\Extensions\PropertyEqualityComparerTests.cs" />
     <Compile Include="Unit\AutoMapperTests.cs" />
     <Compile Include="Unit\DbMigrationTests.cs" />

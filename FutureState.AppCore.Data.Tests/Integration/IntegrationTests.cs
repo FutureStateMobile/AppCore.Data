@@ -326,7 +326,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 //
 //            // Execute
 //            var actualStudents = db.Query<AuthorModel>()
-//                .ManyJoin<PublisherModel>()
+//                .ManyToManyJoin<PublisherModel>()
 //                .Where( ( s, c ) => c.Name == expectedCourse.Name )
 //                .OrderBy((s, c) => s.FirstName, OrderDirection.Descending)
 //                .Select()
@@ -351,7 +351,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 ////
 ////            // Execute
 ////            var actualStudents = db.Query<AuthorModel>()
-////                .InnerJoin<BookModel>(JoinType.Left, (u, b) => u.Id == b.StudentId)
+////                .InnerJoin<BookModel>(JoinType.OneToMany, (u, b) => u.Id == b.StudentId)
 ////                .Where((u, b) => b.Name == "Book1Name")
 ////                .OrderBy((u, b) => u.FirstName, OrderDirection.Descending)
 ////                .Select()
@@ -410,7 +410,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 //
 //            // Execute Query
 //            var actualUsers = db.Query<AuthorModel>()
-//                .ManyJoin<PublisherModel>()
+//                .ManyToManyJoin<PublisherModel>()
 //                .Where( ( s, b ) => b.Id == mathCourseId )
 //                .Select()
 //                .ToList();
@@ -432,7 +432,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 //            db.Update( studentToUpdate );
 //
 //            var studentCourses = db.Query<PublisherModel>()
-//                .ManyJoin<AuthorModel>()
+//                .ManyToManyJoin<AuthorModel>()
 //                .Where( ( c, s ) => c.IsDeleted == false && s.Id == studentToUpdate.Id )
 //                .Select()
 //                .ToList();
@@ -455,7 +455,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 //            db.Update( studentToDelete );
 //
 //            var studentCourses = db.Query<PublisherModel>()
-//                .ManyJoin<AuthorModel>()
+//                .ManyToManyJoin<AuthorModel>()
 //                .Where( ( c, s ) => c.IsDeleted == false && s.Id == studentToDelete.Id )
 //                .Select()
 //                .ToList();

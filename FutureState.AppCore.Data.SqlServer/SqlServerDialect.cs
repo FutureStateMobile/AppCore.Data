@@ -139,12 +139,12 @@
 
         public string InnerJoin
         {
-            get { return "INNER JOIN [{2}] ON [{0}].[{1}] = [{2}].[{3}]"; }
+            get { return "INNER JOIN [{0}] ON {1}"; }
         }
 
         public string LeftJoin
         {
-            get { return "LEFT OUTER JOIN [{2}] ON [{0}].[{1}] = [{2}].[{3}]"; }
+            get { return "LEFT OUTER JOIN [{0}] ON {1}"; }
         }
 
         public string OldManyToManyJoin

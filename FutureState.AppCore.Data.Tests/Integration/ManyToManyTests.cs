@@ -38,7 +38,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualAuthor.Should().NotBeNull();
 
             actualAuthor.AddBooks(db.Query<BookModel>()
-                                    .ManyJoin<AuthorModel>()
+                                    .ManyToManyJoin<AuthorModel>()
                                     .Where((b, a) => a.Id == actualAuthor.Id)
                                     .Select().ToArray());
 
@@ -70,13 +70,13 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert
             var actualAuthor = db.Query<AuthorModel>()
-                             .Where(a => a.Email == expectedAuthor.Email)
-                             .Select().SingleOrDefault();
+                                 .Where(a => a.Email == expectedAuthor.Email)
+                                 .Select().SingleOrDefault();
 
             actualAuthor.Should().NotBeNull();
 
             actualAuthor.AddBooks(db.Query<BookModel>()
-                                    .ManyJoin<AuthorModel>()
+                                    .ManyToManyJoin<AuthorModel>()
                                     .Where((b, a) => a.Id == actualAuthor.Id)
                                     .Select().ToArray());
 
@@ -108,13 +108,13 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert
             var actualAuthor = db.Query<AuthorModel>()
-                             .Where(a => a.Email == expectedAuthor.Email)
-                             .Select().SingleOrDefault();
+                                 .Where(a => a.Email == expectedAuthor.Email)
+                                 .Select().SingleOrDefault();
 
             actualAuthor.Should().NotBeNull();
 
             actualAuthor.AddBooks(db.Query<BookModel>()
-                                    .ManyJoin<AuthorModel>()
+                                    .ManyToManyJoin<AuthorModel>()
                                     .Where((b, a) => a.Id == actualAuthor.Id)
                                     .Select().ToArray());
 

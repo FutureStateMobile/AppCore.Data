@@ -120,7 +120,6 @@ namespace FutureState.AppCore.Data.Tests.Unit
         [Test, TestCaseSource("Repositories")]
         public void ShouldBuildQueryWithOrderByAscClause(IDbProvider dbProvider)
         {
-            // TODO: Joe to implement
             // setup
             const string expectedQuery =
                 @"SELECT [Authors].* FROM [Authors] WHERE ( [Authors].[FirstName] LIKE @FirstName1 ) ORDER BY [Authors].[Email] ASC";
@@ -138,7 +137,6 @@ namespace FutureState.AppCore.Data.Tests.Unit
         [Test, TestCaseSource("Repositories")]
         public void ShouldBuildQueryWithOrderByDescClause(IDbProvider dbProvider)
         {
-            // TODO: Joe to implement
             // setup
             const string expectedQuery =
                 @"SELECT [Authors].* FROM [Authors] WHERE ( [Authors].[FirstName] LIKE @FirstName1 ) ORDER BY [Authors].[Email] DESC";
@@ -147,6 +145,25 @@ namespace FutureState.AppCore.Data.Tests.Unit
             var actualQuery = dbProvider.Query<AuthorModel>()
                                         .Where(u => u.FirstName.Contains("Bo"))
                                         .OrderBy(u => u.Email, OrderDirection.Descending)
+                                        .ToString();
+
+            // assert
+            Assert.AreEqual(expectedQuery, actualQuery);
+        }
+
+
+        [Test, TestCaseSource("Repositories")]
+        public void ShouldBuildQueryWithManyToOneRelationship(IDbProvider dbProvider)
+        {
+            // setup
+            var id = Guid.NewGuid();
+            const string expectedQuery =
+                @"SELECT [Books].* FROM [Books] WHERE ( [Books].[PublisherId] = @PublisherId1 ) ORDER BY [Books].[Name] DESC";
+
+            // execute
+            var actualQuery = dbProvider.Query<BookModel>()
+                                        .Where(b => b.Publisher.Id == id)
+                                        .OrderBy(b => b.Name, OrderDirection.Descending)
                                         .ToString();
 
             // assert

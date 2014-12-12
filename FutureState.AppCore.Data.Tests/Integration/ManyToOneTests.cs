@@ -62,5 +62,31 @@ namespace FutureState.AppCore.Data.Tests.Integration
             publishers.Should().HaveCount(1);
             publishers[0].ShouldBeEquivalentTo(publisher);
         }
+
+        [Test, TestCaseSource("DbProviders")]
+        public void Should_Query_ManyToOne_Records_With_Needing_To_Build_Join(IDbProvider db)
+        {
+            Trace.WriteLine(TraceObjectGraphInfo(db));
+
+            // Setup
+            var publisher = PublisherFixture.GetThirdPublisher();
+            db.Create(publisher);
+
+            var thirdBook = BookFixture.GetThirdBook(publisher);
+            var fourthBook = BookFixture.GetFourthBook(publisher);
+
+            // Execute
+            db.Create(thirdBook);
+            db.Create(fourthBook);
+
+            // Assert
+            var actualBooks = db.Query<BookModel>()
+                               .Where(b => b.Publisher.Id == publisher.Id)
+                               .Select().ToList();
+
+            actualBooks.Should().HaveCount(2);
+            actualBooks[0].Publisher.Id.Should().Be(publisher.Id);
+            actualBooks[1].Publisher.Id.Should().Be(publisher.Id);
+        }
     }
 }

@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using FutureState.AppCore.Data.Exceptions;
 using FutureState.AppCore.Data.Extensions;
-using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
@@ -137,6 +136,10 @@ namespace FutureState.AppCore.Data
         private void VisitBinary(BinaryExpression expression)
         {
             // AddExpressionParameter(expression);
+//            if (expression.Right is ConstantExpression || expression.Right is MemberExpression)
+//            {
+//                throw new ExpressionNotSupportedException(expression);
+//            }
 
             Visit(expression.Left);
             GetBinaryOperator(expression);
@@ -146,7 +149,7 @@ namespace FutureState.AppCore.Data
                 Visit(expression.Right, expression.Left);
                 return;
             }
-
+            
             Visit(expression.Right);
         }
 
@@ -213,8 +216,8 @@ namespace FutureState.AppCore.Data
             else
                 expressionValue = constantExpression.Value;
 
-            var tableName = memberExpression.Expression.Type.Name.BuildTableName();
-            var fieldName = memberExpression.Member.Name;
+            var tableName = BuildTableName(memberExpression);
+            var fieldName = BuildColumnName(memberExpression);
             var value = string.Format(parameterFormat, expressionValue);
             var number = AddParameter("@" + fieldName, value, 1);
             var parameterName = fieldName + number;
@@ -257,12 +260,13 @@ namespace FutureState.AppCore.Data
             // To preserve Case between key/value pairs, we always want to use the LEFT side of the expression.
             // therefore, if left is null, then expression is actually left. 
             // Doing this ensures that our `key` matches between parameter names and database fields
-            var fieldName = left != null ? left.Member.Name : expression.Member.Name;
-            var tableName = left != null ? left.Expression.Type.Name.BuildTableName() : expression.Expression.Type.Name.BuildTableName();
+            var fieldName = left != null ? BuildColumnName(left) : BuildColumnName(expression);
+            var tableName = left != null ? BuildTableName(left) : BuildTableName(expression);
 
             // If the NodeType is a `Parameter`, we want to add the key as a DB Field name to our string collection
             // Otherwise, we want to add the key as a DB Parameter to our string collection
-            if (expression.Expression.NodeType.ToString() == "Parameter")
+            //if (expression.Expression.NodeType.ToString() == "Parameter" || left == null)
+            if (left == null)
             {
                 _strings.Append(string.Format("[{0}].[{1}]", tableName, fieldName));
                 _strings.Append(" ");
@@ -315,6 +319,26 @@ namespace FutureState.AppCore.Data
             }
 
             throw new InvalidMemberException();
+        }
+
+        private string BuildTableName(Expression expression)
+        {
+            var memberExpression = expression as MemberExpression;
+            if (memberExpression != null)
+            {
+                return BuildTableName(memberExpression.Expression);
+            }
+            return expression.Type.Name.BuildTableName();
+        }
+
+        private string BuildColumnName(Expression expression)
+        {
+            var memberExpression = expression as MemberExpression;
+            if (memberExpression != null)
+            {
+                return BuildColumnName(memberExpression.Expression) + memberExpression.Member.Name;
+            }
+            return "";
         }
 
         private void GetBinaryOperator(BinaryExpression expression)

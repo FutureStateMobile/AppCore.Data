@@ -51,11 +51,6 @@ namespace FutureState.AppCore.Data
             return new DbQuery<TModel, TJoinTo>(_dbProvider, JoinType.Left, _dbMapper);
         }
 
-        public IDbQuery<TModel, TJoinTo> Join<TJoinTo>(Expression<Func<TModel, TJoinTo, object>> joinExpression) where TJoinTo : class, new()
-        {
-            return new DbQuery<TModel, TJoinTo>(_dbProvider, JoinType.Inner, _dbMapper, joinExpression);
-        }
-
         public IDbQuery<TModel, TJoinTo> ManyToManyJoin<TJoinTo>() where TJoinTo : class, new()
         {
             return new DbQuery<TModel, TJoinTo>(_dbProvider, JoinType.ManyToMany, _dbMapper);
@@ -150,7 +145,8 @@ namespace FutureState.AppCore.Data
     {
         private readonly IDbMapper<TModel> _dbMapper;
         private readonly IDbProvider _dbProvider;
-        private readonly string _joinExpression;
+        private readonly JoinType _joinType;
+        private string _joinExpression;
         private readonly string _joinTableName;
         private readonly string _tableName;
         private string _orderByClause;
@@ -165,6 +161,7 @@ namespace FutureState.AppCore.Data
         public DbQuery(IDbProvider dbProvider, JoinType joinType, IDbMapper<TModel> dbMapper)
         {
             _dbProvider = dbProvider;
+            _joinType = joinType;
             _dbMapper = dbMapper;
             _tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
             _joinTableName = typeof (TJoinTo).GetTypeInfo().Name.BuildTableName();
@@ -174,15 +171,16 @@ namespace FutureState.AppCore.Data
             _joinExpression = BuildJoinExpression(joinType, joinExpression);
         }
 
-        public DbQuery(IDbProvider dbProvider, JoinType joinType, IDbMapper<TModel> dbMapper, Expression<Func<TModel, TJoinTo, object>> joinExpression)
+        public IDbQuery<TModel, TJoinTo> On(Expression<Func<TModel, TJoinTo, object>> joinExpression)
         {
-            _dbProvider = dbProvider;
-            _dbMapper = dbMapper;
-            _tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
-            _joinTableName = typeof(TJoinTo).GetTypeInfo().Name.BuildTableName();
-            _parameters = new Dictionary<string, object>();
+            if (_joinType == JoinType.ManyToMany)
+            {
+                throw new NotSupportedException("The join type you selected is not compatible with the On statement.");
+            }
+
             _joinExpressionVisitor = new JoinExpressionVisitor().Visit(joinExpression);
-            _joinExpression = BuildJoinExpression(joinType, _joinExpressionVisitor.JoinExpression);
+            _joinExpression = BuildJoinExpression(_joinType, _joinExpressionVisitor.JoinExpression);
+            return this;
         }
 
         public IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, object>> expression)

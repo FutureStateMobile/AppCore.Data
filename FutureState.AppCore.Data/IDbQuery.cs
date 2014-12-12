@@ -7,7 +7,6 @@ namespace FutureState.AppCore.Data
     public interface IDbQuery<TModel> where TModel : class, new()
     {
         IDbQuery<TModel, TJoinTo> Join<TJoinTo>() where TJoinTo : class, new();
-        IDbQuery<TModel, TJoinTo> Join<TJoinTo>(Expression<Func<TModel, TJoinTo, object>> joinExpression) where TJoinTo : class, new();
         IDbQuery<TModel, TJoinTo> ManyToManyJoin<TJoinTo>() where TJoinTo : class, new();
         IDbQuery<TModel> Where(Expression<Func<TModel, object>> whereExpression);
         IDbQuery<TModel> OrderBy(Expression<Func<TModel, object>> orderByExpression, OrderDirection direction);
@@ -26,6 +25,7 @@ namespace FutureState.AppCore.Data
 
     public interface IDbQuery<TModel, TJoinTo> where TModel : class where TJoinTo : class, new()
     {
+        IDbQuery<TModel, TJoinTo> On(Expression<Func<TModel, TJoinTo, object>> joinExpression);
         IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, object>> whereExpression);
         IDbQuery<TModel, TJoinTo> OrderBy(Expression<Func<TModel, TJoinTo, object>> orderByExpression, OrderDirection direction);
         IDbQuery<TModel, TJoinTo> SkipTake(int skip, int take);

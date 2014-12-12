@@ -28,7 +28,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert
             var actualBooks = db.Query<BookModel>()
-                                .Join<PublisherModel>((b, p) => b.Publisher.Id == p.Id)
+                                .Join<PublisherModel>().On((b, p) => b.Publisher.Id == p.Id)
                                 .Where((b, p) => p.Id == publisher.Id)
                                 .Select().ToList();
             
@@ -36,7 +36,6 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualBooks[0].Publisher.Id.Should().Be(publisher.Id);
             actualBooks[1].Publisher.Id.Should().Be(publisher.Id);
         }
-
 
         [Test, TestCaseSource("DbProviders")]
         public void Should_Create_Records_With_OneToMany_Relationships(IDbProvider db)
@@ -56,7 +55,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Assert
             var publishers = db.Query<PublisherModel>()
-                               .Join<BookModel>((p, b) => b.Publisher.Id == p.Id)
+                               .Join<BookModel>().On((p, b) => b.Publisher.Id == p.Id)
                                .Where((p, b) => b.Name == fourthBook.Name)
                                .Select().ToList();
 

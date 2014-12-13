@@ -34,7 +34,7 @@ namespace FutureState.AppCore.Data
             where TModel : class, new()
         {
             var tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
-            var fieldNameList = dbMapper.GetFieldNames();
+            var fieldNameList = dbMapper.FieldNames;
             var commandParams = dbMapper.BuildDbParametersFrom(model);
 
             var parameters = "@" + string.Join(",@", fieldNameList);
@@ -96,7 +96,7 @@ namespace FutureState.AppCore.Data
             where TModel : class, new()
         {
             var tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
-            var fieldNameList = dbMapper.GetFieldNames();
+            var fieldNameList = dbMapper.FieldNames;
             var commandParams = dbMapper.BuildDbParametersFrom(model);
 
             var setFieldText = fieldNameList.Select(field => string.Format("[{0}] = @{0}", field)).ToList();

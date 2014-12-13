@@ -16,15 +16,15 @@ namespace FutureState.AppCore.Data.Tests.Unit
             // Setup
             var expectedDate = DateTime.UtcNow;
             var expectedUser = new AuthorModel
-                {
-                    Id = Guid.NewGuid(),
-                    FirstName = "firstname",
-                    LastName = "lastname",
-                    Email = "email@gmail.com",
-                    CreatedDate = expectedDate,
-                    UpdatedDate = expectedDate,
-                    IsDeleted = true
-                };
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "firstname",
+                LastName = "lastname",
+                Email = "email@gmail.com",
+                CreatedDate = expectedDate,
+                UpdatedDate = expectedDate,
+                IsDeleted = true
+            };
 
             var mapper = new AutoDbMapper<AuthorModel>();
 
@@ -36,10 +36,8 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual(expectedUser.FirstName, actual["FirstName"] as string);
             Assert.AreEqual(expectedUser.LastName, actual["LastName"] as string);
             Assert.AreEqual(expectedUser.Email, actual["Email"] as string);
-            Assert.AreEqual(expectedUser.CreatedDate.ToString(CultureInfo.InvariantCulture),
-                            expectedDate.ToString(CultureInfo.InvariantCulture));
-            Assert.AreEqual(expectedUser.UpdatedDate.ToString(CultureInfo.InvariantCulture),
-                            expectedDate.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(expectedUser.CreatedDate.ToString(CultureInfo.InvariantCulture), expectedDate.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(expectedUser.UpdatedDate.ToString(CultureInfo.InvariantCulture), expectedDate.ToString(CultureInfo.InvariantCulture));
             Assert.AreEqual(expectedUser.IsDeleted, (bool) actual["IsDeleted"]);
         }
 
@@ -52,17 +50,17 @@ namespace FutureState.AppCore.Data.Tests.Unit
             var dataReader = new Mock<IDbReader>();
             dataReader.SetupSequence(reader => reader.Read()).Returns(true).Returns(true).Returns(true).Returns(false);
             dataReader.SetupSequence(dr => dr["Id"])
-                      .Returns(new Guid("4C565CBE-4003-4624-B399-A3E40096A7D0"))
-                      .Returns(null)
-                      .Returns(new Guid("94664F60-1F40-4C98-8870-C662B3B96605"));
+                .Returns(new Guid("4C565CBE-4003-4624-B399-A3E40096A7D0"))
+                .Returns(null)
+                .Returns(new Guid("94664F60-1F40-4C98-8870-C662B3B96605"));
             dataReader.SetupSequence(dr => dr["FirstName"])
-                      .Returns("firstname1")
-                      .Returns("firstname2")
-                      .Returns("firstname2");
+                .Returns("firstname1")
+                .Returns("firstname2")
+                .Returns("firstname2");
             dataReader.SetupSequence(dr => dr["LastName"])
-                      .Returns("lastname1")
-                      .Returns("lastname2")
-                      .Returns("lastname3");
+                .Returns("lastname1")
+                .Returns("lastname2")
+                .Returns("lastname3");
             dataReader.SetupSequence(dr => dr["Email"]).Returns("email1").Returns("email2").Returns("email2");
             dataReader.SetupSequence(dr => dr["CreatedDate"]).Returns(expectedDate).Returns(null).Returns(expectedDate);
             dataReader.SetupSequence(dr => dr["UpdatedDate"]).Returns(expectedDate).Returns(expectedDate).Returns(null);
@@ -78,20 +76,16 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual(actualUser[0].FirstName, "firstname1");
             Assert.AreEqual(actualUser[0].LastName, "lastname1");
             Assert.AreEqual(actualUser[0].Email, "email1");
-            Assert.AreEqual(actualUser[0].CreatedDate.ToString(CultureInfo.InvariantCulture),
-                            expectedDate.ToString(CultureInfo.InvariantCulture));
-            Assert.AreEqual(actualUser[0].UpdatedDate.ToString(CultureInfo.InvariantCulture),
-                            expectedDate.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(actualUser[0].CreatedDate.ToString(CultureInfo.InvariantCulture), expectedDate.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(actualUser[0].UpdatedDate.ToString(CultureInfo.InvariantCulture), expectedDate.ToString(CultureInfo.InvariantCulture));
             Assert.AreEqual(actualUser[0].IsDeleted, true);
 
             Assert.AreEqual(actualUser[1].Id.ToString().ToUpper(), Guid.Empty.ToString());
             Assert.AreEqual(actualUser[1].FirstName, "firstname2");
             Assert.AreEqual(actualUser[1].LastName, "lastname2");
             Assert.AreEqual(actualUser[1].Email, "email2");
-            Assert.AreEqual(actualUser[1].CreatedDate.ToString(CultureInfo.InvariantCulture),
-                            DateTime.MinValue.ToString(CultureInfo.InvariantCulture));
-            Assert.AreEqual(actualUser[1].UpdatedDate.ToString(CultureInfo.InvariantCulture),
-                            expectedDate.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(actualUser[1].CreatedDate.ToString(CultureInfo.InvariantCulture), DateTime.MinValue.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(actualUser[1].UpdatedDate.ToString(CultureInfo.InvariantCulture), expectedDate.ToString(CultureInfo.InvariantCulture));
             Assert.AreEqual(actualUser[1].IsDeleted, false);
         }
 
@@ -100,18 +94,18 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var books = new List<BookModel>
-                {
-                    new BookModel {Name = "bob", Id = new Guid("645301E1-EC02-47BC-A99C-330A77FC6A4E")},
-                    new BookModel {Name = "Joe", Id = new Guid("02CEF568-4130-457C-A34C-268585AFB939")},
-                };
-            var autoMapper = new AutoModelMapper<PublisherModel>();
+            {
+                new BookModel {Name = "bob", Id = new Guid("645301E1-EC02-47BC-A99C-330A77FC6A4E")},
+                new BookModel {Name = "Joe", Id = new Guid("02CEF568-4130-457C-A34C-268585AFB939")},
+            };
+            var autoMapper = new AutoModelMapper<PublisherModel, BookModel>();
 
             // Execute
-            var courses = autoMapper.BuildListFrom(books);
+            var publishers = autoMapper.BuildListFrom(books);
 
             // Assert
-            Assert.AreEqual(books[0].Name, courses[0].Name);
-            Assert.AreEqual(books[1].Name, courses[1].Name);
+            Assert.AreEqual(books[0].Name, publishers[0].Name);
+            Assert.AreEqual(books[1].Name, publishers[1].Name);
         }
 
         [Test]
@@ -140,10 +134,8 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual(actualUser.FirstName, "firstname1");
             Assert.AreEqual(actualUser.LastName, "lastname1");
             Assert.AreEqual(actualUser.Email, "email1");
-            Assert.AreEqual(actualUser.CreatedDate.ToString(CultureInfo.InvariantCulture),
-                            expectedDate.ToString(CultureInfo.InvariantCulture));
-            Assert.AreEqual(actualUser.UpdatedDate.ToString(CultureInfo.InvariantCulture),
-                            expectedDate.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(actualUser.CreatedDate.ToString(CultureInfo.InvariantCulture), expectedDate.ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual(actualUser.UpdatedDate.ToString(CultureInfo.InvariantCulture), expectedDate.ToString(CultureInfo.InvariantCulture));
             Assert.AreEqual(actualUser.IsDeleted, true);
         }
 
@@ -152,13 +144,13 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             var book = new BookModel {Name = "bob", Id = new Guid("645301E1-EC02-47BC-A99C-330A77FC6A4E")};
-            var autoMapper = new AutoModelMapper<PublisherModel>();
+            var autoMapper = new AutoModelMapper<PublisherModel, BookModel>();
 
             // Execute
-            var course = autoMapper.BuildFrom(book);
+            var publisher = autoMapper.BuildFrom(book);
 
             // Assert
-            Assert.AreEqual(book.Name, course.Name);
+            Assert.AreEqual(book.Name, publisher.Name);
         }
 
         [Test]
@@ -166,13 +158,13 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             BookModel book = null;
-            var autoMapper = new AutoModelMapper<PublisherModel>();
+            var autoMapper = new AutoModelMapper<PublisherModel, BookModel>();
 
             // Execute
-            var course = autoMapper.BuildFrom(book);
+            var publisher = autoMapper.BuildFrom(book);
 
             // Assert
-            Assert.IsNull(course);
+            Assert.IsNull(publisher);
         }
     }
 }

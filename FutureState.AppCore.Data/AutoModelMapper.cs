@@ -5,42 +5,45 @@ using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data
 {
-    public class AutoModelMapper<TMapTo> : IModelMapper<TMapTo> where TMapTo : class, new()
+    public class AutoModelMapper<TMapTo, TMapFrom> : IModelMapper<TMapTo, TMapFrom>
+        where TMapTo : class, new()
+        where TMapFrom : class, new()
     {
-        public AutoModelMapper()
+        private IList<PropertyInfo> _properties;
+        internal IList<PropertyInfo> Properties
         {
-            _properties = ( from property in typeof( TMapTo ).GetRuntimeProperties().OrderBy( p => p.Name ) select property ).ToList();
-//                let ignore = property.GetCustomAttributes( typeof( OneToManyAttribute ), true ).Any() ||
-//                             property.GetCustomAttributes( typeof( OneToOneAttribute ), true ).Any() ||
-//                             property.GetCustomAttributes( typeof( ManyToManyAttribute ), true ).Any()
-//                where !ignore
-//                select property ).ToList();
+            get
+            {
+                if (_properties == null)
+                {
+                    _properties = (from property in typeof(TMapTo).GetRuntimeProperties().OrderBy(p => p.Name) select property).ToList();                    
+                }
+                return _properties;
+            }
         }
 
-        private readonly IList<PropertyInfo> _properties;
-
-        public IList<TMapTo> BuildListFrom<TInput> ( IList<TInput> inputList ) where TInput : class
+        public IList<TMapTo> BuildListFrom(IList<TMapFrom> inputList)
         {
-            return inputList.Select( BuildFrom ).ToList();
+            return inputList.Select(BuildFrom).ToList();
         }
 
-        public TMapTo BuildFrom<TInput> ( TInput input ) where TInput : class
+        public TMapTo BuildFrom(TMapFrom input)
         {
-            if ( input.IsNull() )
+            if (input.IsNull())
             {
                 return null;
             }
 
             var model = new TMapTo();
 
-            _properties.ForEach( property =>
+            Properties.ForEach(property =>
             {
-                var inputProperty = typeof( TInput ).GetRuntimeProperty( property.Name );
-                if ( inputProperty != null )
+                var inputProperty = typeof (TMapFrom).GetRuntimeProperty(property.Name);
+                if (inputProperty != null)
                 {
-                    property.SetValue( model, inputProperty.GetValue( input, null ), null );
+                    property.SetValue(model, inputProperty.GetValue(input, null), null);
                 }
-            } );
+            });
 
             return model;
         }

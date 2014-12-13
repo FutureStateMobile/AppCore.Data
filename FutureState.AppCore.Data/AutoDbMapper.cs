@@ -4,53 +4,73 @@ using System.Linq;
 using System.Reflection;
 using FutureState.AppCore.Data.Attributes;
 using FutureState.AppCore.Data.Extensions;
-using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data
 {
-    public class AutoDbMapper<TMapTo> : IDbMapper<TMapTo> where TMapTo : class, new()
+    public class AutoDbMapper<TModel> : IDbMapper<TModel> where TModel : class, new()
     {
-        private readonly DateTime _minSqlDateTime = DateTime.Parse("1/1/1753 12:00:00 AM");
-        private readonly IList<PropertyInfo> _properties;
-        private readonly IList<PropertyInfo> _manyToOneProperties;
+        private IList<PropertyInfo> _properties;
+        private IList<PropertyInfo> _manyToOneProperties;
+        private List<string> _fieldNames;
 
-        public AutoDbMapper()
+        private IEnumerable<PropertyInfo> ManyToOneProperties
         {
-            _properties = (from property in typeof (TMapTo).GetRuntimeProperties().OrderBy(p => p.Name)
-                let ignore = property.GetCustomAttributes(typeof (OneToManyAttribute), true).Any() ||
-                             property.GetCustomAttributes(typeof (OneToOneAttribute), true).Any() ||
-                             property.GetCustomAttributes(typeof (ManyToOneAttribute), true).Any() ||
-                             property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any()
-                where !ignore
-                select property).ToList();
+            get
+            {
+                if (_manyToOneProperties == null)
+                {
+                    _manyToOneProperties = typeof(TModel)
+                        .GetRuntimeProperties()
+                        .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
+                        .ToList();
+                }
 
-            _manyToOneProperties = typeof(TMapTo)
-                .GetRuntimeProperties()
-                .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
-                .ToList();
+                return _manyToOneProperties;
+            }
         }
 
-        public IList<string> GetFieldNames()
+        private IEnumerable<PropertyInfo> Properties
         {
-            var fieldNames = _properties.Select(prop => prop.Name).ToList();
-            fieldNames.AddRange(_manyToOneProperties.Select(prop => prop.Name + "Id"));
-            return fieldNames;
+            get
+            {
+                if (_properties == null)
+                {
+                    _properties = (from property in typeof(TModel).GetRuntimeProperties().OrderBy(p => p.Name)
+                                   let ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
+                                                property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
+                                                property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any() ||
+                                                property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any()
+                                   where !ignore
+                                   select property).ToList();
+                }
+                return _properties;
+            }
         }
 
-        public IDictionary<string, object> BuildDbParametersFrom(TMapTo model)
+        public IList<string> FieldNames
+        {
+            get
+            {
+                if (_fieldNames == null)
+                {
+                    _fieldNames = Properties.Select(prop => prop.Name).ToList();
+                    _fieldNames.AddRange(ManyToOneProperties.Select(prop => prop.Name + "Id"));
+                }
+                return _fieldNames;
+            }
+        }
+
+        public IDictionary<string, object> BuildDbParametersFrom(TModel model)
         {
             var dictionary = new Dictionary<string, object>();
 
-            _properties.OrderBy(p => p.Name).ForEach(property =>
+            Properties.OrderBy(p => p.Name).ForEach(property =>
             {
-                object value = property.GetValue(model);
+                var value = property.GetValue(model);
 
                 if (property.PropertyType == typeof (DateTime))
                 {
-                    if ((DateTime) value < _minSqlDateTime)
-                    {
-                        value = DateTimeHelper.MinSqlValue;
-                    }
+                    value = ((DateTime) value).GetDbSafeDate();
                 }
                 else if (property.PropertyType == typeof (Guid))
                 {
@@ -68,9 +88,9 @@ namespace FutureState.AppCore.Data
             return dictionary;
         }
 
-        private void AddManyToOneRecords(TMapTo model, Dictionary<string, object> dictionary)
+        private void AddManyToOneRecords(TModel model, IDictionary<string, object> dictionary)
         {
-            _manyToOneProperties.ForEach(propertyInfo =>
+            ManyToOneProperties.ForEach(propertyInfo =>
             {
                 var dbColumnName = propertyInfo.Name + "Id";
                 var manyToOneObject = propertyInfo.GetValue(model);
@@ -110,10 +130,10 @@ namespace FutureState.AppCore.Data
             });
         }
 
-        public IList<TMapTo> BuildListFrom(IDbReader reader)
+        public IList<TModel> BuildListFrom(IDbReader reader)
         {
-            var list = new List<TMapTo>();
-            TMapTo model = BuildFrom(reader);
+            var list = new List<TModel>();
+            var model = BuildFrom(reader);
 
             while (model != null)
             {
@@ -124,16 +144,16 @@ namespace FutureState.AppCore.Data
             return list;
         }
 
-        public TMapTo BuildFrom(IDbReader reader)
+        public TModel BuildFrom(IDbReader reader)
         {
             if (!reader.Read())
             {
                 return null;
             }
 
-            var model = new TMapTo();
+            var model = new TModel();
 
-            _properties.ForEach(property =>
+            Properties.ForEach(property =>
             {
                 if (!reader.IsDbNull(property.Name))
                 {
@@ -141,7 +161,7 @@ namespace FutureState.AppCore.Data
                 }
             });
 
-            _manyToOneProperties.ForEach(property =>
+            ManyToOneProperties.ForEach(property =>
             {
                 var propertyName = property.Name + "Id";
 
@@ -150,7 +170,7 @@ namespace FutureState.AppCore.Data
                     var manyToOneObject = Activator.CreateInstance(property.PropertyType);
                     var idProperty = property.PropertyType.GetRuntimeProperty("Id");
                     idProperty.SetValue(manyToOneObject, reader[propertyName], null);
-                    
+
                     property.SetValue(model, manyToOneObject, null);
                 }
             });
@@ -158,10 +178,10 @@ namespace FutureState.AppCore.Data
             return model;
         }
 
-        public IEnumerable<TMapTo> BuildQueueFrom(IDbReader reader)
+        public IEnumerable<TModel> BuildQueueFrom(IDbReader reader)
         {
-            var queue = new Queue<TMapTo>();
-            TMapTo model = BuildFrom(reader);
+            var queue = new Queue<TModel>();
+            var model = BuildFrom(reader);
 
             while (model != null)
             {

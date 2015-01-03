@@ -37,6 +37,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Attributes\IgnoreAttribute.cs" />
     <Compile Include="Attributes\ManyToManyAttribute.cs" />
     <Compile Include="Attributes\ManyToOneAttribute.cs" />
     <Compile Include="Attributes\OneToManyAttribute.cs" />

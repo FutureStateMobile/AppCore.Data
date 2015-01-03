@@ -17,6 +17,12 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Models
         public string LastName { get; set; }
         public string Email { get; set; }
 
+        [Ignore]
+        public bool IsCoolName
+        {
+            get { return FirstName.Contains("e"); }
+        }
+
         [ManyToMany]
         public IEnumerable<BookModel> Books
         {

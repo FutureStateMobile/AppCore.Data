@@ -39,7 +39,8 @@ namespace FutureState.AppCore.Data
                                    let ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
                                                 property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
                                                 property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any()
+                                                property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any() ||
+                                                property.GetCustomAttributes(typeof(IgnoreAttribute), true).Any()
                                    where !ignore
                                    select property).ToList();
                 }

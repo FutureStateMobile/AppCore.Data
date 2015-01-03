@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
 using NUnit.Framework;
@@ -180,6 +181,31 @@ namespace FutureState.AppCore.Data.Tests.Unit
             // Execute
             var actualExpression =
                 TestExpression<AuthorModel>(u => u.Email.Equals(email) && u.FirstName == TestProperty.FirstName);
+            var actualParameters = actualExpression.Parameters;
+            var actualString = actualExpression.WhereExpression;
+
+            // Test
+            Assert.AreEqual(expectedString, actualString);
+            CollectionAssert.AreEquivalent(expectedParameters, actualParameters);
+        }
+
+        [Test]
+        public void Should_Build_Correct_Where_Clause_For_One_To_Many_Relationships()
+        {
+            // Setup
+            var testBook = new BookModel
+            {
+                Id = new Guid("91191CA1-74D7-4751-B6AA-11F060403FBA"),
+                ISBN = 1234
+            };
+
+            const string expectedString = "( [Books].[PublisherId] = @PublisherId1 )";
+            var expectedParameters = new Dictionary<string, object> { {"@PublisherId1", testBook.Id } };
+
+            // Execute
+            var actualExpression =
+                TestExpression<BookModel>(b => b.Publisher.Id == testBook.Id);
+            
             var actualParameters = actualExpression.Parameters;
             var actualString = actualExpression.WhereExpression;
 

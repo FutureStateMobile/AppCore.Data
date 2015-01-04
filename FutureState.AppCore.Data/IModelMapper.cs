@@ -6,7 +6,8 @@ namespace FutureState.AppCore.Data
         where TMapTo : class, new()
         where TMapFrom : class, new()
     {
-        IList<TMapTo> BuildListFrom( IList<TMapFrom> input );
-        TMapTo BuildFrom( TMapFrom input );
+        IList<TMapTo> BuildListFrom(IList<TMapFrom> input);
+        TMapTo BuildFrom(TMapFrom input);
+        TMapTo BuildFrom(TMapFrom input, TMapTo output);
     }
 }

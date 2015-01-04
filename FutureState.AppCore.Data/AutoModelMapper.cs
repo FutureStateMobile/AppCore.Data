@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FutureState.AppCore.Data.Attributes;
 using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data
@@ -16,7 +17,11 @@ namespace FutureState.AppCore.Data
             {
                 if (_properties == null)
                 {
-                    _properties = (from property in typeof(TMapTo).GetRuntimeProperties().OrderBy(p => p.Name) select property).ToList();                    
+                    _properties = (from property in typeof(TMapTo).GetRuntimeProperties().OrderBy(p => p.Name)
+                                   let ignore = property.GetCustomAttributes(typeof(IgnoreAttribute), true).Any()
+                                   where !ignore
+                                   where property.CanWrite
+                                   select property).ToList();
                 }
                 return _properties;
             }
@@ -25,6 +30,30 @@ namespace FutureState.AppCore.Data
         public IList<TMapTo> BuildListFrom(IList<TMapFrom> inputList)
         {
             return inputList.Select(BuildFrom).ToList();
+        }
+
+        public TMapTo BuildFrom(TMapFrom input, TMapTo output)
+        {
+            if (input.IsNull())
+            {
+                return null;
+            }
+
+            if (output.IsNull())
+            {
+                output = new TMapTo();
+            }
+
+            Properties.ForEach(property =>
+            {
+                var inputProperty = typeof (TMapFrom).GetRuntimeProperty(property.Name);
+                if (inputProperty != null)
+                {
+                    property.SetValue(output, inputProperty.GetValue(input, null), null);
+                }
+            });
+
+            return output;
         }
 
         public TMapTo BuildFrom(TMapFrom input)
@@ -36,16 +65,7 @@ namespace FutureState.AppCore.Data
 
             var model = new TMapTo();
 
-            Properties.ForEach(property =>
-            {
-                var inputProperty = typeof (TMapFrom).GetRuntimeProperty(property.Name);
-                if (inputProperty != null)
-                {
-                    property.SetValue(model, inputProperty.GetValue(input, null), null);
-                }
-            });
-
-            return model;
+            return BuildFrom(input, model);
         }
     }
 }

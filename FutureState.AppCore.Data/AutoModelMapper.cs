@@ -27,12 +27,12 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        public IList<TMapTo> BuildListFrom(IList<TMapFrom> inputList)
+        public virtual IList<TMapTo> BuildListFrom(IList<TMapFrom> inputList)
         {
             return inputList.Select(BuildFrom).ToList();
         }
 
-        public TMapTo BuildFrom(TMapFrom input, TMapTo output)
+        public virtual TMapTo BuildFrom(TMapFrom input, TMapTo output)
         {
             if (input.IsNull())
             {
@@ -56,7 +56,7 @@ namespace FutureState.AppCore.Data
             return output;
         }
 
-        public TMapTo BuildFrom(TMapFrom input)
+        public virtual TMapTo BuildFrom(TMapFrom input)
         {
             if (input.IsNull())
             {

@@ -48,7 +48,7 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        public IList<string> FieldNames
+        public virtual IList<string> FieldNames
         {
             get
             {
@@ -61,7 +61,7 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        public IDictionary<string, object> BuildDbParametersFrom(TModel model)
+        public virtual IDictionary<string, object> BuildDbParametersFrom(TModel model)
         {
             var dictionary = new Dictionary<string, object>();
 
@@ -131,7 +131,7 @@ namespace FutureState.AppCore.Data
             });
         }
 
-        public IList<TModel> BuildListFrom(IDbReader reader)
+        public virtual IList<TModel> BuildListFrom(IDbReader reader)
         {
             var list = new List<TModel>();
             var model = BuildFrom(reader);
@@ -145,7 +145,7 @@ namespace FutureState.AppCore.Data
             return list;
         }
 
-        public TModel BuildFrom(IDbReader reader)
+        public virtual TModel BuildFrom(IDbReader reader)
         {
             if (!reader.Read())
             {
@@ -179,7 +179,7 @@ namespace FutureState.AppCore.Data
             return model;
         }
 
-        public IEnumerable<TModel> BuildQueueFrom(IDbReader reader)
+        public virtual IEnumerable<TModel> BuildQueueFrom(IDbReader reader)
         {
             var queue = new Queue<TModel>();
             var model = BuildFrom(reader);

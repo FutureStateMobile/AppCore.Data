@@ -82,7 +82,7 @@ namespace FutureState.AppCore.Data
             return Select(_dbMapper.BuildListFrom);
         }
 
-        public IEnumerable<TResult> Select<TResult>(Func<IDbReader, IList<TResult>> mapperFunc)
+        public IEnumerable<TResult> Select<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc)
         {
             return _dbProvider.ExecuteReader(ToString(), _parameters, mapperFunc);
         }
@@ -227,7 +227,7 @@ namespace FutureState.AppCore.Data
             return Select(_dbMapper.BuildListFrom);
         }
 
-        public IEnumerable<TResult> Select<TResult>(Func<IDbReader, IList<TResult>> mapperFunc)
+        public IEnumerable<TResult> Select<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc)
         {
             return _dbProvider.ExecuteReader( ToString(), _parameters, mapperFunc );
         }

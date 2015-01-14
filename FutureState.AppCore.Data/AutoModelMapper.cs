@@ -27,9 +27,9 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        public virtual IList<TMapTo> BuildListFrom(IList<TMapFrom> inputList)
+        public virtual IEnumerable<TMapTo> BuildListFrom(IEnumerable<TMapFrom> inputList)
         {
-            return inputList.Select(BuildFrom).ToList();
+            return inputList.Select(BuildFrom);
         }
 
         public virtual TMapTo BuildFrom(TMapFrom input, TMapTo output)
@@ -52,7 +52,7 @@ namespace FutureState.AppCore.Data
                     property.SetValue(output, inputProperty.GetValue(input, null), null);
                 }
             });
-
+            
             return output;
         }
 

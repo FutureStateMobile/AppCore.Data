@@ -131,7 +131,7 @@ namespace FutureState.AppCore.Data
             });
         }
 
-        public virtual IList<TModel> BuildListFrom(IDbReader reader)
+        public virtual IEnumerable<TModel> BuildListFrom(IDbReader reader)
         {
             var list = new List<TModel>();
             var model = BuildFrom(reader);

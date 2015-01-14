@@ -13,7 +13,7 @@ namespace FutureState.AppCore.Data
         IDbQuery<TModel> SkipTake(int skip, int take);
         int Count();
         IEnumerable<TModel> Select();
-        IEnumerable<TResult> Select<TResult>(Func<IDbReader, IList<TResult>> mapperFunc);
+        IEnumerable<TResult> Select<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc);
         void Update(TModel model);
         void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters);
         void Delete();
@@ -31,7 +31,7 @@ namespace FutureState.AppCore.Data
         IDbQuery<TModel, TJoinTo> SkipTake(int skip, int take);
         int Count ();
         IEnumerable<TModel> Select();
-        IEnumerable<TResult> Select<TResult>(Func<IDbReader, IList<TResult>> mapperFunc);
+        IEnumerable<TResult> Select<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc);
         void Update(TModel model);
         void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters);
         void Delete ();

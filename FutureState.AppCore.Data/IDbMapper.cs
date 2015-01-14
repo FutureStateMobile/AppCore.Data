@@ -6,7 +6,7 @@ namespace FutureState.AppCore.Data
     {
         IList<string> FieldNames { get; }
         IDictionary<string, object> BuildDbParametersFrom(TMapTo model);
-        IList<TMapTo> BuildListFrom(IDbReader reader);
+        IEnumerable<TMapTo> BuildListFrom(IDbReader reader);
         TMapTo BuildFrom(IDbReader dbReader);
     }
 }

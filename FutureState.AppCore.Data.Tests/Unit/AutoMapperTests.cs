@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
 using Moq;
 using NUnit.Framework;
@@ -69,7 +70,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             var mapper = new AutoDbMapper<AuthorModel>();
 
             // Execute
-            var actualUser = mapper.BuildListFrom(dataReader.Object);
+            var actualUser = mapper.BuildListFrom(dataReader.Object).ToList();
 
             // Assert
             Assert.AreEqual(actualUser[0].Id.ToString().ToUpper(), "4C565CBE-4003-4624-B399-A3E40096A7D0");
@@ -101,7 +102,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             var autoMapper = new AutoModelMapper<PublisherModel, BookModel>();
 
             // Execute
-            var publishers = autoMapper.BuildListFrom(books);
+            var publishers = autoMapper.BuildListFrom(books).ToList();
 
             // Assert
             Assert.AreEqual(books[0].Name, publishers[0].Name);

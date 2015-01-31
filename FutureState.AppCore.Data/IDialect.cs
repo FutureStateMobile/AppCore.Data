@@ -7,6 +7,7 @@ namespace FutureState.AppCore.Data
         string UseDatabase { get; }
         string CreateTable { get; }
         string UpdateTable { get; }
+        string CreateIndex { get; }
         string CreateColumn { get; }
         string CheckDatabaseExists { get; }
         string CheckTableExists { get; }

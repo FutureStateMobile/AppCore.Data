@@ -17,6 +17,11 @@
             get { return "ALTER TABLE [{0}] ADD {1};"; }
         }
 
+        public string CreateIndex
+        {
+            get { return "CREATE INDEX [{0}] ON [{1}] ({2});"; }
+        }
+
         public string CreateColumn
         {
             get { return "[{0}] {1} {2}"; }

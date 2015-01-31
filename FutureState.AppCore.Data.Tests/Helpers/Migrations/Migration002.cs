@@ -16,7 +16,8 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
             var gooseTable = database.UpdateTable("Geese");
             gooseTable.AddColumn( "BirthDate", typeof( DateTime ) ).Nullable();
             gooseTable.AddColumn( "IsDead", typeof( bool ) ).NotNullable( false );
-
+            database.AddIndex("Geese", "BirthDate");
+            
             DbProvider.ExecuteNonQuery(database.ToString());
         }
     }

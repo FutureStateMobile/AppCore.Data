@@ -40,7 +40,8 @@ CREATE TABLE [Test] (
 ALTER TABLE [Test] ADD 
 [Name] nvarchar(100) NULL;
 ALTER TABLE [Test] ADD 
-[Foo] int DEFAULT(1);";
+[Foo] int DEFAULT(1);
+CREATE INDEX [IX_Test_Name_Foo] ON [Test] (Name,Foo);";
 
             var dialect = new SqlServerDialect();
             var database = new Database( "MyDatabase", dialect );
@@ -48,6 +49,7 @@ ALTER TABLE [Test] ADD
             var testTable = database.UpdateTable( "Test" );
             testTable.AddColumn( "Name", typeof( string ), 100 ).Nullable();
             testTable.AddColumn( "Foo", typeof( int ) ).Default(1);
+            database.AddIndex("Test", "Name", "Foo");
 
             // Execute
             var actualDDL = database.ToString();

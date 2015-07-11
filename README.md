@@ -28,6 +28,11 @@ In our attempt to create our idea of the ultimate sync engine between mobile dev
 | col 2 is      | centered        |   $12 |
 | zebra stripes | are neat        |    $1 |
 
+| Name | Description          |
+| ------------- | ----------- |
+| Help      | ~~Display the~~ help window.|
+| Close     | _Closes_ a window     |
+
 ###That sounds good, how do I use it?###
 
 We're working on building out the [Wiki](https://github.com/FutureStateMobile/AppCore.Data/wiki), so more information will be found there.

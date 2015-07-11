@@ -15,13 +15,17 @@ In our attempt to create our idea of the ultimate sync engine between mobile dev
 
 *note: we take pull requests if you'd like to support more ;)* 
 
-
 | Platform      | Sqlite |
 | :––––-----––– | –––––: |
 | Windows       | yes    |
 | Android       | yes    |
 | iOS           | yes    |
 | Windows Phone | coming |
+
+| head | head | head |
+|------|------|------|
+| - | -: | :-: |
+| content | 1 | 2 |
 
 ###That sounds good, how do I use it?###
 

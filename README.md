@@ -15,12 +15,12 @@ In our attempt to create our idea of the ultimate sync engine between mobile dev
 
 *note: we take pull requests if you'd like to support more ;)* 
 
-| Platform      | Sqlite | SQL Server (2012) | PostgreSQL | MySQL   |
-| ––––––––––––– | –––––: | –––––––––––-----: | –––––––––: |–––––--: |
-| Windows       | yes    |  yes              | coming     | coming  |
-| Android       | yes    |  no               | no         | no      |
-| iOS           | yes    |  no               | no         | no      |
-| Windows Phone | coming |  no               | no         | no      |
+| Platform      | Sqlite | SQL Server (2012) | PostgreSQL | MySQL  |
+| ------------- | -----: | ----------------: | ---------: | -----: |
+| Windows       | yes    |  yes              | coming     | coming |
+| Android       | yes    |  no               | no         | no     |
+| iOS           | yes    |  no               | no         | no     |
+| Windows Phone | coming |  no               | no         | no     |
 
 ###That sounds good, how do I use it?###
 

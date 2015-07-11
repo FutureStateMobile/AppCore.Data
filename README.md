@@ -15,23 +15,13 @@ In our attempt to create our idea of the ultimate sync engine between mobile dev
 
 *note: we take pull requests if you'd like to support more ;)* 
 
-| Platform | Sqlite | SQL Server (2012) | PostgreSQL | MySQL |
-| :–––––––––––– | –––––-:| –---:| –––––-:|–––––--:|
-| Windows       | yes    |  yes | coming | coming |
-| Android       | yes    |  no  | no     | no     |
-| iOS           | yes    |  no  | no     | no     |
-| Windows Phone | coming |  no  | no     | no     |
 
-| Left-Aligned  | Center Aligned  | Right Aligned |
-| :------------ |:---------------:| -----:|
-| col 3 is      | some wordy text | $1600 |
-| col 2 is      | centered        |   $12 |
-| zebra stripes | are neat        |    $1 |
-
-| Name | Description          |
-| ------------- | ----------- |
-| Help      | ~~Display the~~ help window.|
-| Close     | _Closes_ a window     |
+| Platform      | Sqlite | SQL Server (2012) | PostgreSQL | MySQL   |
+| :–––––––––––– | –––––-:| –––––––––––------:| –––––––––-:|–––––---:|
+| Windows       | yes    |  yes              | coming     | coming  |
+| Android       | yes    |  no               | no         | no      |
+| iOS           | yes    |  no               | no         | no      |
+| Windows Phone | coming |  no               | no         | no      |
 
 ###That sounds good, how do I use it?###
 

@@ -15,7 +15,7 @@ In our attempt to create our idea of the ultimate sync engine between mobile dev
 
 *note: we take pull requests if you'd like to support more ;)* 
 
-                |Sqlite    |SQL Server (2012)    |PostgreSQL    |MySQL   
+&nbsp;          |Sqlite    |SQL Server (2012)    |PostgreSQL    |MySQL   
 ––––––––––––––––|––––––––––|––––––––––––-------––|––––––––––––––|–––––---
  Windows        |   yes    |  yes                |  coming      |  coming 
  Android        |   yes    |  no                 |  no          |  no     

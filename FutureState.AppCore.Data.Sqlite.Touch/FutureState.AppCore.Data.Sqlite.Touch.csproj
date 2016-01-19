@@ -2,9 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D3491400-F646-4FA9-9B33-46F4FC3A9789}</ProjectGuid>
     <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
@@ -53,11 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FutureState.AppCore.Data.Sqlite\FutureState.AppCore.Data.Sqlite.csproj">
-      <Project>{a569ad5e-f470-499c-8e86-1a1f48c1d747}</Project>
+      <Project>{A569AD5E-F470-499C-8E86-1A1F48C1D747}</Project>
       <Name>FutureState.AppCore.Data.Sqlite</Name>
     </ProjectReference>
     <ProjectReference Include="..\FutureState.AppCore.Data\FutureState.AppCore.Data.csproj">
-      <Project>{762f6ec1-c180-44f8-a470-015e2c2ac37c}</Project>
+      <Project>{762F6EC1-C180-44F8-A470-015E2C2AC37C}</Project>
       <Name>FutureState.AppCore.Data</Name>
     </ProjectReference>
   </ItemGroup>

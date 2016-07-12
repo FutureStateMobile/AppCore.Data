@@ -20,7 +20,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 
         public Migration001():base(1)
         {
-            Migrate((database, dbProvider) =>
+            Migration[MigrationPoint.Migrate] = (database, dbProvider) =>
             {
                 var studentTable = database.AddTable("Authors");
                 studentTable.AddColumn("Id", typeof(Guid)).PrimaryKey().Clustered().NotNullable();
@@ -60,9 +60,9 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
                 var gooseTable = database.AddTable("Geese");
                 gooseTable.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
                 gooseTable.AddColumn("Name", typeof(string), 100).Nullable();
-            });
+            };
 
-            ServerAfterMigrate((database, dbProvider )=>
+            Migration[MigrationPoint.ServerAfterMigrate] = (database, dbProvider )=>
             {
                 // Create some base data
                 var bobsPublishing = new PublisherModel
@@ -131,7 +131,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 
                 dbProvider.Create(FixtureBase.UpdateBaseFields(jrTolkien));
                 dbProvider.Create(FixtureBase.UpdateBaseFields(csLewis));
-            });
+            };
         }
     }
 }

@@ -6,13 +6,13 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
     {
         public Migration002():base(2)
         {
-            Migrate((database, dbProvider) =>
+            Migration[MigrationPoint.Migrate] = (database, dbProvider) =>
             {
                 var gooseTable = database.UpdateTable("Geese");
-                gooseTable.AddColumn("BirthDate", typeof(DateTime)).Nullable();
-                gooseTable.AddColumn("IsDead", typeof(bool)).NotNullable(false);
+                gooseTable.AddColumn("BirthDate", typeof (DateTime)).Nullable();
+                gooseTable.AddColumn("IsDead", typeof (bool)).NotNullable(false);
                 database.AddIndex("Geese", "BirthDate");
-            });
+            };
         }
     }
 }

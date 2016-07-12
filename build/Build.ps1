@@ -1,6 +1,6 @@
 properties {
     $environment =  if ("$env".length -gt 0) { "$env" } else { 'local' }
-    $framework = '4.0'
+    $framework = '4.6'
     $rootDir = (Resolve-Path $pwd\..\)
     $solutionFile = (Resolve-Path $rootDir\*.sln)
     $testAssembly = "FutureState.AppCore.Data.Tests"
@@ -30,10 +30,11 @@ FormatTaskName {
 }
 
 task Clean -Description "Deletes the build artifacts directory and runs a 'clean' on the solution" { 
+    Framework  $framework
     if (Test-Path $buildArtifactsDir) {
         Remove-Item $buildArtifactsDir -Recurse -Force -ErrorAction SilentlyContinue
     }
-    Exec { msbuild $solutionFile /:Configuration=Release /t:clean } "Could not clean the project"
+    Exec { msbuild $solutionFile /p:Configuration=Release /t:clean } "Could not clean the project"
 }
 
 task SetVersion -Description "Sets the version number in 'AssemblyInfo.cs'" {

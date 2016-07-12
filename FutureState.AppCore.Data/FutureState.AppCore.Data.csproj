@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -97,10 +98,9 @@
     <Compile Include="Extensions\PropertyEqualityComparer.cs" />
     <Compile Include="AutoDbMapper.cs" />
     <Compile Include="IDbMapper.cs" />
-    <Compile Include="IMigration.cs" />
     <Compile Include="IMigrationRunner.cs" />
     <Compile Include="IServiceLocator.cs" />
-    <Compile Include="Migration.cs" />
+    <Compile Include="AppCoreMigration.cs" />
     <Compile Include="MigrationRunner.cs" />
     <Compile Include="SystemRole.cs" />
     <Compile Include="Models\DatabaseVersionModel.cs" />

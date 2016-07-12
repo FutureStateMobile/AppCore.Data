@@ -64,7 +64,7 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        public void RunAll(SystemRole systemRole, IList<IMigration> migrations)
+        public void RunAll(SystemRole systemRole, IList<AppCoreMigration> migrations)
         {
             _systemRole = systemRole;
 
@@ -86,7 +86,7 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        public void Run(SystemRole systemRole, IMigration migration)
+        public void Run(SystemRole systemRole, AppCoreMigration migration)
         {
             _systemRole = systemRole;
             
@@ -97,18 +97,25 @@ namespace FutureState.AppCore.Data
             RunAfterMigration( migration, databaseVersion );
         }
 
-        private void RunBeforeMigration(IMigration migration, DatabaseVersionModel databaseVersion)
+        private void RunBeforeMigration(AppCoreMigration migration, DatabaseVersionModel databaseVersion)
         {
             // Check Actual DatabaseVersion against the migration version
             // Don't run unless this Migrations BeforeMigration has not been run
             if ( databaseVersion.IsBeforeMigrationComplete == false )
             {
-                migration.DbProvider = _dbProvider;
-
                 // Before Migrate
-                migration.BeforeMigrate();
-                if ( _systemRole == SystemRole.Server ) migration.ServerBeforeMigrate();
-                if ( _systemRole == SystemRole.Client ) migration.ClientBeforeMigrate();
+                if (migration.OrderedMigrations.ContainsKey("BeforeMigrate"))
+                {
+                    migration.RunOrderedMigration("BeforeMigrate", _dbProvider);
+                }
+                if (_systemRole == SystemRole.Server && migration.OrderedMigrations.ContainsKey("ServerBeforeMigrate"))
+                {
+                    migration.RunOrderedMigration("ServerBeforeMigrate", _dbProvider);
+                }
+                if (_systemRole == SystemRole.Client && migration.OrderedMigrations.ContainsKey("ClientBeforeMigrate"))
+                {
+                    migration.RunOrderedMigration("ClientBeforeMigrate", _dbProvider);
+                }
 
                 // Update the database version to show the before migration has been run
                 databaseVersion.IsBeforeMigrationComplete = true;
@@ -116,18 +123,24 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        private void RunMigration(IMigration migration, DatabaseVersionModel databaseVersion)
+        private void RunMigration(AppCoreMigration migration, DatabaseVersionModel databaseVersion)
         {
             // Check Actual DatabaseVersion against the migration version
             // Don't run unless this Migrations Migration has not been run
             if ( databaseVersion.IsMigrationComplete == false )
             {
-                migration.DbProvider = _dbProvider;
-
-                // Migrate                
-                migration.Migrate();
-                if (_systemRole == SystemRole.Server) migration.ServerMigrate();
-                if (_systemRole == SystemRole.Client) migration.ClientMigrate();
+                if (migration.OrderedMigrations.ContainsKey("Migrate"))
+                {
+                    migration.RunOrderedMigration("Migrate", _dbProvider);
+                }
+                if (_systemRole == SystemRole.Server && migration.OrderedMigrations.ContainsKey("ServerMigrate"))
+                {
+                    migration.RunOrderedMigration("ServerMigrate", _dbProvider);
+                }
+                if (_systemRole == SystemRole.Client && migration.OrderedMigrations.ContainsKey("ClientMigrate"))
+                {
+                    migration.RunOrderedMigration("ClientMigrate", _dbProvider);
+                }
 
                 // Update the database version to show the migration has been run
                 databaseVersion.IsMigrationComplete = true;
@@ -135,18 +148,24 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        private void RunAfterMigration(IMigration migration, DatabaseVersionModel databaseVersion)
+        private void RunAfterMigration(AppCoreMigration migration, DatabaseVersionModel databaseVersion)
         {
             // Check Actual DatabaseVersion against the migration version
             // Don't run unless the MigrationVersion is 1 more than DatabaseVersion
             if ( databaseVersion.IsAfterMigrationComplete == false )
             {
-                migration.DbProvider = _dbProvider;
-
-                // After Migrate
-                migration.AfterMigrate();
-                if ( _systemRole == SystemRole.Server ) migration.ServerAfterMigrate();
-                if ( _systemRole == SystemRole.Client ) migration.ClientAfterMigrate();
+                if (migration.OrderedMigrations.ContainsKey("AfterMigrate"))
+                {
+                    migration.RunOrderedMigration("AfterMigrate", _dbProvider);
+                }
+                if (_systemRole == SystemRole.Server && migration.OrderedMigrations.ContainsKey("ServerAfterMigrate"))
+                {
+                    migration.RunOrderedMigration("ServerAfterMigrate", _dbProvider);
+                }
+                if (_systemRole == SystemRole.Client && migration.OrderedMigrations.ContainsKey("ClientAfterMigrate"))
+                {
+                    migration.RunOrderedMigration("ClientAfterMigrate", _dbProvider);
+                }
 
                 // Update the database version to show the after migration has been run
                 databaseVersion.IsAfterMigrationComplete = true;
@@ -154,7 +173,7 @@ namespace FutureState.AppCore.Data
             }
         }
 
-        private DatabaseVersionModel GetMigrationInformation ( IMigration migration )
+        private DatabaseVersionModel GetMigrationInformation ( AppCoreMigration migration )
         {
             var databaseVersion = _dbProvider.Query<DatabaseVersionModel>()
                                              .Where( dbv => dbv.VersionNumber == migration.MigrationVersion )

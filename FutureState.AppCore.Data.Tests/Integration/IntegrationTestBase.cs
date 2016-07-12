@@ -33,7 +33,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 var migrationRunner = new MigrationRunner(dbProvider);
 
                 migrationRunner.DropDatabase();
-                migrationRunner.RunAll(SystemRole.Server, new List<IMigration>
+                migrationRunner.RunAll(SystemRole.Server, new List<AppCoreMigration>
                 {
                     new Migration001(),
                     new Migration002()

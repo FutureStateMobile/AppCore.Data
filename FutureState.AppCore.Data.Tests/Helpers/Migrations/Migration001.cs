@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
 
 namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 {
-    public class Migration001 : Migration
+    public class Migration001 : AppCoreMigration
     {
         public static readonly Guid TheHobbitId = new Guid("E4BA6C4A-92BC-4B53-A833-680CEC3686DB");
         public static readonly Guid TheScrewTapeLettersId = new Guid("4C65C4BD-A87D-46E8-A39E-9B4D85078D52");
@@ -19,106 +18,99 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
         public static readonly Guid BobsPublishingId = new Guid("0F9D7D41-BBCA-4663-873C-AE2B5F31BEA4");
         public static readonly Guid RandomHouseId = new Guid("78CB8CFD-0A09-4385-ABFE-38B4A087220A");
 
-        public Migration001()
+        public Migration001():base(1)
         {
-            MigrationVersion = 1;
-        }
+            Migrate((database, dbProvider) =>
+            {
+                var studentTable = database.AddTable("Authors");
+                studentTable.AddColumn("Id", typeof(Guid)).PrimaryKey().Clustered().NotNullable();
+                studentTable.AddColumn("FirstName", typeof(string), 100);
+                studentTable.AddColumn("LastName", typeof(string), 100);
+                studentTable.AddColumn("Email", typeof(string), 100).NotNullable().Unique();
+                studentTable.AddColumn("CreatedDate", typeof(DateTime)).NotNullable();
+                studentTable.AddColumn("UpdatedDate", typeof(DateTime)).NotNullable();
+                studentTable.AddColumn("IsDeleted", typeof(bool)).NotNullable(false);
 
-        public override void Migrate()
-        {
-            var database = new Database(DbProvider.DatabaseName, DbProvider.Dialect);
+                var courseTable = database.AddTable("Publishers");
+                courseTable.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
+                courseTable.AddColumn("Name", typeof(string), 100).NotNullable();
+                courseTable.AddColumn("Description", typeof(string), 100).NotNullable();
+                courseTable.AddColumn("CreatedDate", typeof(DateTime)).NotNullable();
+                courseTable.AddColumn("UpdatedDate", typeof(DateTime)).NotNullable();
+                courseTable.AddColumn("IsDeleted", typeof(bool)).NotNullable(false);
 
-            var studentTable = database.AddTable("Authors");
-            studentTable.AddColumn("Id", typeof (Guid)).PrimaryKey().Clustered().NotNullable();
-            studentTable.AddColumn("FirstName", typeof (string), 100);
-            studentTable.AddColumn("LastName", typeof (string), 100);
-            studentTable.AddColumn("Email", typeof (string), 100).NotNullable().Unique();
-            studentTable.AddColumn("CreatedDate", typeof (DateTime)).NotNullable();
-            studentTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();
-            studentTable.AddColumn("IsDeleted", typeof (bool)).NotNullable(false);
+                // OneToMany Relationship to Student
+                var bookTable = database.AddTable("Books");
+                bookTable.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
+                bookTable.AddColumn("PublisherId", typeof(Guid)).Nullable().ForeignKey("Publishers", "Id");
+                bookTable.AddColumn("Name", typeof(string), 100).NotNullable();
+                bookTable.AddColumn("ISBN", typeof(int)).Nullable();
+                bookTable.AddColumn("PublishDate", typeof(DateTime)).NotNullable();
+                bookTable.AddColumn("CreatedDate", typeof(DateTime)).NotNullable();
+                bookTable.AddColumn("UpdatedDate", typeof(DateTime)).NotNullable();
+                bookTable.AddColumn("IsDeleted", typeof(bool)).NotNullable(false);
 
-            var courseTable = database.AddTable("Publishers");
-            courseTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
-            courseTable.AddColumn("Name", typeof (string), 100).NotNullable();
-            courseTable.AddColumn("Description", typeof (string), 100).NotNullable();
-            courseTable.AddColumn("CreatedDate", typeof (DateTime)).NotNullable();
-            courseTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();
-            courseTable.AddColumn("IsDeleted", typeof (bool)).NotNullable(false);
+                // ManyToMany Join Tables are currently handled under the covers (without an associated model)
+                // Naming convention used by ORM is to joing the 2 table names together in alphabetical order
+                var courseStudentTable = database.AddTable("Authors_Books").CompositeKey("AuthorId", "BookId", ClusterType.Clustered);
+                courseStudentTable.AddColumn("BookId", typeof(Guid)).ForeignKey("Books", "Id").NotNullable();
+                courseStudentTable.AddColumn("AuthorId", typeof(Guid)).ForeignKey("Authors", "Id").NotNullable();
 
-            // OneToMany Relationship to Student
-            var bookTable = database.AddTable("Books");
-            bookTable.AddColumn("Id", typeof (Guid)).PrimaryKey().NotNullable();
-            bookTable.AddColumn("PublisherId", typeof(Guid)).Nullable().ForeignKey("Publishers", "Id");
-            bookTable.AddColumn("Name", typeof(string), 100).NotNullable();
-            bookTable.AddColumn("ISBN", typeof(int)).Nullable();
-            bookTable.AddColumn("PublishDate", typeof (DateTime)).NotNullable();
-            bookTable.AddColumn("CreatedDate", typeof (DateTime)).NotNullable();
-            bookTable.AddColumn("UpdatedDate", typeof (DateTime)).NotNullable();
-            bookTable.AddColumn("IsDeleted", typeof (bool)).NotNullable(false);
+                // Example of the inflection library at work
+                var gooseTable = database.AddTable("Geese");
+                gooseTable.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
+                gooseTable.AddColumn("Name", typeof(string), 100).Nullable();
+            });
 
-            // ManyToMany Join Tables are currently handled under the covers (without an associated model)
-            // Naming convention used by ORM is to joing the 2 table names together in alphabetical order
-            var courseStudentTable = database.AddTable("Authors_Books").CompositeKey("AuthorId", "BookId", ClusterType.Clustered);
-            courseStudentTable.AddColumn("BookId", typeof (Guid)).ForeignKey("Books", "Id").NotNullable();
-            courseStudentTable.AddColumn("AuthorId", typeof (Guid)).ForeignKey("Authors", "Id").NotNullable();
-
-            // Example of the inflection library at work
-            var gooseTable = database.AddTable("Geese");
-            gooseTable.AddColumn("Id", typeof(Guid)).PrimaryKey().NotNullable();
-            gooseTable.AddColumn("Name", typeof(string), 100).Nullable();
-
-            DbProvider.ExecuteNonQuery(database.ToString());
-        }
-
-        public override void ServerAfterMigrate()
-        {
-            // Create some base data
-            var bobsPublishing = new PublisherModel
+            ServerAfterMigrate((database, dbProvider )=>
+            {
+                // Create some base data
+                var bobsPublishing = new PublisherModel
                 {
                     Id = BobsPublishingId,
                     Name = "Bob's publishing",
                     Description = "This is bobs publishing company.",
                 };
 
-            var randomHouse = new PublisherModel
+                var randomHouse = new PublisherModel
                 {
                     Id = RandomHouseId,
                     Name = "Random House",
                     Description = "This is a Canadian book publisher.",
                 };
 
-            DbProvider.Create(FixtureBase.UpdateBaseFields(randomHouse));
-            DbProvider.Create(FixtureBase.UpdateBaseFields(bobsPublishing));
+                dbProvider.Create(FixtureBase.UpdateBaseFields(randomHouse));
+                dbProvider.Create(FixtureBase.UpdateBaseFields(bobsPublishing));
 
-            var theHobbit = new BookModel
-            {
-                Id = TheHobbitId,
-                ISBN = 4444,
-                Publisher = randomHouse,
-                Name = "The Hobbit"
-            };
+                var theHobbit = new BookModel
+                {
+                    Id = TheHobbitId,
+                    ISBN = 4444,
+                    Publisher = randomHouse,
+                    Name = "The Hobbit"
+                };
 
-            var screwTapeLetters = new BookModel
-            {
-                Id = TheScrewTapeLettersId,
-                ISBN = 1234,
-                Publisher = randomHouse,
-                Name = "The Screwtape Letters"
-            };
+                var screwTapeLetters = new BookModel
+                {
+                    Id = TheScrewTapeLettersId,
+                    ISBN = 1234,
+                    Publisher = randomHouse,
+                    Name = "The Screwtape Letters"
+                };
 
-            var theLionWitchWardrobe = new BookModel
-            {
-                Id = TheLionWitchWardrobeId,
-                ISBN = 1234,
-                Publisher = randomHouse,
-                Name = "The Lion the Witch and the Wardrobe"
-            };
+                var theLionWitchWardrobe = new BookModel
+                {
+                    Id = TheLionWitchWardrobeId,
+                    ISBN = 1234,
+                    Publisher = randomHouse,
+                    Name = "The Lion the Witch and the Wardrobe"
+                };
 
-            DbProvider.Create(FixtureBase.UpdateBaseFields(theHobbit));
-            DbProvider.Create(FixtureBase.UpdateBaseFields(screwTapeLetters));
-            DbProvider.Create(FixtureBase.UpdateBaseFields(theLionWitchWardrobe));
+                dbProvider.Create(FixtureBase.UpdateBaseFields(theHobbit));
+                dbProvider.Create(FixtureBase.UpdateBaseFields(screwTapeLetters));
+                dbProvider.Create(FixtureBase.UpdateBaseFields(theLionWitchWardrobe));
 
-            var jrTolkien = new AuthorModel
+                var jrTolkien = new AuthorModel
                 {
                     Id = AuthorJRTolkienId,
                     FirstName = "JR",
@@ -126,19 +118,20 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
                     Email = JRTolkien,
                 };
 
-            jrTolkien.AddBooks(theHobbit);
-            
-            var csLewis = new AuthorModel
+                jrTolkien.AddBooks(theHobbit);
+
+                var csLewis = new AuthorModel
                 {
                     Id = AuthorCSLewisId,
                     FirstName = "CS",
                     LastName = "Lewis",
                     Email = CSLewisEmail,
                 };
-            csLewis.AddBooks(screwTapeLetters, theLionWitchWardrobe);
-            
-            DbProvider.Create(FixtureBase.UpdateBaseFields(jrTolkien));
-            DbProvider.Create(FixtureBase.UpdateBaseFields(csLewis));
+                csLewis.AddBooks(screwTapeLetters, theLionWitchWardrobe);
+
+                dbProvider.Create(FixtureBase.UpdateBaseFields(jrTolkien));
+                dbProvider.Create(FixtureBase.UpdateBaseFields(csLewis));
+            });
         }
     }
 }

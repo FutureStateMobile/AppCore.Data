@@ -62,7 +62,7 @@ $versionNumber = $buildNumberParts[0] + '.' + $buildNumberParts[1] + '.' + $buil
 $buildNumber = $buildNumberParts[3]
 $informationalText = $versionNumber + ' ' + $informationalVersion
 
-& ".\packages\psake.4.3.0.0\tools\psake.ps1" .\build\Build.ps1 $task -parameters @{
+& ".\packages\psake.4.6.0\tools\psake.ps1" .\build\Build.ps1 $task -parameters @{
     env=$buildEnvironment;
     version=$versionNumber;
     buildNumber=$buildNumber;

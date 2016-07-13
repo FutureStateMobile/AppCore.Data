@@ -101,15 +101,15 @@ namespace FutureState.AppCore.Data
             {
                 // Before Migrate
 
-                migration.RunOrderedMigration(MigrationPoint.BeforeMigrate, _dbProvider);
+                migration.RunOrderedMigration(MigrationStep.BeforeMigrate, _dbProvider);
 
                 if (_systemRole == SystemRole.Server)
                 {
-                    migration.RunOrderedMigration(MigrationPoint.ServerBeforeMigrate, _dbProvider);
+                    migration.RunOrderedMigration(MigrationStep.ServerBeforeMigrate, _dbProvider);
                 }
                 if (_systemRole == SystemRole.Client)
                 {
-                    migration.RunOrderedMigration(MigrationPoint.ClientBeforeMigrate, _dbProvider);
+                    migration.RunOrderedMigration(MigrationStep.ClientBeforeMigrate, _dbProvider);
                 }
 
                 // Update the database version to show the before migration has been run
@@ -126,15 +126,15 @@ namespace FutureState.AppCore.Data
             // Don't run unless this Migrations Migration has not been run
             if (databaseVersion.IsMigrationComplete == false)
             {
-                migration.RunOrderedMigration(MigrationPoint.Migrate, _dbProvider);
+                migration.RunOrderedMigration(MigrationStep.Migrate, _dbProvider);
 
                 if (_systemRole == SystemRole.Server)
                 {
-                    migration.RunOrderedMigration(MigrationPoint.ServerMigrate, _dbProvider);
+                    migration.RunOrderedMigration(MigrationStep.ServerMigrate, _dbProvider);
                 }
                 if (_systemRole == SystemRole.Client)
                 {
-                    migration.RunOrderedMigration(MigrationPoint.ClientMigrate, _dbProvider);
+                    migration.RunOrderedMigration(MigrationStep.ClientMigrate, _dbProvider);
                 }
 
                 // Update the database version to show the migration has been run
@@ -151,15 +151,15 @@ namespace FutureState.AppCore.Data
             // Don't run unless the MigrationVersion is 1 more than DatabaseVersion
             if (databaseVersion.IsAfterMigrationComplete == false)
             {
-                migration.RunOrderedMigration(MigrationPoint.AfterMigrate, _dbProvider);
+                migration.RunOrderedMigration(MigrationStep.AfterMigrate, _dbProvider);
 
                 if (_systemRole == SystemRole.Server)
                 {
-                    migration.RunOrderedMigration(MigrationPoint.ServerAfterMigrate, _dbProvider);
+                    migration.RunOrderedMigration(MigrationStep.ServerAfterMigrate, _dbProvider);
                 }
                 if (_systemRole == SystemRole.Client)
                 {
-                    migration.RunOrderedMigration(MigrationPoint.ClientAfterMigrate, _dbProvider);
+                    migration.RunOrderedMigration(MigrationStep.ClientAfterMigrate, _dbProvider);
                 }
 
                 // Update the database version to show the after migration has been run

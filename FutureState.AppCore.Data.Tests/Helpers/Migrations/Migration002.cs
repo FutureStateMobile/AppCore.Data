@@ -6,7 +6,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
     {
         public Migration002():base(2)
         {
-            Migration[MigrationPoint.Migrate] = (database, dbProvider) =>
+            Migration[MigrationStep.Migrate] = (database, dbProvider) =>
             {
                 var gooseTable = database.UpdateTable("Geese");
                 gooseTable.AddColumn("BirthDate", typeof (DateTime)).Nullable();

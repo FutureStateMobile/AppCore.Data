@@ -20,7 +20,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
 
         public Migration001():base(1)
         {
-            Migration[MigrationPoint.Migrate] = (database, dbProvider) =>
+            Migration[MigrationStep.Migrate] = (database, dbProvider) =>
             {
                 var studentTable = database.AddTable("Authors");
                 studentTable.AddColumn("Id", typeof(Guid)).PrimaryKey().Clustered().NotNullable();
@@ -62,7 +62,7 @@ namespace FutureState.AppCore.Data.Tests.Helpers.Migrations
                 gooseTable.AddColumn("Name", typeof(string), 100).Nullable();
             };
 
-            Migration[MigrationPoint.ServerAfterMigrate] = (database, dbProvider )=>
+            Migration[MigrationStep.ServerAfterMigrate] = (database, dbProvider )=>
             {
                 // Create some base data
                 var bobsPublishing = new PublisherModel

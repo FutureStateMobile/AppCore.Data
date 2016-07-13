@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FutureState.AppCore.Data
 {
-    public enum MigrationPoint
+    public enum MigrationStep
     {
         BeforeMigrate = 0,
         Migrate = 1,
@@ -21,14 +21,14 @@ namespace FutureState.AppCore.Data
         protected AppCoreMigration(int migrationVersion)
         {
             MigrationVersion = migrationVersion;
-            Migration = new Dictionary<MigrationPoint, Action<Database, IDbProvider>>();
+            Migration = new Dictionary<MigrationStep, Action<Database, IDbProvider>>();
         }
 
-        public Dictionary<MigrationPoint, Action<Database, IDbProvider>> Migration { get; }
+        public Dictionary<MigrationStep, Action<Database, IDbProvider>> Migration { get; }
 
         internal int MigrationVersion { get; }
 
-        internal void RunOrderedMigration(MigrationPoint key, IDbProvider dbProvider)
+        internal void RunOrderedMigration(MigrationStep key, IDbProvider dbProvider)
         {
             if (!Migration.ContainsKey(key))
             {

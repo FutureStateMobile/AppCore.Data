@@ -2,7 +2,7 @@
     <appName>FutureState.AppCore.Data</appName>
     <serverDatabase>
         <name>local_appcore_data</name>
-        <connectionString>Data Source=db.fsmobile.ca;Connect Timeout=30;User Id=builduser;Password=P0w3rsh3!!r0ck5</connectionString>
+        <connectionString>Data Source=localhost\SQLEXPRESS;Connect Timeout=30;Integrated Security=SSPI</connectionString>
         <providerName>System.Data.SqlClient</providerName>
     </serverDatabase>
 </environmentSettings>

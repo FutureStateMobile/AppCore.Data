@@ -1,4 +1,4 @@
-﻿using Mono.Data.Sqlite;
+using Mono.Data.Sqlite;
 
 namespace FutureState.AppCore.Data.Sqlite
 {

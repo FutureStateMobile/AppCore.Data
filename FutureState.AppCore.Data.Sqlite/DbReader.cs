@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Mono.Data.Sqlite;
 
 namespace FutureState.AppCore.Data.Sqlite

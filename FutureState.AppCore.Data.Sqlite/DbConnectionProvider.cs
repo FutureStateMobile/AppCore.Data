@@ -8,7 +8,7 @@ namespace FutureState.AppCore.Data.Sqlite
 
         public DbConnectionProvider(string sqlFile, SqliteSettings sqliteSettings)
         {
-            var dataSource = string.Format("Data Source={0};", sqlFile);
+            var dataSource = $"Data Source={sqlFile};";
             var sqliteConnectionStringBuilder = new SqliteConnectionStringBuilder(dataSource)
                 {
                     CacheSize = sqliteSettings.CacheSize,
@@ -19,14 +19,13 @@ namespace FutureState.AppCore.Data.Sqlite
                     FailIfMissing = sqliteSettings.FailIfMissing,
                     ReadOnly = sqliteSettings.ReadOnly,
                 };
-
-
+            
             _connectionString = sqliteConnectionStringBuilder.ConnectionString;
         }
 
         public DbConnectionProvider(string sqlFile)
         {
-            var connectionString = string.Format("Data Source={0};", sqlFile);
+            var connectionString = $"Data Source={sqlFile};";
             _connectionString = connectionString;
         }
 

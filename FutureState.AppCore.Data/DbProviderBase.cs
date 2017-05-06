@@ -16,40 +16,22 @@ namespace FutureState.AppCore.Data
         public string DatabaseName { get; set; }
         public abstract Task<string> LoadSqlFileAsync<TDbProvider>(string fileName);
 
-        public string LoadSqlFile<TDbProvider>(string fileName)
-        {
-            return LoadSqlFileAsync<TDbProvider>(fileName).Result;
-        }
+        public string LoadSqlFile<TDbProvider>(string fileName) => LoadSqlFileAsync<TDbProvider>(fileName).Result;
 
         public abstract Task<bool> CheckIfDatabaseExistsAsync();
 
-        public bool CheckIfDatabaseExists()
-        {
-            return CheckIfDatabaseExistsAsync().Result;
-        }
+        public bool CheckIfDatabaseExists() => CheckIfDatabaseExistsAsync().Result;
 
         public abstract Task CreateDatabaseAsync();
         public abstract Task DropDatabaseAsync();
 
-        public void CreateDatabase()
-        {
-            CreateDatabaseAsync().Wait();
-        }
+        public void CreateDatabase() => CreateDatabaseAsync().Wait();
 
-        public void DropDatabase()
-        {
-            DropDatabaseAsync().Wait();
-        }
+        public void DropDatabase() => DropDatabaseAsync().Wait();
 
-        public bool CheckIfTableExists(string tableName)
-        {
-            return CheckIfTableExistsAsync(tableName).Result;
-        }
+        public bool CheckIfTableExists(string tableName) => CheckIfTableExistsAsync(tableName).Result;
 
-        public bool CheckIfTableColumnExists(string tableName, string columnName)
-        {
-            return CheckIfTableColumnExistsAsync(tableName, columnName).Result;
-        }
+        public bool CheckIfTableColumnExists(string tableName, string columnName) => CheckIfTableColumnExistsAsync(tableName, columnName).Result;
 
         public abstract Task<bool> CheckIfTableExistsAsync(string tableName);
         public abstract Task<bool> CheckIfTableColumnExistsAsync(string tableName, string columnName);
@@ -61,44 +43,22 @@ namespace FutureState.AppCore.Data
         public abstract Task<TResult> ExecuteReaderAsync<TResult>(string commandText,
             IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper);
 
-        public TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper)
-        {
-            return ExecuteReaderAsync(commandText, readerMapper).Result;
-        }
+        public TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper) => ExecuteReaderAsync(commandText, readerMapper).Result;
 
         public TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters,
-            Func<IDbReader, TResult> readerMapper)
-        {
-            return ExecuteReaderAsync(commandText, parameters, readerMapper).Result;
-        }
+            Func<IDbReader, TResult> readerMapper) => ExecuteReaderAsync(commandText, parameters, readerMapper).Result;
 
         // Used For Updates and Deletes
         public abstract Task ExecuteNonQueryAsync(string commandText);
         public abstract Task ExecuteNonQueryAsync(string commandText, IDictionary<string, object> parameters);
-
-        public void ExecuteNonQuery(string commandText)
-        {
-            ExecuteNonQueryAsync(commandText).Wait();
-        }
-
-        public void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters)
-        {
-            ExecuteNonQueryAsync(commandText, parameters).Wait();
-        }
+        public void ExecuteNonQuery(string commandText) => ExecuteNonQueryAsync(commandText).Wait();
+        public void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters) => ExecuteNonQueryAsync(commandText, parameters).Wait();
 
         // Used for Creates
         public abstract Task<TKey> ExecuteScalarAsync<TKey>(string commandText);
         public abstract Task<TKey> ExecuteScalarAsync<TKey>(string commandText, IDictionary<string, object> parameters);
-
-        public TKey ExecuteScalar<TKey>(string commandText)
-        {
-            return ExecuteScalarAsync<TKey>(commandText).Result;
-        }
-
-        public TKey ExecuteScalar<TKey>(string commandText, IDictionary<string, object> parameters)
-        {
-            return ExecuteScalarAsync<TKey>(commandText, parameters).Result;
-        }
+        public TKey ExecuteScalar<TKey>(string commandText) => ExecuteScalarAsync<TKey>(commandText).Result;
+        public TKey ExecuteScalar<TKey>(string commandText, IDictionary<string, object> parameters) => ExecuteScalarAsync<TKey>(commandText, parameters).Result;
 
 
         /// <summary>
@@ -107,10 +67,7 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model Type</typeparam>
         /// <param name="model">Model Object</param>
         /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
-        public void Create<TModel>(TModel model) where TModel : class, new()
-        {
-            CreateAsync(model).Wait();
-        }
+        public void Create<TModel>(TModel model) where TModel : class, new() => CreateAsync(model).Wait();
 
         /// <summary>
         ///     Create a new record based on a Model
@@ -119,11 +76,7 @@ namespace FutureState.AppCore.Data
         /// <param name="model">Model Object</param>
         /// <param name="dbMapper"></param>
         /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
-        public void Create<TModel>(TModel model, IDbMapper<TModel> dbMapper)
-            where TModel : class, new()
-        {
-            CreateAsync(model, dbMapper).Wait();
-        }
+        public void Create<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new() => CreateAsync(model, dbMapper).Wait();
 
         /// <summary>
         ///     CreateAsync a new record based on a Model
@@ -131,10 +84,7 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model Type</typeparam>
         /// <param name="model">Model Object</param>
         /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
-        public Task CreateAsync<TModel>(TModel model) where TModel : class, new()
-        {
-            return CreateAsync(model, new AutoDbMapper<TModel>());
-        }
+        public Task CreateAsync<TModel>(TModel model) where TModel : class, new() => CreateAsync(model, new AutoDbMapper<TModel>());
 
         /// <summary>
         ///     CreateAsync a new record based on a Model
@@ -166,11 +116,7 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model Type</typeparam>
         /// <param name="expression">The expression to use for the query</param>
         /// <remarks>THIS IS A HARD DELETE. When you run this method, the record is GONE!</remarks>
-        public void Delete<TModel>(Expression<Func<TModel, object>> expression)
-            where TModel : class, new()
-        {
-            DeleteAsync(expression).Wait();
-        }
+        public void Delete<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new() => DeleteAsync(expression).Wait();
 
         /// <summary>
         ///     DeleteAsync the Database Record based on an expression
@@ -196,10 +142,7 @@ namespace FutureState.AppCore.Data
         /// </summary>
         /// <typeparam name="TModel">Model Type</typeparam>
         /// <returns>IEnumerable model</returns>
-        public IDbQuery<TModel> Query<TModel>() where TModel : class, new()
-        {
-            return new DbQuery<TModel>(this, new AutoDbMapper<TModel>());
-        }
+        public IDbQuery<TModel> Query<TModel>() where TModel : class, new() => new DbQuery<TModel>(this, new AutoDbMapper<TModel>());
 
         /// <summary>
         ///     Query the Database for ALL records.
@@ -208,12 +151,8 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TReturnType">The scalar return value</typeparam>
         /// <param name="propertyExpression">The expression to use for the query</param>
         /// <returns>IEnumerable model</returns>
-        public IDbScalar<TModel, TReturnType> Scalar<TModel, TReturnType>(
-            Expression<Func<TModel, TReturnType>> propertyExpression)
-            where TModel : class, new()
-        {
-            return new DbScalar<TModel, TReturnType>(this, propertyExpression);
-        }
+        public IDbScalar<TModel, TReturnType> Scalar<TModel, TReturnType>(Expression<Func<TModel, TReturnType>> propertyExpression)
+            where TModel : class, new() => new DbScalar<TModel, TReturnType>(this, propertyExpression);
 
         /// <summary>
         ///     UpdateAsync the Database Record of a specified model.
@@ -221,10 +160,7 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="model">Model Object to update</param>
         /// <remarks>We're using the Id field to check the update.</remarks>
-        public void Update<TModel>(TModel model) where TModel : class, new()
-        {
-            UpdateAsync(model).Wait();
-        }
+        public void Update<TModel>(TModel model) where TModel : class, new() => UpdateAsync(model).Wait();
 
         /// <summary>
         ///     UpdateAsync the Database Record of a specified model.
@@ -233,11 +169,7 @@ namespace FutureState.AppCore.Data
         /// <param name="model">Model Object to update</param>
         /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
         /// <remarks>We're using the Id field to check the update.</remarks>
-        public void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper)
-            where TModel : class, new()
-        {
-            UpdateAsync(model, dbMapper).Wait();
-        }
+        public void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new() => UpdateAsync(model, dbMapper).Wait();
 
         /// <summary>
         ///     UpdateAsync the Database Record of a specified model.
@@ -245,10 +177,7 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="model">Model Object to update</param>
         /// <remarks>We're using the Id field to check the update.</remarks>
-        public Task UpdateAsync<TModel>(TModel model) where TModel : class, new()
-        {
-            return UpdateAsync(model, new AutoDbMapper<TModel>());
-        }
+        public Task UpdateAsync<TModel>(TModel model) where TModel : class, new() => UpdateAsync(model, new AutoDbMapper<TModel>());
 
         /// <summary>
         ///     UpdateAsync the Database Record of a specified model.
@@ -345,13 +274,12 @@ namespace FutureState.AppCore.Data
         }
 
         //private static bool IsGenericList(Type type)
-        //}
+        //{
         //        .Any(i => i.GetGenericTypeDefinition() == typeof(ICollection<>));
         //        .Where(i => i.IsConstructedGenericType)
-
         //    return type.GetTypeInfo().ImplementedInterfaces
         //        throw new ArgumentNullException("type");
         //    if (type == null)
-        //{
+        //}
     }
 }

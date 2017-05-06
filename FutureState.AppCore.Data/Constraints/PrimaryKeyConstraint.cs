@@ -9,9 +9,6 @@
             _dialect = dialect;
         }
 
-        public override string ToString()
-        {
-            return _dialect.PrimaryKeyConstraint;
-        }
+        public override string ToString() => _dialect.PrimaryKeyConstraint;
     }
 }

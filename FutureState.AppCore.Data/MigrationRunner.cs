@@ -16,25 +16,13 @@ namespace FutureState.AppCore.Data
             _dbProvider = dbProvider;
         }
 
-        public void CreateDatabase()
-        {
-            CreateDatabaseAsync().Wait();
-        }
+        public void CreateDatabase() => CreateDatabaseAsync().Wait();
 
-        public void DropDatabase()
-        {
-            DropDatabaseAsync().Wait();
-        }
+        public void DropDatabase() => DropDatabaseAsync().Wait();
 
-        public void Run(SystemRole systemRole, AppCoreMigration migrations)
-        {
-            RunAsync(systemRole, migrations).Wait();
-        }
+        public void Run(SystemRole systemRole, AppCoreMigration migrations) => RunAsync(systemRole, migrations).Wait();
 
-        public void RunAll(SystemRole systemRole, IList<AppCoreMigration> migrations)
-        {
-            RunAllAsync(systemRole, migrations).Wait();
-        }
+        public void RunAll(SystemRole systemRole, IList<AppCoreMigration> migrations) => RunAllAsync(systemRole, migrations).Wait();
 
         public async Task CreateDatabaseAsync()
         {

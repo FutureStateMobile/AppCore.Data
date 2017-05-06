@@ -5,10 +5,10 @@ namespace FutureState.AppCore.Data.Exceptions
 {
     internal class ExpressionBinaryOperatorNotSupportedException : Exception
     {
-        private const string OperatorNotSupported = "The binary operator '{0}' is not supported.";
+        private const string _operatorNotSupported = "The binary operator '{0}' is not supported.";
 
         public ExpressionBinaryOperatorNotSupportedException(BinaryExpression expression)
-            : base(string.Format(OperatorNotSupported, expression.NodeType))
+            : base(string.Format(_operatorNotSupported, expression.NodeType))
         {
         }
     }

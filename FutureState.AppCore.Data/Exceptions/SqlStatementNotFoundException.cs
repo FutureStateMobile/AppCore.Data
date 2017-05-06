@@ -4,9 +4,9 @@ namespace FutureState.AppCore.Data.Exceptions
 {
     public class SqlStatementNotFoundException : Exception
     {
-        private const string CouldNotFindFile = "Could not find the resource: '{0}'.";
+        private const string _couldNotFindFile = "Could not find the resource: '{0}'.";
 
-        public SqlStatementNotFoundException(string fullFileName) : base(string.Format(CouldNotFindFile, fullFileName))
+        public SqlStatementNotFoundException(string fullFileName) : base(string.Format(_couldNotFindFile, fullFileName))
         {
         }
     }

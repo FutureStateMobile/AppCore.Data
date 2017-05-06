@@ -83,7 +83,7 @@ namespace FutureState.AppCore.Data
             var lambda = method as LambdaExpression;
 
             if (lambda == null)
-                throw new ArgumentNullException("method");
+                throw new ArgumentNullException(nameof(method));
 
             MemberExpression memberExpr = null;
 
@@ -92,7 +92,7 @@ namespace FutureState.AppCore.Data
             else if (lambda.Body.NodeType == ExpressionType.MemberAccess)
                 memberExpr = lambda.Body as MemberExpression;
 
-            if (memberExpr == null)
+            if (memberExpr == null) 
                 throw new ArgumentException("method");
 
             return memberExpr;

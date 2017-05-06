@@ -145,11 +145,8 @@ namespace FutureState.AppCore.Data.Sqlite
         public override async Task<TKey> ExecuteScalarAsync<TKey>(string commandText, IDictionary<string, object> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-            using (var transaction = connection.BeginTransaction())
             using (var command = (SqliteCommand)connection.CreateCommand() )
             {
-                try
-                {
                     command.CommandType = CommandType.Text;
                     EnableForeignKeys(command);
                     command.CommandText = commandText;
@@ -190,12 +187,6 @@ namespace FutureState.AppCore.Data.Sqlite
                     }
 
                     return (TKey) result;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace FutureState.AppCore.Data.Sqlite
 {
@@ -8,12 +9,9 @@ namespace FutureState.AppCore.Data.Sqlite
         protected const string RootSqlScriptPath = "FutureState.AppCore.Data.Sqlite.SqlScripts.";
         private IDialect _dialect;
 
-        public override sealed IDialect Dialect
-        {
-            get { return _dialect ?? (_dialect = new SqliteDialect()); }
-        }
+        public sealed override IDialect Dialect => _dialect ?? (_dialect = new SqliteDialect());
 
-        public override string LoadSqlFile<TDbProvider>(string fileName)
+        public override async Task<string> LoadSqlFileAsync<TDbProvider>(string fileName)
         {
             var sqlStatement = string.Empty;
             
@@ -21,7 +19,7 @@ namespace FutureState.AppCore.Data.Sqlite
             {
                 if (resourceStream != null)
                 {
-                    sqlStatement = new StreamReader(resourceStream).ReadToEnd();
+                    sqlStatement = await new StreamReader(resourceStream).ReadToEndAsync().ConfigureAwait(false);
                 }
             }
 

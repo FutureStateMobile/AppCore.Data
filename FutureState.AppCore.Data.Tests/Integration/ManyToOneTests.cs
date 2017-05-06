@@ -10,7 +10,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
     [TestFixture]
     public class ManyToOneTests : IntegrationTestBase
     {
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Create_Records_With_ManyToOne_Relationships(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -37,7 +37,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualBooks[1].Publisher.Id.Should().Be(publisher.Id);
         }
 
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Create_Records_With_OneToMany_Relationships(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -63,7 +63,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             publishers[0].ShouldBeEquivalentTo(publisher);
         }
 
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Query_ManyToOne_Records_With_Needing_To_Build_Join(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));

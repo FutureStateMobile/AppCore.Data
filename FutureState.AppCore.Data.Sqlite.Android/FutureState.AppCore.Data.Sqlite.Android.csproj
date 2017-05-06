@@ -58,9 +58,6 @@
     <Compile Include="..\FutureState.AppCore.Data.Sqlite\DbReader.cs">
       <Link>DbReader.cs</Link>
     </Compile>
-    <Compile Include="..\FutureState.AppCore.Data.Sqlite\IDbConnectionProvider.cs">
-      <Link>IDbConnectionProvider.cs</Link>
-    </Compile>
     <Compile Include="..\FutureState.AppCore.Data.Sqlite\SqliteSettings.cs">
       <Link>SqliteSettings.cs</Link>
     </Compile>

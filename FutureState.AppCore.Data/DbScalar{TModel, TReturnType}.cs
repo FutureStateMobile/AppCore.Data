@@ -33,50 +33,23 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
-        public Task<TReturnType> MaxAsync()
-        {
-            return _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMax(), _parameters);
-        }
+        public Task<TReturnType> MaxAsync() => _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMax(), _parameters);
 
-        public Task<TReturnType> MinAsync()
-        {
-            return _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMin(), _parameters);
-        }
+        public Task<TReturnType> MinAsync() => _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMin(), _parameters);
 
-        public Task<TReturnType> SumAsync()
-        {
-            return _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringSum(), _parameters);
-        }
+        public Task<TReturnType> SumAsync() => _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringSum(), _parameters);
 
-        public TReturnType Max()
-        {
-            return MaxAsync().Result;
-        }
+        public TReturnType Max() => MaxAsync().Result;
 
-        public TReturnType Min()
-        {
-            return MinAsync().Result;
-        }
+        public TReturnType Min() => MinAsync().Result;
 
-        public TReturnType Sum()
-        {
-            return SumAsync().Result;
-        }
+        public TReturnType Sum() => SumAsync().Result;
 
-        public string ToStringMax()
-        {
-            return string.Format(_dbProvider.Dialect.SelectMaxFrom, _tableName, _whereClause, _propertyName).Trim();
-        }
+        public string ToStringMax() => string.Format(_dbProvider.Dialect.SelectMaxFrom, _tableName, _whereClause, _propertyName).Trim();
 
-        public string ToStringMin()
-        {
-            return string.Format(_dbProvider.Dialect.SelectMinFrom, _tableName, _whereClause, _propertyName).Trim();
-        }
+        public string ToStringMin() => string.Format(_dbProvider.Dialect.SelectMinFrom, _tableName, _whereClause, _propertyName).Trim();
 
-        public string ToStringSum()
-        {
-            return string.Format(_dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName).Trim();
-        }
+        public string ToStringSum() => string.Format(_dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName).Trim();
 
         private static MemberExpression GetMemberInfo(Expression method)
         {
@@ -98,9 +71,6 @@ namespace FutureState.AppCore.Data
             return memberExpr;
         }
 
-        private static string GetPropertyName(Expression<Func<TModel, TReturnType>> propertyExpression)
-        {
-            return GetMemberInfo(propertyExpression).Member.Name;
-        }
+        private static string GetPropertyName(Expression<Func<TModel, TReturnType>> propertyExpression) => GetMemberInfo(propertyExpression).Member.Name;
     }
 }

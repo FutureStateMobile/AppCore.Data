@@ -23,7 +23,6 @@ namespace FutureState.AppCore.Data.Tests.Integration
             db.Create(firstGoose);
             db.Create(gooseToUpdate);
             db.Create(gooseToDelete);
-
             var actualGoose = db.Query<GooseModel>().Where(u => u.Id == firstGoose.Id).Select().FirstOrDefault();
             
             // Assert Create

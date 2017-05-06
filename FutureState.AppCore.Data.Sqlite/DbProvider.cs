@@ -109,11 +109,12 @@ namespace FutureState.AppCore.Data.Sqlite
         public override async Task ExecuteNonQueryAsync(string commandText, IDictionary<string, object> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-            using (var transaction = connection.BeginTransaction())
+           // using (var transaction = (SqliteTransaction)connection.BeginTransaction())
             using (var command = (SqliteCommand)connection.CreateCommand())
             {
-                try
-                {
+               // try
+               // {
+                  //  command.Transaction = transaction;
                     command.CommandType = CommandType.Text;
                     EnableForeignKeys(command);
                     command.CommandText = commandText;
@@ -123,13 +124,13 @@ namespace FutureState.AppCore.Data.Sqlite
                                 parameter.Value ?? DBNull.Value)));
 
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                    transaction.Commit();
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+                 //   transaction.Commit();
+               // }
+               // catch
+               // {
+                //    transaction.Rollback();
+                //    throw;
+               // }
             }
         }
 

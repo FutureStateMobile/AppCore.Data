@@ -9,9 +9,6 @@
             _dialect = dialect;
         }
 
-        public override string ToString()
-        {
-            return _dialect.NotNullableConstraint;
-        }
+        public override string ToString() => _dialect.NotNullableConstraint;
     }
 }

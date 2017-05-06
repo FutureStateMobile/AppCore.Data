@@ -40,10 +40,7 @@ namespace FutureState.AppCore.Data
             _joinExpression = BuildJoinExpression(joinType, joinExpression);
         }
 
-        public void Delete()
-        {
-            DeleteAsync().Wait();
-        }
+        public void Delete() => DeleteAsync().Wait();
 
         public IDbQuery<TModel, TJoinTo> On(Expression<Func<TModel, TJoinTo, object>> joinExpression)
         {
@@ -55,10 +52,7 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
-        public void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters)
-        {
-            UpdateAsync(model, mapToDbParameters).Wait();
-        }
+        public void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters) => UpdateAsync(model, mapToDbParameters).Wait();
 
         public IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, object>> expression)
         {
@@ -85,15 +79,9 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
-        public IEnumerable<TModel> Select()
-        {
-            return SelectAsync().Result;
-        }
+        public IEnumerable<TModel> Select() => SelectAsync().Result;
 
-        public IEnumerable<TResult> Select<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc)
-        {
-            return SelectAsync(mapperFunc).Result;
-        }
+        public IEnumerable<TResult> Select<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc) => SelectAsync(mapperFunc).Result;
 
         public IDbQuery<TModel, TJoinTo> SkipTake(int skip, int take)
         {
@@ -101,30 +89,16 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
-        public Task<int> CountAsync()
-        {
-            return _dbProvider.ExecuteScalarAsync<int>(ToStringCount(), _parameters);
-        }
+        public Task<int> CountAsync() => _dbProvider.ExecuteScalarAsync<int>(ToStringCount(), _parameters);
 
-        public int Count()
-        {
-            return CountAsync().Result;
-        }
+        public int Count() => CountAsync().Result;
 
-        public Task<IEnumerable<TModel>> SelectAsync()
-        {
-            return SelectAsync(_dbMapper.BuildListFrom);
-        }
+        public Task<IEnumerable<TModel>> SelectAsync() => SelectAsync(_dbMapper.BuildListFrom);
 
         public Task<IEnumerable<TResult>> SelectAsync<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc)
-        {
-            return _dbProvider.ExecuteReaderAsync(ToString(), _parameters, mapperFunc);
-        }
+            => _dbProvider.ExecuteReaderAsync(ToString(), _parameters, mapperFunc);
 
-        public Task UpdateAsync(TModel model)
-        {
-            return UpdateAsync(model, _dbMapper.BuildDbParametersFrom);
-        }
+        public Task UpdateAsync(TModel model) => UpdateAsync(model, _dbMapper.BuildDbParametersFrom);
 
         public Task UpdateAsync(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters)
         {
@@ -142,15 +116,9 @@ namespace FutureState.AppCore.Data
             return _dbProvider.ExecuteNonQueryAsync(commandText, parameters);
         }
 
-        public void Update(TModel model)
-        {
-            UpdateAsync(model).Wait();
-        }
+        public void Update(TModel model) => UpdateAsync(model).Wait();
 
-        public Task DeleteAsync()
-        {
-            return _dbProvider.ExecuteNonQueryAsync(ToStringDelete(), _parameters);
-        }
+        public Task DeleteAsync() => _dbProvider.ExecuteNonQueryAsync(ToStringDelete(), _parameters);
 
         public string ToStringCount()
         {
@@ -159,17 +127,9 @@ namespace FutureState.AppCore.Data
                     GetExtendedWhereClause()).Trim();
         }
 
-        public string ToStringDelete()
-        {
-            return string.Format(_dbProvider.Dialect.DeleteFromJoin, _tableName, _joinExpression, _whereClause);
-        }
+        public string ToStringDelete() => string.Format(_dbProvider.Dialect.DeleteFromJoin, _tableName, _joinExpression, _whereClause);
 
-        public override string ToString()
-        {
-            return
-                string.Format(_dbProvider.Dialect.SelectFromJoin, _tableName, _joinExpression, GetExtendedWhereClause())
-                    .Trim();
-        }
+        public override string ToString() => string.Format(_dbProvider.Dialect.SelectFromJoin, _tableName, _joinExpression, GetExtendedWhereClause()).Trim();
 
         private string BuildJoinExpression(JoinType joinType, string joinString)
         {
@@ -191,9 +151,6 @@ namespace FutureState.AppCore.Data
             throw new NotSupportedException("The join type you selected is not yet supported.");
         }
 
-        private string GetExtendedWhereClause()
-        {
-            return string.Join(" ", _whereClause, _orderByClause, _skipTake);
-        }
+        private string GetExtendedWhereClause() => string.Join(" ", _whereClause, _orderByClause, _skipTake);
     }
 }

@@ -17,15 +17,10 @@ namespace FutureState.AppCore.Data
         {
             get
             {
-                if (_manyToOneProperties == null)
-                {
-                    _manyToOneProperties = typeof(TModel)
-                        .GetRuntimeProperties()
-                        .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
-                        .ToList();
-                }
-
-                return _manyToOneProperties;
+                return _manyToOneProperties ?? (_manyToOneProperties = typeof(TModel)
+                           .GetRuntimeProperties()
+                           .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
+                           .ToList());
             }
         }
 

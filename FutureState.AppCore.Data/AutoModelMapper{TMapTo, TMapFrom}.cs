@@ -15,22 +15,15 @@ namespace FutureState.AppCore.Data
         {
             get
             {
-                if (_properties == null)
-                {
-                    _properties = (from property in typeof(TMapTo).GetRuntimeProperties().OrderBy(p => p.Name)
-                                   let ignore = property.GetCustomAttributes(typeof(IgnoreAttribute), true).Any()
-                                   where !ignore
-                                   where property.CanWrite
-                                   select property).ToList();
-                }
-                return _properties;
+                return _properties ?? (_properties = (from property in typeof(TMapTo).GetRuntimeProperties().OrderBy(p => p.Name)
+                           let ignore = property.GetCustomAttributes(typeof(IgnoreAttribute), true).Any()
+                           where !ignore
+                           where property.CanWrite
+                           select property).ToList());
             }
         }
 
-        public virtual IEnumerable<TMapTo> BuildListFrom(IEnumerable<TMapFrom> inputList)
-        {
-            return inputList.Select(BuildFrom);
-        }
+        public virtual IEnumerable<TMapTo> BuildListFrom(IEnumerable<TMapFrom> inputList) => inputList.Select(BuildFrom);
 
         public virtual TMapTo BuildFrom(TMapFrom input, TMapTo output)
         {

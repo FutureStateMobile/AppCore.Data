@@ -9,9 +9,6 @@
             _dialect = dialect;
         }
 
-        public override string ToString()
-        {
-            return _dialect.UniqueConstraint;
-        }
+        public override string ToString() => _dialect.UniqueConstraint;
     }
 }

@@ -7,7 +7,7 @@ namespace FutureState.AppCore.Data
     {
         public readonly string Name;
         public readonly IList<Table> Tables;
-        public readonly IList<String> Indices; 
+        public readonly IList<string> Indices; 
         private readonly IDialect _dialect;
 
         public Database(string databaseName, IDialect dialect)

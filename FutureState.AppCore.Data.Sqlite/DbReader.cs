@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using Mono.Data.Sqlite;
+using System.Data.Common;
 
 namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbReader : IDbReader
     {
-        private readonly SqliteDataReader _reader;
+        private readonly DbDataReader _reader;
         private Dictionary<string, int> _hashOfNames;
 
-        public DbReader(SqliteDataReader reader)
+        public DbReader(DbDataReader reader)
         {
             _reader = reader;
         }
@@ -28,25 +28,13 @@ namespace FutureState.AppCore.Data.Sqlite
             return _reader.Read();
         }
 
-        public object this[int index]
-        {
-            get { return _reader[index]; }
-        }
+        public object this[int index] => _reader[index];
 
-        public object this[string name]
-        {
-            get { return HasName(name) ? _reader[name] : null; }
-        }
+        public object this[string name] => HasName(name) ? _reader[name] : null;
 
-        public int Depth
-        {
-            get { return _reader.Depth; }
-        }
+        public int Depth => _reader.Depth;
 
-        public bool IsClosed
-        {
-            get { return _reader.IsClosed; }
-        }
+        public bool IsClosed => _reader.IsClosed;
 
         public bool IsDbNull ( string name )
         {
@@ -58,20 +46,15 @@ namespace FutureState.AppCore.Data.Sqlite
             return _reader.IsDBNull(ordinal);
         }
 
-        public int RecordsAffected
-        {
-            get { return _reader.RecordsAffected; }
-        }
+        public int RecordsAffected => _reader.RecordsAffected;
 
         private bool HasName(string name)
         {
-            if (_hashOfNames == null)
+            if (_hashOfNames != null) return _hashOfNames.ContainsKey(name);
+            _hashOfNames = new Dictionary<string, int>();
+            for (var i = 0; i < _reader.FieldCount; i++)
             {
-                _hashOfNames = new Dictionary<string, int>();
-                for (var i = 0; i < _reader.FieldCount; i++)
-                {
-                    _hashOfNames.Add(_reader.GetName(i), i);
-                }
+                _hashOfNames.Add(_reader.GetName(i), i);
             }
             return _hashOfNames.ContainsKey(name);
         }

@@ -124,13 +124,25 @@ namespace FutureState.AppCore.Data.SqlServer
         private async Task ExecuteNonQueryAsync(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+            using (var transaction = connection.BeginTransaction())
             using (var command = connection.CreateCommand())
             {
-                command.CommandType = CommandType.Text;
-                command.CommandText = useStatement + commandText;
-                parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                try
+                {
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = useStatement + commandText;
+                    parameters.ForEach(
+                        parameter =>
+                                command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 
@@ -147,9 +159,7 @@ namespace FutureState.AppCore.Data.SqlServer
         {
             return ExecuteScalarAsync<TKey>(_useStatement, commandText, parameters);
         }
-
-    
-
+        
         private Task<TKey> ExecuteScalarAsync<TKey>(string useStatement, string commandText)
         {
             return ExecuteScalarAsync<TKey>(useStatement, commandText, new Dictionary<string, object>());
@@ -158,29 +168,40 @@ namespace FutureState.AppCore.Data.SqlServer
         private async Task<TKey> ExecuteScalarAsync<TKey>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+            using (var transaction = connection.BeginTransaction())
             using (var command = connection.CreateCommand())
             {
-                command.CommandType = CommandType.Text;
-                command.CommandText = useStatement + commandText;
-                parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
-
-                var result = command.ExecuteScalar();
-
-                if (typeof (TKey) == typeof (int))
-                    return (TKey) (result ?? 0);
-
-                if (typeof (TKey) == typeof (DateTime))
+                try
                 {
-                    DateTime retval;
-                    if (!DateTime.TryParse(result.ToString(), out retval))
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = useStatement + commandText;
+                    parameters.ForEach(
+                        parameter =>
+                                command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+
+                    var result = command.ExecuteScalar();
+                    transaction.Commit();
+                    if (typeof(TKey) == typeof(int))
+                        return (TKey) (result ?? 0);
+
+                    if (typeof(TKey) == typeof(DateTime))
                     {
-                        return (TKey) (object) DateTimeHelper.MinSqlValue;
+                        DateTime retval;
+                        if (!DateTime.TryParse(result.ToString(), out retval))
+                        {
+                            return (TKey) (object) DateTimeHelper.MinSqlValue;
+                        }
+
+                        return (TKey) (object) retval;
                     }
 
-                    return (TKey) (object) retval;
+                    return (TKey) result;
                 }
-
-                return (TKey) result;
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 

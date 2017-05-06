@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using System.Data.Common;
+using System.Data;
 
 namespace FutureState.AppCore.Data.Sqlite
 {
     public class DbReader : IDbReader
     {
-        private readonly DbDataReader _reader;
+        private readonly IDataReader _reader;
         private Dictionary<string, int> _hashOfNames;
 
-        public DbReader(DbDataReader reader)
+        public DbReader(IDataReader reader)
         {
             _reader = reader;
         }

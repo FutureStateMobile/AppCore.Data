@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using FluentAssertions;
 using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
@@ -11,7 +10,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
     [TestFixture]
     public class SimpleCrudTests : IntegrationTestBase
     {
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Do_Crud_On_Simple_Model_Object(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -31,7 +30,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             db.Update(expectedAuthor);
 
             // Assert Update
-            actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).Select().SingleOrDefault();
+            actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).Select().Single();
             actualAuthor.Should().NotBeNull();
             actualAuthor.ShouldBeEquivalentTo(expectedAuthor);
 
@@ -42,6 +41,5 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).Select().SingleOrDefault();
             actualAuthor.Should().BeNull();
         }
-
    }
 }

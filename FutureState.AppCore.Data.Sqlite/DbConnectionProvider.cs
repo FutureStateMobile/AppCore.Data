@@ -1,3 +1,5 @@
+using System.Data;
+using System.Threading.Tasks;
 using Mono.Data.Sqlite;
 
 namespace FutureState.AppCore.Data.Sqlite
@@ -29,13 +31,12 @@ namespace FutureState.AppCore.Data.Sqlite
             _connectionString = connectionString;
         }
 
-        public SqliteConnection GetOpenConnection()
+        public async Task<IDbConnection> GetOpenConnectionAsync()
         {
             var connection = new SqliteConnection(_connectionString);
             if (connection == null) throw new SqliteException("Could not create a database connection.");
 
-            connection.Open();
-
+            await connection.OpenAsync().ConfigureAwait(false);
             return connection;
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data
@@ -19,7 +20,7 @@ namespace FutureState.AppCore.Data
         {
             _propertyName = GetPropertyName(propertyExpression);
             _dbProvider = dbProvider;
-            _tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
+            _tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
         }
 
@@ -32,19 +33,34 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
+        public Task<TReturnType> MaxAsync()
+        {
+            return _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMax(), _parameters);
+        }
+
+        public Task<TReturnType> MinAsync()
+        {
+            return _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMin(), _parameters);
+        }
+
+        public Task<TReturnType> SumAsync()
+        {
+            return _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringSum(), _parameters);
+        }
+
         public TReturnType Max()
         {
-            return _dbProvider.ExecuteScalar<TReturnType>(ToStringMax(), _parameters);
+            return MaxAsync().Result;
         }
 
         public TReturnType Min()
         {
-            return _dbProvider.ExecuteScalar<TReturnType>(ToStringMin(), _parameters);
+            return MinAsync().Result;
         }
 
         public TReturnType Sum()
         {
-            return _dbProvider.ExecuteScalar<TReturnType>(ToStringSum(), _parameters);
+            return SumAsync().Result;
         }
 
         public string ToStringMax()
@@ -62,37 +78,29 @@ namespace FutureState.AppCore.Data
             return string.Format(_dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName).Trim();
         }
 
-        private static string GetPropertyName(Expression<Func<TModel, TReturnType>> propertyExpression)
-        {
-            return GetMemberInfo(propertyExpression).Member.Name;
-        }
-
         private static MemberExpression GetMemberInfo(Expression method)
         {
             var lambda = method as LambdaExpression;
 
             if (lambda == null)
-            {
-                throw new ArgumentNullException( "method" );
-            }
+                throw new ArgumentNullException("method");
 
             MemberExpression memberExpr = null;
 
             if (lambda.Body.NodeType == ExpressionType.Convert)
-            {
-                memberExpr = ((UnaryExpression)lambda.Body).Operand as MemberExpression;
-            }
+                memberExpr = ((UnaryExpression) lambda.Body).Operand as MemberExpression;
             else if (lambda.Body.NodeType == ExpressionType.MemberAccess)
-            {
                 memberExpr = lambda.Body as MemberExpression;
-            }
 
             if (memberExpr == null)
-            {
-                throw new ArgumentException( "method" );
-            }
+                throw new ArgumentException("method");
 
             return memberExpr;
+        }
+
+        private static string GetPropertyName(Expression<Func<TModel, TReturnType>> propertyExpression)
+        {
+            return GetMemberInfo(propertyExpression).Member.Name;
         }
     }
 }

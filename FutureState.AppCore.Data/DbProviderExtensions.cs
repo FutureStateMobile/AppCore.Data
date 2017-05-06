@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using FutureState.AppCore.Data.Attributes;
 using FutureState.AppCore.Data.Extensions;
 
@@ -19,7 +20,7 @@ namespace FutureState.AppCore.Data
         /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
         public static void Create<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
         {
-            Create(dbProvider, model, new AutoDbMapper<TModel>());
+            dbProvider.CreateAsync(model).Wait();
         }
 
         /// <summary>
@@ -33,7 +34,34 @@ namespace FutureState.AppCore.Data
         public static void Create<TModel>(this IDbProvider dbProvider, TModel model, IDbMapper<TModel> dbMapper)
             where TModel : class, new()
         {
-            var tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
+            dbProvider.CreateAsync(model, dbMapper).Wait();
+        }
+
+        /// <summary>
+        ///     CreateAsync a new record based on a Model
+        /// </summary>
+        /// <typeparam name="TModel">Model Type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="model">Model Object</param>
+        /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
+        public static Task CreateAsync<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
+        {
+            return CreateAsync(dbProvider, model, new AutoDbMapper<TModel>());
+        }
+
+        /// <summary>
+        ///     CreateAsync a new record based on a Model
+        /// </summary>
+        /// <typeparam name="TModel">Model Type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="model">Model Object</param>
+        /// <param name="dbMapper"></param>
+        /// <returns>The uniqueidentifier (Guid) of the newly created record.</returns>
+        public static async Task CreateAsync<TModel>(this IDbProvider dbProvider, TModel model,
+            IDbMapper<TModel> dbMapper)
+            where TModel : class, new()
+        {
+            var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
             var fieldNameList = dbMapper.FieldNames;
             var commandParams = dbMapper.BuildDbParametersFrom(model);
 
@@ -41,9 +69,42 @@ namespace FutureState.AppCore.Data
             var fields = string.Join(",", fieldNameList);
             var commandText = string.Format(dbProvider.Dialect.InsertInto, tableName, fields, parameters);
 
-            dbProvider.ExecuteNonQuery(commandText, commandParams);
+            await dbProvider.ExecuteNonQueryAsync(commandText, commandParams).ConfigureAwait(false);
 
-            UpdateManyToManyRelations(dbProvider, model, tableName, dbMapper);
+            await UpdateManyToManyRelationsAsync(dbProvider, model, tableName, dbMapper).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        ///     DeleteAsync the Database Record based on an expression
+        /// </summary>
+        /// <typeparam name="TModel">Model Type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="expression">The expression to use for the query</param>
+        /// <remarks>THIS IS A HARD DELETE. When you run this method, the record is GONE!</remarks>
+        public static void Delete<TModel>(this IDbProvider dbProvider, Expression<Func<TModel, object>> expression)
+            where TModel : class, new()
+        {
+            dbProvider.DeleteAsync(expression).Wait();
+        }
+
+        /// <summary>
+        ///     DeleteAsync the Database Record based on an expression
+        /// </summary>
+        /// <typeparam name="TModel">Model Type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="expression">The expression to use for the query</param>
+        /// <remarks>THIS IS A HARD DELETE. When you run this method, the record is GONE!</remarks>
+        public static Task DeleteAsync<TModel>(this IDbProvider dbProvider, Expression<Func<TModel, object>> expression)
+            where TModel : class, new()
+        {
+            var visitor = new WhereExpressionVisitor().Visit(expression);
+
+            // this is a hard delete. soft deletes will happen in the repository layer.
+            var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
+            var whereClause = string.Format(dbProvider.Dialect.Where, visitor.WhereExpression);
+            var commandText = string.Format(dbProvider.Dialect.DeleteFrom, tableName, whereClause);
+
+            return dbProvider.ExecuteNonQueryAsync(commandText, visitor.Parameters);
         }
 
         /// <summary>
@@ -73,7 +134,7 @@ namespace FutureState.AppCore.Data
         }
 
         /// <summary>
-        ///     Update the Database Record of a specified model.
+        ///     UpdateAsync the Database Record of a specified model.
         /// </summary>
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="dbProvider">Database Provider</param>
@@ -81,11 +142,11 @@ namespace FutureState.AppCore.Data
         /// <remarks>We're using the Id field to check the update.</remarks>
         public static void Update<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
         {
-            Update(dbProvider, model, new AutoDbMapper<TModel>());
+            dbProvider.UpdateAsync(model).Wait();
         }
 
         /// <summary>
-        ///     Update the Database Record of a specified model.
+        ///     UpdateAsync the Database Record of a specified model.
         /// </summary>
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="dbProvider">Database Provider</param>
@@ -95,35 +156,61 @@ namespace FutureState.AppCore.Data
         public static void Update<TModel>(this IDbProvider dbProvider, TModel model, IDbMapper<TModel> dbMapper)
             where TModel : class, new()
         {
-            var tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
+            dbProvider.UpdateAsync(model, dbMapper).Wait();
+        }
+
+        /// <summary>
+        ///     UpdateAsync the Database Record of a specified model.
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="model">Model Object to update</param>
+        /// <remarks>We're using the Id field to check the update.</remarks>
+        public static Task UpdateAsync<TModel>(this IDbProvider dbProvider, TModel model) where TModel : class, new()
+        {
+            return UpdateAsync(dbProvider, model, new AutoDbMapper<TModel>());
+        }
+
+        /// <summary>
+        ///     UpdateAsync the Database Record of a specified model.
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="dbProvider">Database Provider</param>
+        /// <param name="model">Model Object to update</param>
+        /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
+        /// <remarks>We're using the Id field to check the update.</remarks>
+        public static async Task UpdateAsync<TModel>(this IDbProvider dbProvider, TModel model,
+            IDbMapper<TModel> dbMapper)
+            where TModel : class, new()
+        {
+            var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
             var fieldNameList = dbMapper.FieldNames;
             var commandParams = dbMapper.BuildDbParametersFrom(model);
 
             var setFieldText = fieldNameList.Select(field => string.Format("[{0}] = @{0}", field)).ToList();
             var whereClause = string.Format(dbProvider.Dialect.Where, "Id = @Id");
-            var commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", setFieldText), whereClause);
+            var commandText = string.Format(dbProvider.Dialect.Update, tableName, string.Join(",", setFieldText),
+                whereClause);
 
-            dbProvider.ExecuteNonQuery(commandText, commandParams);
-            UpdateManyToManyRelations(dbProvider, model, tableName, dbMapper);
+            await dbProvider.ExecuteNonQueryAsync(commandText, commandParams).ConfigureAwait(false);
+            await UpdateManyToManyRelationsAsync(dbProvider, model, tableName, dbMapper).ConfigureAwait(false);
         }
 
-        /// <summary>
-        ///     Delete the Database Record based on an expression
-        /// </summary>
-        /// <typeparam name="TModel">Model Type</typeparam>
-        /// <param name="dbProvider">Database Provider</param>
-        /// <param name="expression">The expression to use for the query</param>
-        /// <remarks>THIS IS A HARD DELETE. When you run this method, the record is GONE!</remarks>
-        public static void Delete<TModel>(this IDbProvider dbProvider, Expression<Func<TModel, object>> expression) where TModel : class, new()
+        private static string GetJoinTableName(string tableName, string joinTableName)
         {
-            var visitor = new WhereExpressionVisitor().Visit(expression);
+            var names = new[] {tableName, joinTableName};
+            Array.Sort(names, StringComparer.CurrentCulture);
+            return string.Join("_", names);
+        }
 
-            // this is a hard delete. soft deletes will happen in the repository layer.
-            var tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
-            var whereClause = string.Format(dbProvider.Dialect.Where, visitor.WhereExpression);
-            var commandText = string.Format(dbProvider.Dialect.DeleteFrom, tableName, whereClause);
+        private static bool IsGenericList(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException("type");
 
-            dbProvider.ExecuteNonQuery(commandText, visitor.Parameters);
+            return type.GetTypeInfo().ImplementedInterfaces
+                .Where(i => i.IsConstructedGenericType)
+                .Any(i => i.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
         /// <summary>
@@ -134,13 +221,15 @@ namespace FutureState.AppCore.Data
         /// <param name="model">Actual object model</param>
         /// <param name="tableName">The name of the table</param>
         /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
-        private static void UpdateManyToManyRelations<TModel>(IDbProvider dbProvider, TModel model, string tableName, IDbMapper<TModel> dbMapper) where TModel : class, new()
+        private static async Task UpdateManyToManyRelationsAsync<TModel>(IDbProvider dbProvider, TModel model,
+            string tableName, IDbMapper<TModel> dbMapper) where TModel : class, new()
         {
             var leftModel = dbMapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
-            var leftKey = typeof (TModel).Name.Replace("Model", string.Empty) + "Id";
+            var leftKey = typeof(TModel).Name.Replace("Model", string.Empty) + "Id";
             var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
             var manyToManyFields =
-                typeof (TModel).GetRuntimeProperties().Where(property => property.GetCustomAttributes(typeof (ManyToManyAttribute), true).Any());
+                typeof(TModel).GetRuntimeProperties()
+                    .Where(property => property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any());
 
             foreach (var collection in manyToManyFields)
             {
@@ -152,8 +241,8 @@ namespace FutureState.AppCore.Data
                 var joinTableName = GetJoinTableName(tableName, collection.Name);
                 var deleteWhereClause = string.Format(dbProvider.Dialect.Where, string.Format("{0} = @{0}", leftKey));
                 var deleteCommandText = string.Format(dbProvider.Dialect.DeleteFrom, joinTableName, deleteWhereClause);
-                // Delete ALL records in the Join table associated with the `leftModel`
-                dbProvider.ExecuteNonQuery(deleteCommandText, parameters);
+                // DeleteAsync ALL records in the Join table associated with the `leftModel`
+                await dbProvider.ExecuteNonQueryAsync(deleteCommandText, parameters).ConfigureAwait(false);
 
                 var manyToManyCollection = collection.PropertyType.GenericTypeArguments.FirstOrDefault();
                 var listValues = (IEnumerable<object>) collection.GetValue(model, null);
@@ -180,29 +269,12 @@ namespace FutureState.AppCore.Data
                         var insertCommandText = string.Format(dbProvider.Dialect.InsertInto, joinTableName,
                             fieldsToInsert,
                             parametersToSet);
-                        dbProvider.ExecuteNonQuery(insertCommandText, parameters);
+                        await dbProvider.ExecuteNonQueryAsync(insertCommandText, parameters).ConfigureAwait(false);
                         // Remove the parameter for the next iteration.
                         parameters.Remove("@" + rightKey);
                     }
                 }
             }
-        }
-
-        private static string GetJoinTableName(string tableName, string joinTableName)
-        {
-            var names = new[] {tableName, joinTableName};
-            Array.Sort(names, StringComparer.CurrentCulture);
-            return string.Join("_", names);
-        }
-
-        private static bool IsGenericList(Type type)
-        {
-            if (type == null)
-                throw new ArgumentNullException("type");
-
-            return type.GetTypeInfo().ImplementedInterfaces
-                .Where(i => i.IsConstructedGenericType)
-                .Any(i => i.GetGenericTypeDefinition() == typeof (ICollection<>));
         }
 
 //        static Type CheckForEnumerable(PropertyInfo propertyInfo)
@@ -218,6 +290,7 @@ namespace FutureState.AppCore.Data
 //                }
 //            }
 //            return null;
+
 //        }
     }
 }

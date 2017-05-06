@@ -43,6 +43,7 @@
     <Compile Include="Attributes\ManyToOneAttribute.cs" />
     <Compile Include="Attributes\OneToManyAttribute.cs" />
     <Compile Include="AutoModelMapper.cs" />
+    <Compile Include="DbQuery{TModel, TJoinTo}.cs" />
     <Compile Include="ClusterType.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="Constraints\ClusteredConstraint.cs" />
@@ -61,22 +62,25 @@
     <Compile Include="Database.cs" />
     <Compile Include="DbProviderBase.cs" />
     <Compile Include="DbProviderExtensions.cs" />
-    <Compile Include="DbQuery.cs" />
+    <Compile Include="DbQuery{TModel}.cs" />
     <Compile Include="DbScalar.cs" />
     <Compile Include="Exceptions\DuplicateRecordException.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Inflector.cs" />
+    <Compile Include="IDbConnectionProvider.cs" />
     <Compile Include="IDbScalar.cs" />
     <Compile Include="IModelMapper.cs" />
+    <Compile Include="IDbQuery{TModel, TJoinTo}.cs" />
     <Compile Include="JoinExpressionVisitor.cs" />
     <Compile Include="JoinType.cs" />
+    <Compile Include="MigrationStep.cs" />
     <Compile Include="OrderByExpressionVisitor.cs" />
     <Compile Include="OrderDirection.cs" />
     <Compile Include="WhereExpressionVisitor.cs" />
     <Compile Include="IDbProvider.cs" />
-    <Compile Include="IDbQuery.cs" />
+    <Compile Include="IDbQuery{TModel}.cs" />
     <Compile Include="IDbReader.cs" />
     <Compile Include="IDialect.cs" />
     <Compile Include="Table.cs" />
@@ -121,6 +125,11 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="Attributes\OneToOneAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Data">
+      <HintPath>..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\MonoAndroid\v1.0\System.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

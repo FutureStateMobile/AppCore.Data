@@ -5,10 +5,10 @@ namespace FutureState.AppCore.Data.Exceptions
 {
     public class ExpressionMethodCallNotSupportedException : Exception
     {
-        private const string MethodNotSupported = "The method call '{0}' is not supported.";
+        private const string _methodNotSupported = "The method call '{0}' is not supported.";
 
         public ExpressionMethodCallNotSupportedException(MethodCallExpression expression)
-            : base(string.Format(MethodNotSupported, expression.Method.Name))
+            : base(string.Format(_methodNotSupported, expression.Method.Name))
         {
         }
     }

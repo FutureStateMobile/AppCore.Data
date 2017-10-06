@@ -32,14 +32,12 @@ namespace FutureState.AppCore.Data.Sqlite
 
         public override Task<bool> CheckIfDatabaseExistsAsync()
         {
-            var exists = File.Exists(_sqliteDatabasePath);
-            return Task.FromResult(exists);
+            return Task.Run(() => File.Exists(_sqliteDatabasePath));
         }
 
         public override Task CreateDatabaseAsync()
         {
-            SqliteConnection.CreateFile(_sqliteDatabasePath);
-            return Task.FromResult(true);
+            return Task.Run(()=>SqliteConnection.CreateFile(_sqliteDatabasePath));
         }
 
         public override Task DropDatabaseAsync()
@@ -79,21 +77,21 @@ namespace FutureState.AppCore.Data.Sqlite
         public override async Task<TResult> ExecuteReaderAsync<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-            using (var command = (SqliteCommand)connection.CreateCommand())
+            using (var command = (SqliteCommand) connection.CreateCommand())
             {
-                    command.CommandType = CommandType.Text;
-                    EnableForeignKeys(command);
-                    command.CommandText = commandText;
-                    parameters.ForEach(
-                        parameter =>
-                            command.Parameters.Add(new SqliteParameter(parameter.Key,
-                                parameter.Value ?? DBNull.Value)));
+                command.CommandType = CommandType.Text;
+                EnableForeignKeys(command);
+                command.CommandText = commandText;
+                parameters.ForEach(
+                    parameter =>
+                        command.Parameters.Add(new SqliteParameter(parameter.Key,
+                            parameter.Value ?? DBNull.Value)));
 
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var r = new DbReader(reader);
-                        return readerMapper(r);
-                    }
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var r = new DbReader(reader);
+                    return readerMapper(r);
+                }
             }
         }
 

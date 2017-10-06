@@ -225,7 +225,7 @@ namespace FutureState.AppCore.Data
             var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
             var manyToManyFields =
                 typeof(TModel).GetRuntimeProperties()
-                    .Where(property => property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any());
+                    .Where(property => property.GetCustomAttributes( true).Any(a=>a.GetType().Name== nameof(ManyToManyAttribute)));
 
             foreach (var collection in manyToManyFields)
             {

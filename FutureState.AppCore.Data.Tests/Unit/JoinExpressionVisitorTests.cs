@@ -8,21 +8,16 @@ namespace FutureState.AppCore.Data.Tests.Unit
     [TestFixture]
     public class JoinExpressionVisitorTests
     {
-        public static JoinExpressionVisitor JoinExpression<TModel, TJoinTo>(Expression<Func<TModel, TJoinTo, object>> joinExpression) where TModel : class, new()
-        {
-            JoinExpressionVisitor visitor = new JoinExpressionVisitor().Visit(joinExpression);
-            return visitor;
-        }
-
         [Test]
         public void ShouldBuildInnerJoinExpression()
         {
             // Setup
             const string expectedString = "[Books].[PublisherId] = [Publishers].[Id]";
-            JoinExpressionVisitor actualExpression = JoinExpression<BookModel, PublisherModel>((b, p) => b.Publisher.Id == p.Id);
+            var actualExpression = JoinExpression<BookModel, PublisherModel>((b, p) => 
+                b.Publisher.Id == p.Id);
 
             // Execute
-            string actualString = actualExpression.JoinExpression;
+            var actualString = actualExpression.JoinExpression;
 
             // Test
             Assert.AreEqual(expectedString, actualString);
@@ -33,13 +28,16 @@ namespace FutureState.AppCore.Data.Tests.Unit
         {
             // Setup
             const string expectedString = "[Publishers].[Id] = [Books].[PublisherId]";
-            JoinExpressionVisitor actualExpression = JoinExpression<BookModel, PublisherModel>((b, p) => p.Id == b.Publisher.Id);
+            var actualExpression = JoinExpression<BookModel, PublisherModel>((b, p) => 
+                p.Id == b.Publisher.Id);
 
             // Execute
-            string actualString = actualExpression.JoinExpression;
+            var actualString = actualExpression.JoinExpression;
 
             // Test
             Assert.AreEqual(expectedString, actualString);
         }
+
+        private static JoinExpressionVisitor JoinExpression<TModel, TJoinTo>(Expression<Func<TModel, TJoinTo, object>> joinExpression) where TModel : class, new() => new JoinExpressionVisitor().Visit(joinExpression);
     }
 }

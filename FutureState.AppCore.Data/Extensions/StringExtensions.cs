@@ -1,4 +1,5 @@
-﻿using FutureState.AppCore.Data.Helpers;
+﻿using System.Text.RegularExpressions;
+using FutureState.AppCore.Data.Helpers;
 
 namespace FutureState.AppCore.Data.Extensions
 {
@@ -6,7 +7,9 @@ namespace FutureState.AppCore.Data.Extensions
     {
         public static string BuildTableName(this string value)
         {
-            return value.Replace( "Model", "" ).Pluralize();
+            var name = value.Replace("Model", "");
+            name = Regex.Replace(name, @"\`\d", "");
+            return name.Pluralize();
         }
     }
 }

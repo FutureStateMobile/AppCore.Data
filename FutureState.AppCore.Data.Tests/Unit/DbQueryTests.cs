@@ -1,4 +1,5 @@
 ﻿using System;
+using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
 using NUnit.Framework;
 
@@ -7,6 +8,19 @@ namespace FutureState.AppCore.Data.Tests.Unit
     [TestFixture]
     public class DbQueryTests : DbQueryTestBase
     {
+        [Test,TestCaseSource("Repositories")]
+        public void ShouldStripGenericMetaFromClassNameWhenBuildingQuery(IDbProvider dbProvider)
+        {
+            // setup
+            const string expectedQuery = "SELECT [Foos].* FROM [Foos]";
+
+            // execute
+            var actualQuery = dbProvider.Query<Foo<Bar,Bar,Bar>>().ToString();
+
+            // assert
+            Assert.AreEqual(expectedQuery,actualQuery);
+        }
+
         // NOTE: These tests have no way of working against a DELETE command.
         [Test, TestCaseSource( "Repositories" )]
         public void ShouldBuildQueryForUsersGettingCount ( IDbProvider dbProvider )

@@ -19,7 +19,7 @@ namespace FutureState.AppCore.Data
             {
                 return _manyToOneProperties ?? (_manyToOneProperties = typeof(TModel)
                            .GetRuntimeProperties()
-                           .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
+                           .Where(property => property.GetCustomAttributes( true).Any(a=>a.GetType().Name== nameof(ManyToOneAttribute)))
                            .ToList());
             }
         }
@@ -28,18 +28,18 @@ namespace FutureState.AppCore.Data
         {
             get
             {
-                if (_properties == null)
-                {
-                    _properties = (from property in typeof(TModel).GetRuntimeProperties().OrderBy(p => p.Name)
-                                   let ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(IgnoreAttribute), true).Any()
-                                   where !ignore
-                                   select property).ToList();
-                }
-                return _properties;
+                return _properties ?? (_properties = (from property in typeof(TModel).GetRuntimeProperties().OrderBy(p => p.Name)
+                           let ignore = property.GetCustomAttributes(true).Any(
+                               a =>
+                               {
+                                   var name = a.GetType().Name;
+                                   return name == nameof(OneToManyAttribute) ||
+                                          name == nameof(ManyToOneAttribute) ||
+                                          name == nameof(ManyToManyAttribute) ||
+                                          name == nameof(IgnoreAttribute);
+                               })
+                           where !ignore
+                           select property).ToList());
             }
         }
 

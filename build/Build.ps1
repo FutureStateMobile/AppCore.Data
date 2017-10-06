@@ -52,7 +52,7 @@ task Compile -Depends Clean, MakeBuildDir, SetVersion -Description "Compiles the
     # There is a bug in msbuild that doesn't allow us to specify the buildnumber or assembly version at the command CommandLine
     # Such as: "/p:ApplicationRevision=$buildNumber" "/p:ApplicationVersion=$version"
 
-    Exec { msbuild $solutionFile "/p:Configuration=Release" "/p:OutDir=$buildOutputDir\" } "Build Failed - Compilation"
+    Exec { msbuild $solutionFile "/p:Configuration=Release" "/p:OutDir=$buildOutputDir\" "/p:TargetFrameworkRootPath=`"C:/Program Files (x86)/Reference Assemblies/Microsoft/Framework/`"" } "Build Failed - Compilation"
 }
 
 task UnitTest -Depends Compile -Description "Runs only Unit Tests" {

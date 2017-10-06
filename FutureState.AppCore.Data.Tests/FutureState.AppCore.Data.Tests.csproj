@@ -96,6 +96,7 @@
   <ItemGroup>
     <Compile Include="Helpers\CustomTypes\CustomDialect.cs" />
     <Compile Include="Helpers\CustomTypes\LatLong.cs" />
+    <Compile Include="Helpers\Fixtures\GenericFixture.cs" />
     <Compile Include="Helpers\Fixtures\GooseFixture.cs" />
     <Compile Include="Helpers\Migrations\Migration002.cs" />
     <Compile Include="Helpers\Migrations\Migration001.cs" />

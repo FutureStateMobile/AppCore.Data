@@ -12,7 +12,7 @@ namespace FutureState.AppCore.Data
         void Delete();
         Task DeleteAsync();
         IDbQuery<TModel, TJoinTo> On(Expression<Func<TModel, TJoinTo, object>> joinExpression);
-
+        
         IDbQuery<TModel, TJoinTo> OrderBy(Expression<Func<TModel, TJoinTo, object>> orderByExpression,
             OrderDirection direction);
 
@@ -28,6 +28,6 @@ namespace FutureState.AppCore.Data
         void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters);
         Task UpdateAsync(TModel model);
         Task UpdateAsync(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters);
-        IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, object>> whereExpression);
+        IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, bool>> whereExpression);
     }
 }

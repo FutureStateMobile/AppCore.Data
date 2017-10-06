@@ -27,6 +27,6 @@ namespace FutureState.AppCore.Data
         void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters);
         Task UpdateAsync(TModel model);
         Task UpdateAsync(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters);
-        IDbQuery<TModel> Where(Expression<Func<TModel, object>> whereExpression);
+        IDbQuery<TModel> Where(Expression<Func<TModel, bool>> whereExpression);
     }
 }

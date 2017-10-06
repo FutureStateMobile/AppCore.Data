@@ -61,7 +61,7 @@ namespace FutureState.AppCore.Data
             return new DbQuery<TModel, TJoinTo>(_dbProvider, JoinType.ManyToMany, _dbMapper);
         }
 
-        public IDbQuery<TModel> Where(Expression<Func<TModel, object>> expression)
+        public IDbQuery<TModel> Where(Expression<Func<TModel, bool>> expression)
         {
             _whereExpressionVisitor = new WhereExpressionVisitor(_parameters).Visit(expression);
             _parameters = _whereExpressionVisitor.Parameters;

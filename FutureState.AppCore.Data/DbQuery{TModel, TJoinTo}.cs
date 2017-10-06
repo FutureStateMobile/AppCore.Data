@@ -54,7 +54,7 @@ namespace FutureState.AppCore.Data
 
         public void Update(TModel model, Func<TModel, IDictionary<string, object>> mapToDbParameters) => UpdateAsync(model, mapToDbParameters).Wait();
 
-        public IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, object>> expression)
+        public IDbQuery<TModel, TJoinTo> Where(Expression<Func<TModel, TJoinTo, bool>> expression)
         {
             _whereExpressionVisitor = new WhereExpressionVisitor(_parameters).Visit(expression);
             _parameters = _whereExpressionVisitor.Parameters;

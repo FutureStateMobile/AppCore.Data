@@ -13,16 +13,10 @@ namespace FutureState.AppCore.Data
         private IList<PropertyInfo> _manyToOneProperties;
         private List<string> _fieldNames;
 
-        private IEnumerable<PropertyInfo> ManyToOneProperties
-        {
-            get
-            {
-                return _manyToOneProperties ?? (_manyToOneProperties = typeof(TModel)
-                           .GetRuntimeProperties()
-                           .Where(property => property.GetCustomAttributes( true).Any(a=>a.GetType().Name== nameof(ManyToOneAttribute)))
-                           .ToList());
-            }
-        }
+        private IEnumerable<PropertyInfo> ManyToOneProperties => _manyToOneProperties ?? (_manyToOneProperties = typeof(TModel)
+                                                                     .GetRuntimeProperties()
+                                                                     .Where(property => property.GetCustomAttributes( true).Any(a => a.GetType().Name == nameof(ManyToOneAttribute)))
+                                                                     .ToList());
 
         private IEnumerable<PropertyInfo> Properties
         {

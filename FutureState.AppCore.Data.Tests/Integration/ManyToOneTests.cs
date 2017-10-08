@@ -48,17 +48,16 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             var thirdBook = BookFixture.GetThirdBook(publisher);
             var fourthBook = BookFixture.GetFourthBook(publisher);
-
-            // Execute
             db.Create(thirdBook);
             db.Create(fourthBook);
 
-            // Assert
-            var publishers = db.Query<PublisherModel>()
-                               .Join<BookModel>().On((p, b) => b.Publisher.Id == p.Id)
-                               .Where((p, b) => b.Name == fourthBook.Name)
-                               .Select().ToList();
+            // Execute
+            var query = db.Query<PublisherModel>()
+                .Join<BookModel>().On((p, b) => b.Publisher.Id == p.Id)
+                .Where((p, b) => b.Name == fourthBook.Name);
+            var publishers = query.Select().ToList();
 
+            // Assert
             publishers.Should().HaveCount(1);
             publishers[0].ShouldBeEquivalentTo(publisher);
         }

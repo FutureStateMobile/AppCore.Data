@@ -108,6 +108,7 @@
     <Compile Include="Integration\InflectionTests.cs" />
     <Compile Include="Integration\ManyToManyTests.cs" />
     <Compile Include="Integration\ManyToOneTests.cs" />
+    <Compile Include="Integration\QueryHelperTests.cs" />
     <Compile Include="Integration\SimpleCrudTests.cs" />
     <Compile Include="Unit\InflectionTests.cs" />
     <Compile Include="Unit\JoinExpressionVisitorTests.cs" />

@@ -88,8 +88,8 @@ namespace FutureState.AppCore.Data.Sqlite
                             parameter.Value ?? DBNull.Value)));
 
                 using (var reader = await command.ExecuteReaderAsync())
+                using (var r = new DbReader(reader))
                 {
-                    var r = new DbReader(reader);
                     return readerMapper(r);
                 }
             }

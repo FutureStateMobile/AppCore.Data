@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 
 namespace FutureState.AppCore.Data.Sqlite
 {
-    public class DbReader : IDbReader
+    public class DbReader : IDbReader, IDisposable
     {
         private readonly IDataReader _reader;
         private Dictionary<string, int> _hashOfNames;
@@ -42,6 +43,11 @@ namespace FutureState.AppCore.Data.Sqlite
                 _hashOfNames.Add(_reader.GetName(i), i);
             }
             return _hashOfNames.ContainsKey(name);
+        }
+
+        public void Dispose()
+        {
+            _reader?.Dispose();
         }
     }
 }

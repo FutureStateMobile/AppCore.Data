@@ -89,6 +89,7 @@ namespace FutureState.AppCore.Data
         public IEnumerable<TModel> Select() => SelectAsync().Result;
 
         public Task<IEnumerable<TResult>> SelectAsync<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc) => _dbProvider.ExecuteReaderAsync(ToString(), _parameters, mapperFunc);
+
         public TModel Single() => SelectAsync().Result.Single();
 
         public TResult Single<TResult>(Func<IDbReader, IEnumerable<TResult>> mapperFunc) => SelectAsync(mapperFunc).Result.Single();

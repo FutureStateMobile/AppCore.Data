@@ -130,9 +130,9 @@ namespace FutureState.AppCore.Data.SqlServer
                 command.CommandText = useStatement + commandText;
                 parameters.ForEach(
                     parameter =>
-                            command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                        command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
             }
         }
 

@@ -106,9 +106,10 @@ namespace FutureState.AppCore.Data
                 Array.Sort(names, StringComparer.CurrentCulture);
                 var manyManyTableName = string.Join("_", names);
 
-                return string.Format(_dbProvider.Dialect.ManyToManyJoin,
+                var join =  string.Format(_dbProvider.Dialect.ManyToManyJoin,
                     _tableName, "Id", manyManyTableName, _tableName.Singularize() + "Id", _joinTableName,
                     _joinTableName.Singularize() + "Id");
+                return join;
             }
             throw new NotSupportedException("The join type you selected is not yet supported.");
         }

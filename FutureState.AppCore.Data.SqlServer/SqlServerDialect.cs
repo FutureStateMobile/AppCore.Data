@@ -1,4 +1,6 @@
-﻿namespace FutureState.AppCore.Data.SqlServer
+﻿using System;
+
+namespace FutureState.AppCore.Data.SqlServer
 {
     public class SqlServerDialect : IDialect
     {
@@ -62,8 +64,9 @@
 
         public string LeftJoin => "LEFT OUTER JOIN [{0}] ON {1}";
 
+        [Obsolete]
         public string OldManyToManyJoin => "INNER JOIN [{0}] ON [{0}].[{1}Id] = [{2}].[Id] INNER JOIN [{3}] ON [{0}].[{4}Id] = [{3}].[Id]";
-
+        
         public string ManyToManyJoin => "INNER JOIN [{2}] ON [{2}].[{3}] = [{0}].[{1}] INNER JOIN [{4}] ON [{2}].[{5}] = [{4}].[{1}]";
 
         public string SkipTake => "OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY";

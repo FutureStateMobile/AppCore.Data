@@ -110,6 +110,30 @@ namespace FutureState.AppCore.Data
             await UpdateManyToManyRelationsAsync(model, tableName, dbMapper).ConfigureAwait(false);
         }
 
+        //public Task BulkCreateAsync<TModel>(IList<TModel> model) where TModel : class, new() => BulkCreateAsync(model, new AutoDbMapper<TModel>());
+
+        //public async Task BulkCreateAsync<TModel>(IList<TModel> model, IDbMapper<TModel> dbMapper) where TModel : class, new()
+        //{
+
+            //var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
+            //var fieldNameList = dbMapper.FieldNames;
+            //var paramList = new List<IDictionary<string, object>>();
+            //foreach (var m in model)
+            //{
+            //    var commandParams = dbMapper.BuildDbParametersFrom(m);
+            //    paramList.Add(commandParams);
+            //}
+
+            //var parameters = "@" + string.Join(",@", fieldNameList);
+            //var fields = string.Join(",", fieldNameList);
+            //var commandText = string.Format(Dialect.InsertInto, tableName, fields, parameters);
+
+            //await ExecuteNonQueryAsync(commandText, paramList).ConfigureAwait(false);
+
+            //foreach(var m in model)
+            //    await UpdateManyToManyRelationsAsync(m, tableName, dbMapper).ConfigureAwait(false);
+        //}
+
         /// <summary>
         ///     DeleteAsync the Database Record based on an expression
         /// </summary>

@@ -86,7 +86,10 @@ namespace FutureState.AppCore.Data
                 var manyToOneObject = propertyInfo.GetValue(model);
                 if (manyToOneObject == null)
                 {
-                    dictionary.Add(dbColumnName, null);
+                    if (!dictionary.ContainsKey(dbColumnName))
+                    {
+                        dictionary.Add(dbColumnName, null);
+                    }
                     return;
                 }
 
@@ -115,8 +118,8 @@ namespace FutureState.AppCore.Data
                         idValue = null;
                     }
                 }
-
-                dictionary.Add(dbColumnName, idValue);
+                if(!dictionary.ContainsKey(dbColumnName))
+                    dictionary.Add(dbColumnName, idValue);
             });
         }
 

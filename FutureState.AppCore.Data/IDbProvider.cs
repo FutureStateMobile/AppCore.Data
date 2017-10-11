@@ -20,6 +20,8 @@ namespace FutureState.AppCore.Data
         void Create<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+        //Task BulkCreateAsync<TModel>(IList<TModel> model) where TModel : class, new();
+        //Task BulkCreateAsync<TModel>(IList<TModel> model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         void CreateDatabase();
         Task CreateDatabaseAsync();
         void Delete<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new();

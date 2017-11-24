@@ -27,10 +27,10 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Update
             expectedAuthor.FirstName = "Bob";
             expectedAuthor.LastName = "Jones";
-            db.Update(expectedAuthor);
+            db.Update(expectedAuthor, a => a.Id);
 
             // Assert Update
-            actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).Select().Single();
+            actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).Single();
             actualAuthor.Should().NotBeNull();
             actualAuthor.ShouldBeEquivalentTo(expectedAuthor);
 

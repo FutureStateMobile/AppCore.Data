@@ -13,7 +13,7 @@ namespace FutureState.AppCore.Data
     {
         // Database specific stuff
         public abstract IDialect Dialect { get; }
-        public string DatabaseName { get; set; }
+        public string DatabaseName { get; protected set; }
         public abstract Task<string> LoadSqlFileAsync<TDbProvider>(string fileName);
 
         public string LoadSqlFile<TDbProvider>(string fileName) => LoadSqlFileAsync<TDbProvider>(fileName).Result;
@@ -115,23 +115,23 @@ namespace FutureState.AppCore.Data
         //public async Task BulkCreateAsync<TModel>(IList<TModel> model, IDbMapper<TModel> dbMapper) where TModel : class, new()
         //{
 
-            //var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
-            //var fieldNameList = dbMapper.FieldNames;
-            //var paramList = new List<IDictionary<string, object>>();
-            //foreach (var m in model)
-            //{
-            //    var commandParams = dbMapper.BuildDbParametersFrom(m);
-            //    paramList.Add(commandParams);
-            //}
+        //var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
+        //var fieldNameList = dbMapper.FieldNames;
+        //var paramList = new List<IDictionary<string, object>>();
+        //foreach (var m in model)
+        //{
+        //    var commandParams = dbMapper.BuildDbParametersFrom(m);
+        //    paramList.Add(commandParams);
+        //}
 
-            //var parameters = "@" + string.Join(",@", fieldNameList);
-            //var fields = string.Join(",", fieldNameList);
-            //var commandText = string.Format(Dialect.InsertInto, tableName, fields, parameters);
+        //var parameters = "@" + string.Join(",@", fieldNameList);
+        //var fields = string.Join(",", fieldNameList);
+        //var commandText = string.Format(Dialect.InsertInto, tableName, fields, parameters);
 
-            //await ExecuteNonQueryAsync(commandText, paramList).ConfigureAwait(false);
+        //await ExecuteNonQueryAsync(commandText, paramList).ConfigureAwait(false);
 
-            //foreach(var m in model)
-            //    await UpdateManyToManyRelationsAsync(m, tableName, dbMapper).ConfigureAwait(false);
+        //foreach(var m in model)
+        //    await UpdateManyToManyRelationsAsync(m, tableName, dbMapper).ConfigureAwait(false);
         //}
 
         /// <summary>
@@ -183,8 +183,11 @@ namespace FutureState.AppCore.Data
         /// </summary>
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="model">Model Object to update</param>
+        /// <param name="identifierName"></param>
         /// <remarks>We're using the Id field to check the update.</remarks>
-        public void Update<TModel>(TModel model) where TModel : class, new() => UpdateAsync(model).Wait();
+        public void Update<TModel>(TModel model, string identifierName = "Id") where TModel : class, new() => UpdateAsync(model, identifierName).Wait();
+
+        public void Update<TModel>(TModel model, Expression<Func<TModel, object>> identifier) where TModel : class, new() => UpdateAsync(model, identifier).Wait();
 
         /// <summary>
         ///     UpdateAsync the Database Record of a specified model.
@@ -192,16 +195,35 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="model">Model Object to update</param>
         /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
+        /// <param name="identifierName"></param>
         /// <remarks>We're using the Id field to check the update.</remarks>
-        public void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new() => UpdateAsync(model, dbMapper).Wait();
+        public void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper, string identifierName = "Id") where TModel : class, new() => UpdateAsync(model, dbMapper, identifierName).Wait();
+
+        public void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper, Expression<Func<TModel, object>> identifier) where TModel : class, new() => UpdateAsync(model, dbMapper, identifier).Wait();
+
+        public Task UpdateAsync<TModel>(TModel model, Expression<Func<TModel, object>> identifier) where TModel : class, new() => UpdateAsync(model, new AutoDbMapper<TModel>(), identifier);
 
         /// <summary>
         ///     UpdateAsync the Database Record of a specified model.
         /// </summary>
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="model">Model Object to update</param>
+        /// <param name="identifierName"></param>
         /// <remarks>We're using the Id field to check the update.</remarks>
-        public Task UpdateAsync<TModel>(TModel model) where TModel : class, new() => UpdateAsync(model, new AutoDbMapper<TModel>());
+        public Task UpdateAsync<TModel>(TModel model, string identifierName = "Id") where TModel : class, new() => UpdateAsync(model, new AutoDbMapper<TModel>(), identifierName);
+
+        public Task UpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper, Expression<Func<TModel, object>> identifier) where TModel : class, new()
+        {
+
+            var body = identifier.Body as MemberExpression;
+
+            if (body == null)
+            {
+                var ubody = (UnaryExpression)identifier.Body;
+                body = ubody.Operand as MemberExpression;
+            }
+            return UpdateAsync(model, dbMapper, body?.Member.Name ?? "Id");
+        }
 
         /// <summary>
         ///     UpdateAsync the Database Record of a specified model.
@@ -209,9 +231,11 @@ namespace FutureState.AppCore.Data
         /// <typeparam name="TModel">Model type</typeparam>
         /// <param name="model">Model Object to update</param>
         /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
+        /// <param name="identifierName"></param>
         /// <remarks>We're using the Id field to check the update.</remarks>
         public async Task UpdateAsync<TModel>(TModel model,
-            IDbMapper<TModel> dbMapper)
+            IDbMapper<TModel> dbMapper,
+            string identifierName = "Id")
             where TModel : class, new()
         {
             var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
@@ -219,7 +243,7 @@ namespace FutureState.AppCore.Data
             var commandParams = dbMapper.BuildDbParametersFrom(model);
 
             var setFieldText = fieldNameList.Select(field => string.Format("[{0}] = @{0}", field)).ToList();
-            var whereClause = string.Format(Dialect.Where, "Id = @Id");
+            var whereClause = string.Format(Dialect.Where, string.Format("{0} = @{0}", identifierName));
             var commandText = string.Format(Dialect.Update, tableName, string.Join(",", setFieldText),
                 whereClause);
 
@@ -229,7 +253,7 @@ namespace FutureState.AppCore.Data
 
         private static string GetJoinTableName(string tableName, string joinTableName)
         {
-            var names = new[] {tableName, joinTableName};
+            var names = new[] { tableName, joinTableName };
             Array.Sort(names, StringComparer.CurrentCulture);
             return string.Join("_", names);
         }
@@ -246,10 +270,10 @@ namespace FutureState.AppCore.Data
         {
             var leftModel = dbMapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
             var leftKey = typeof(TModel).Name.Replace("Model", string.Empty) + "Id";
-            var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
+            var parameters = new Dictionary<string, object> { { "@" + leftKey, leftModel.Value } };
             var manyToManyFields =
                 typeof(TModel).GetRuntimeProperties()
-                    .Where(property => property.GetCustomAttributes( true).Any(a=>a.GetType().Name== nameof(ManyToManyAttribute)));
+                    .Where(property => property.GetCustomAttributes(true).Any(a => a.GetType().Name == nameof(ManyToManyAttribute)));
 
             foreach (var collection in manyToManyFields)
             {
@@ -265,7 +289,7 @@ namespace FutureState.AppCore.Data
                 await ExecuteNonQueryAsync(deleteCommandText, parameters).ConfigureAwait(false);
 
                 var manyToManyCollection = collection.PropertyType.GenericTypeArguments.FirstOrDefault();
-                var listValues = (IEnumerable<object>) collection.GetValue(model, null);
+                var listValues = (IEnumerable<object>)collection.GetValue(model, null);
                 if (listValues == null) continue;
 
                 foreach (var value in listValues.Distinct())

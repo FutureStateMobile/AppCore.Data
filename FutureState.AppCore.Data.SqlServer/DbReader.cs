@@ -13,55 +13,25 @@ namespace FutureState.AppCore.Data.SqlServer
             _reader = reader;
         }
 
-        public void Close()
-        {
-            _reader.Close();
-        }
+        public void Close() => _reader.Close();
 
-        public bool NextResult()
-        {
-            return _reader.NextResult();
-        }
+        public bool NextResult() => _reader.NextResult();
 
-        public bool Read()
-        {
-            return _reader.Read();
-        }
+        public bool Read() => _reader.Read();
 
-        public object this[int index]
-        {
-            get { return _reader[index]; }
-        }
+        public object this[int index] => _reader[index];
 
-        public object this[string name]
-        {
-            get { return HasName(name) ? _reader[name] : null; }
-        }
+        public object this[string name] => HasName(name) ? _reader[name] : null;
 
-        public int Depth
-        {
-            get { return _reader.Depth; }
-        }
+        public int Depth => _reader.Depth;
 
-        public bool IsClosed
-        {
-            get { return _reader.IsClosed; }
-        }
+        public bool IsClosed => _reader.IsClosed;
 
-        public bool IsDbNull(string name)
-        {
-            return IsDbNull(_reader.GetOrdinal(name));
-        }
+        public bool IsDbNull(string name) => IsDbNull(_reader.GetOrdinal(name));
 
-        public bool IsDbNull(int ordinal)
-        {
-            return _reader.IsDBNull(ordinal);
-        }
+        public bool IsDbNull(int ordinal) => _reader.IsDBNull(ordinal);
 
-        public int RecordsAffected
-        {
-            get { return _reader.RecordsAffected; }
-        }
+        public int RecordsAffected => _reader.RecordsAffected;
 
         private bool HasName(string name)
         {

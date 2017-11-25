@@ -26,10 +26,7 @@ namespace FutureState.AppCore.Data
             _strings = new StringBuilder();
         }
 
-        public string WhereExpression
-        {
-            get { return "( " + _strings.ToString().Trim() + " )"; }
-        }
+        public string WhereExpression => "( " + _strings.ToString().Trim() + " )";
 
         public WhereExpressionVisitor Visit(Expression expression)
         {

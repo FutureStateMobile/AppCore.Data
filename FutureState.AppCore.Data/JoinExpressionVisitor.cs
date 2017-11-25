@@ -15,10 +15,7 @@ namespace FutureState.AppCore.Data
             _strings = new StringBuilder();
         }
 
-        public String JoinExpression
-        {
-            get { return _strings.ToString().Trim(); }
-        }
+        public string JoinExpression => _strings.ToString().Trim();
 
         public JoinExpressionVisitor Visit(Expression expression)
         {
@@ -26,7 +23,7 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
-        private Expression VisitExpression(Expression expression)
+        private void VisitExpression(Expression expression)
         {
             if (expression == null)
                 throw new NullReferenceException();
@@ -34,36 +31,37 @@ namespace FutureState.AppCore.Data
             switch (expression.NodeType)
             {
                 case ExpressionType.Lambda:
-                    return VisitLambda((LambdaExpression) expression);
+                    VisitLambda((LambdaExpression) expression);
+                    return;
                 case ExpressionType.MemberAccess:
-                    return VisitMemberAccess((MemberExpression) expression);
+                    VisitMemberAccess((MemberExpression) expression);
+                    return;
                 case ExpressionType.Convert:
-                    return VisitUnary((UnaryExpression)expression);
+                    VisitUnary((UnaryExpression)expression);
+                    return;
                 case ExpressionType.Equal:
-                    return VisitBinary((BinaryExpression)expression);
+                    VisitBinary((BinaryExpression)expression);
+                    return;
                 default:
                     throw new ExpressionNotSupportedException(expression);
             }
         }
 
-        private Expression VisitLambda(LambdaExpression expression)
+        private void VisitLambda(LambdaExpression expression)
         {
             Visit(expression.Body);
-            return expression;
         }
 
-        private Expression VisitMemberAccess(MemberExpression expression)
+        private void VisitMemberAccess(MemberExpression expression)
         {
             var tableName = BuildTableName(expression);
             var columnName = BuildColumnName(expression);
             _strings.AppendFormat("[{0}].[{1}]", tableName, columnName);
-            return expression;
         }
 
-        private Expression VisitUnary(UnaryExpression expression)
+        private void VisitUnary(UnaryExpression expression)
         {
             Visit(expression.Operand);
-            return expression;
         }
 
 
@@ -84,21 +82,17 @@ namespace FutureState.AppCore.Data
         private string BuildTableName(Expression expression)
         {
             var memberExpression = expression as MemberExpression;
-            if (memberExpression != null)
-            {
-                return BuildTableName(memberExpression.Expression);
-            }
-            return expression.Type.Name.BuildTableName();
+            return memberExpression != null ? 
+                BuildTableName(memberExpression.Expression) : 
+                expression.Type.Name.BuildTableName();
         }
 
         private string BuildColumnName(Expression expression)
         {
             var memberExpression = expression as MemberExpression;
-            if (memberExpression != null)
-            {
-                return BuildColumnName(memberExpression.Expression) + memberExpression.Member.Name;
-            }
-            return "";
+            return memberExpression != null ? 
+                BuildColumnName(memberExpression.Expression) + memberExpression.Member.Name : 
+                "";
         }
 
     }

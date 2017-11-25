@@ -16,8 +16,8 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <AndroidUseLatestPlatformSdk />
-    <TargetFrameworkVersion>v4.0.3</TargetFrameworkVersion>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,9 +57,6 @@
     </Compile>
     <Compile Include="..\FutureState.AppCore.Data.Sqlite\DbReader.cs">
       <Link>DbReader.cs</Link>
-    </Compile>
-    <Compile Include="..\FutureState.AppCore.Data.Sqlite\IDbConnectionProvider.cs">
-      <Link>IDbConnectionProvider.cs</Link>
     </Compile>
     <Compile Include="..\FutureState.AppCore.Data.Sqlite\SqliteSettings.cs">
       <Link>SqliteSettings.cs</Link>

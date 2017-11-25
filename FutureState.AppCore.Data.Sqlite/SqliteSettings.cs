@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FutureState.AppCore.Data.Sqlite
 {
@@ -6,20 +6,10 @@ namespace FutureState.AppCore.Data.Sqlite
     {
         // Default Values
         //-----------------------------
-        private int _cacheSize = 2000;
-        private TimeSpan _defaultTimeout = TimeSpan.FromSeconds(0.1);
-        private bool _failIfMissing = true;
-        private SQLiteJournalModeEnum _journalMode = SQLiteJournalModeEnum.Delete;
         private int _pageSize = 1024;
-        private SynchronizationModes _syncMode = SynchronizationModes.Normal;
-        private bool _enforceForeignKeys = true;
         //-----------------------------
 
-        public SQLiteJournalModeEnum JournalMode
-        {
-            get { return _journalMode; }
-            set { _journalMode = value; }
-        }
+        public SQLiteJournalModeEnum JournalMode { get; set; } = SQLiteJournalModeEnum.Delete;
 
         public int PageSize
         {
@@ -28,7 +18,7 @@ namespace FutureState.AppCore.Data.Sqlite
             {
                 if (value > 65536)
                 {
-                    _cacheSize = 65536;
+                    CacheSize = 65536;
                 }
                 else
                 {
@@ -37,37 +27,17 @@ namespace FutureState.AppCore.Data.Sqlite
             }
         }
 
-        public TimeSpan DefaultTimeout
-        {
-            get { return _defaultTimeout; }
-            set { _defaultTimeout = value; }
-        }
+        public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(0.1);
 
-        public SynchronizationModes SyncMode
-        {
-            get { return _syncMode; }
-            set { _syncMode = value; }
-        }
+        public SynchronizationModes SyncMode { get; set; } = SynchronizationModes.Normal;
 
-        public int CacheSize
-        {
-            get { return _cacheSize; }
-            set { _cacheSize = value; }
-        }
+        public int CacheSize { get; set; } = 2000;
 
-        public bool FailIfMissing
-        {
-            get { return _failIfMissing; }
-            set { _failIfMissing = value; }
-        }
+        public bool FailIfMissing { get; set; } = true;
 
         public bool ReadOnly { get; set; }
 
-        public bool EnforceForeignKeys
-        {
-            get { return _enforceForeignKeys; }
-            set { _enforceForeignKeys = value; }
-        }
+        public bool EnforceForeignKeys { get; set; } = true;
     }
 
     public enum SynchronizationModes

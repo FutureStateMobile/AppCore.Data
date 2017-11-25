@@ -10,7 +10,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
     [TestFixture]
     public class InflectionTests : IntegrationTestBase
     {
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Do_Crud_On_Model_Object_With_Inflected_Pluralization(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -23,7 +23,6 @@ namespace FutureState.AppCore.Data.Tests.Integration
             db.Create(firstGoose);
             db.Create(gooseToUpdate);
             db.Create(gooseToDelete);
-
             var actualGoose = db.Query<GooseModel>().Where(u => u.Id == firstGoose.Id).Select().FirstOrDefault();
             
             // Assert Create

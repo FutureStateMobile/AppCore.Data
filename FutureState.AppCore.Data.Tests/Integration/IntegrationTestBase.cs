@@ -2,9 +2,9 @@
 using System.Configuration;
 using FutureState.AppCore.Data.Tests.Helpers.Migrations;
 using NUnit.Framework;
-using DbConnectionProvider = FutureState.AppCore.Data.SqlServer.DbConnectionProvider;
-using DbProvider = FutureState.AppCore.Data.SqlServer.DbProvider;
-
+using SqlDbConnectionProvider = FutureState.AppCore.Data.SqlServer.DbConnectionProvider;
+using SqlDbProvider = FutureState.AppCore.Data.SqlServer.DbProvider;
+using SqliteDbProvider = FutureState.AppCore.Data.Sqlite.DbProvider;
 namespace FutureState.AppCore.Data.Tests.Integration
 {
     public abstract class IntegrationTestBase
@@ -14,12 +14,12 @@ namespace FutureState.AppCore.Data.Tests.Integration
             var testDbName = ConfigurationManager.AppSettings["databaseName"];
             var sqlServerConnection = ConfigurationManager.ConnectionStrings["databaseConnection"];
 
-            var sqlDbConnectionProvider = new DbConnectionProvider(
+            var sqlDbConnectionProvider = new SqlDbConnectionProvider(
                 sqlServerConnection.ConnectionString,
                 sqlServerConnection.ProviderName);
 
-            IDbProvider sqlDbProvider = new DbProvider(sqlDbConnectionProvider, testDbName);
-            IDbProvider sqliteDbProvider = new Sqlite.DbProvider(testDbName + ".sqlite3");
+            IDbProvider sqlDbProvider = new SqlDbProvider(sqlDbConnectionProvider, testDbName);
+            IDbProvider sqliteDbProvider = new SqliteDbProvider(testDbName + ".sqlite3");
 
             yield return sqlDbProvider;
             yield return sqliteDbProvider;

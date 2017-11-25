@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data
@@ -19,7 +20,7 @@ namespace FutureState.AppCore.Data
         {
             _propertyName = GetPropertyName(propertyExpression);
             _dbProvider = dbProvider;
-            _tableName = typeof (TModel).GetTypeInfo().Name.BuildTableName();
+            _tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
             _parameters = new Dictionary<string, object>();
         }
 
@@ -32,67 +33,44 @@ namespace FutureState.AppCore.Data
             return this;
         }
 
-        public TReturnType Max()
-        {
-            return _dbProvider.ExecuteScalar<TReturnType>(ToStringMax(), _parameters);
-        }
+        public Task<TReturnType> MaxAsync() => _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMax(), _parameters);
 
-        public TReturnType Min()
-        {
-            return _dbProvider.ExecuteScalar<TReturnType>(ToStringMin(), _parameters);
-        }
+        public Task<TReturnType> MinAsync() => _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringMin(), _parameters);
 
-        public TReturnType Sum()
-        {
-            return _dbProvider.ExecuteScalar<TReturnType>(ToStringSum(), _parameters);
-        }
+        public Task<TReturnType> SumAsync() => _dbProvider.ExecuteScalarAsync<TReturnType>(ToStringSum(), _parameters);
 
-        public string ToStringMax()
-        {
-            return string.Format(_dbProvider.Dialect.SelectMaxFrom, _tableName, _whereClause, _propertyName).Trim();
-        }
+        public TReturnType Max() => MaxAsync().Result;
 
-        public string ToStringMin()
-        {
-            return string.Format(_dbProvider.Dialect.SelectMinFrom, _tableName, _whereClause, _propertyName).Trim();
-        }
+        public TReturnType Min() => MinAsync().Result;
 
-        public string ToStringSum()
-        {
-            return string.Format(_dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName).Trim();
-        }
+        public TReturnType Sum() => SumAsync().Result;
 
-        private static string GetPropertyName(Expression<Func<TModel, TReturnType>> propertyExpression)
-        {
-            return GetMemberInfo(propertyExpression).Member.Name;
-        }
+        public string ToStringMax() => string.Format(_dbProvider.Dialect.SelectMaxFrom, _tableName, _whereClause, _propertyName).Trim();
+
+        public string ToStringMin() => string.Format(_dbProvider.Dialect.SelectMinFrom, _tableName, _whereClause, _propertyName).Trim();
+
+        public string ToStringSum() => string.Format(_dbProvider.Dialect.SelectSumFrom, _tableName, _whereClause, _propertyName).Trim();
 
         private static MemberExpression GetMemberInfo(Expression method)
         {
             var lambda = method as LambdaExpression;
 
             if (lambda == null)
-            {
-                throw new ArgumentNullException( "method" );
-            }
+                throw new ArgumentNullException(nameof(method));
 
             MemberExpression memberExpr = null;
 
             if (lambda.Body.NodeType == ExpressionType.Convert)
-            {
-                memberExpr = ((UnaryExpression)lambda.Body).Operand as MemberExpression;
-            }
+                memberExpr = ((UnaryExpression) lambda.Body).Operand as MemberExpression;
             else if (lambda.Body.NodeType == ExpressionType.MemberAccess)
-            {
                 memberExpr = lambda.Body as MemberExpression;
-            }
 
-            if (memberExpr == null)
-            {
-                throw new ArgumentException( "method" );
-            }
+            if (memberExpr == null) 
+                throw new ArgumentException("method");
 
             return memberExpr;
         }
+
+        private static string GetPropertyName(Expression<Func<TModel, TReturnType>> propertyExpression) => GetMemberInfo(propertyExpression).Member.Name;
     }
 }

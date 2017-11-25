@@ -13,38 +13,27 @@ namespace FutureState.AppCore.Data
         private IList<PropertyInfo> _manyToOneProperties;
         private List<string> _fieldNames;
 
-        private IEnumerable<PropertyInfo> ManyToOneProperties
-        {
-            get
-            {
-                if (_manyToOneProperties == null)
-                {
-                    _manyToOneProperties = typeof(TModel)
-                        .GetRuntimeProperties()
-                        .Where(property => property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any())
-                        .ToList();
-                }
-
-                return _manyToOneProperties;
-            }
-        }
+        private IEnumerable<PropertyInfo> ManyToOneProperties => _manyToOneProperties ?? (_manyToOneProperties = typeof(TModel)
+                                                                     .GetRuntimeProperties()
+                                                                     .Where(property => property.GetCustomAttributes( true).Any(a => a.GetType().Name == nameof(ManyToOneAttribute)))
+                                                                     .ToList());
 
         private IEnumerable<PropertyInfo> Properties
         {
             get
             {
-                if (_properties == null)
-                {
-                    _properties = (from property in typeof(TModel).GetRuntimeProperties().OrderBy(p => p.Name)
-                                   let ignore = property.GetCustomAttributes(typeof(OneToManyAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(OneToOneAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(ManyToOneAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(ManyToManyAttribute), true).Any() ||
-                                                property.GetCustomAttributes(typeof(IgnoreAttribute), true).Any()
-                                   where !ignore
-                                   select property).ToList();
-                }
-                return _properties;
+                return _properties ?? (_properties = (from property in typeof(TModel).GetRuntimeProperties().OrderBy(p => p.Name)
+                           let ignore = property.GetCustomAttributes(true).Any(
+                               a =>
+                               {
+                                   var name = a.GetType().Name;
+                                   return name == nameof(OneToManyAttribute) ||
+                                          name == nameof(ManyToOneAttribute) ||
+                                          name == nameof(ManyToManyAttribute) ||
+                                          name == nameof(IgnoreAttribute);
+                               })
+                           where !ignore
+                           select property).ToList());
             }
         }
 
@@ -97,7 +86,10 @@ namespace FutureState.AppCore.Data
                 var manyToOneObject = propertyInfo.GetValue(model);
                 if (manyToOneObject == null)
                 {
-                    dictionary.Add(dbColumnName, null);
+                    if (!dictionary.ContainsKey(dbColumnName))
+                    {
+                        dictionary.Add(dbColumnName, null);
+                    }
                     return;
                 }
 
@@ -126,8 +118,8 @@ namespace FutureState.AppCore.Data
                         idValue = null;
                     }
                 }
-
-                dictionary.Add(dbColumnName, idValue);
+                if(!dictionary.ContainsKey(dbColumnName))
+                    dictionary.Add(dbColumnName, idValue);
             });
         }
 

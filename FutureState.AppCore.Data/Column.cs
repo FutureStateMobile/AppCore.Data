@@ -11,7 +11,6 @@ namespace FutureState.AppCore.Data
         public readonly string Name;
         public readonly int Precision;
         public readonly Type Type;
-
         private readonly IDialect _dialect;
         private readonly string _tableName;
         public static IList<KeyValuePair<Type, string>> CustomTypes = new List<KeyValuePair<Type, string>>();

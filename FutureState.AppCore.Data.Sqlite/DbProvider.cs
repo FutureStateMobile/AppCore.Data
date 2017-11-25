@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Threading.Tasks;
 using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
 using Mono.Data.Sqlite;
@@ -29,32 +30,32 @@ namespace FutureState.AppCore.Data.Sqlite
             _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, settings);
         }
 
-        public override bool CheckIfDatabaseExists()
+        public override Task<bool> CheckIfDatabaseExistsAsync()
         {
-            var exists = File.Exists(_sqliteDatabasePath);
-            return exists;
+            return Task.Run(() => File.Exists(_sqliteDatabasePath));
         }
 
-        public override void CreateDatabase()
+        public override Task CreateDatabaseAsync()
         {
-            SqliteConnection.CreateFile(_sqliteDatabasePath);
+            return Task.Run(()=>SqliteConnection.CreateFile(_sqliteDatabasePath));
         }
 
-        public override void DropDatabase()
+        public override Task DropDatabaseAsync()
         {
             File.Delete(_sqliteDatabasePath);
+            return Task.FromResult(true);
         }
 
-        public override bool CheckIfTableExists(string tableName)
+        public override async Task<bool> CheckIfTableExistsAsync(string tableName)
         {
-            var count = ExecuteScalar<int>(string.Format(Dialect.CheckTableExists, tableName));
+            var count = await ExecuteScalarAsync<int>(string.Format(Dialect.CheckTableExists, tableName)).ConfigureAwait(false);
             return count > 0;
         }
 
-        public override bool CheckIfTableColumnExists(string tableName, string columnName)
+        public override async Task<bool> CheckIfTableColumnExistsAsync(string tableName, string columnName)
         {
-            var columnSql = ExecuteScalar<string>(string.Format(Dialect.CheckTableColumnExists, tableName));
-            return columnSql.Contains(string.Format("[{0}]",columnName));
+            var columnSql = await ExecuteScalarAsync<string>(string.Format(Dialect.CheckTableColumnExists, tableName)).ConfigureAwait(false);
+            return columnSql.Contains($"[{columnName}]");
         }
 
         private void EnableForeignKeys(IDbCommand command)
@@ -66,27 +67,29 @@ namespace FutureState.AppCore.Data.Sqlite
             }
         }
 
-        #region ExecuteReader
+        #region ExecuteReaderAsync
 
-        public override TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper)
+        public override Task<TResult> ExecuteReaderAsync<TResult>(string commandText, Func<IDbReader, TResult> readerMapper)
         {
-            return ExecuteReader(commandText, new Dictionary<string, object>(), readerMapper);
+            return ExecuteReaderAsync(commandText, new Dictionary<string, object>(), readerMapper);
         }
 
-        public override TResult ExecuteReader<TResult>(string commandText, IDictionary<string, object> parameters,
-                                                       Func<IDbReader, TResult> readerMapper)
+        public override async Task<TResult> ExecuteReaderAsync<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper)
         {
-            using (var connection = _connectionProvider.GetOpenConnection())
-            using (var command = connection.CreateCommand())
+            using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+            using (var command = (SqliteCommand) connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
                 EnableForeignKeys(command);
                 command.CommandText = commandText;
-                parameters.ForEach(parameter => command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                parameters.ForEach(
+                    parameter =>
+                        command.Parameters.Add(new SqliteParameter(parameter.Key,
+                            parameter.Value ?? DBNull.Value)));
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
+                using (var r = new DbReader(reader))
                 {
-                    var r = new DbReader(reader);
                     return readerMapper(r);
                 }
             }
@@ -94,78 +97,95 @@ namespace FutureState.AppCore.Data.Sqlite
 
         #endregion
 
-        #region ExecuteNonQuery
+        #region ExecuteNonQueryAsync
 
-        public override void ExecuteNonQuery(string commandText)
+        public override Task ExecuteNonQueryAsync(string commandText)
         {
-            ExecuteNonQuery(commandText, new Dictionary<string, object>());
+            return ExecuteNonQueryAsync(commandText, new Dictionary<string, object>());
         }
 
-        public override void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters)
+        public override async Task ExecuteNonQueryAsync(string commandText, IDictionary<string, object> parameters)
         {
-            using (var connection = _connectionProvider.GetOpenConnection())
-            using (var command = connection.CreateCommand())
+            using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+           // using (var transaction = (SqliteTransaction)connection.BeginTransaction())
+            using (var command = (SqliteCommand)connection.CreateCommand())
             {
-                command.CommandType = CommandType.Text;
-                EnableForeignKeys(command);
-                command.CommandText = commandText;
-                parameters.ForEach(parameter => command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+               // try
+               // {
+                  //  command.Transaction = transaction;
+                    command.CommandType = CommandType.Text;
+                    EnableForeignKeys(command);
+                    command.CommandText = commandText;
+                    parameters.ForEach(
+                        parameter =>
+                            command.Parameters.Add(new SqliteParameter(parameter.Key,
+                                parameter.Value ?? DBNull.Value)));
 
-                command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                 //   transaction.Commit();
+               // }
+               // catch
+               // {
+                //    transaction.Rollback();
+                //    throw;
+               // }
             }
         }
 
         #endregion
 
-        #region ExecuteScalar
+        #region ExecuteScalarAsync
 
-        public override TKey ExecuteScalar<TKey>(string commandText)
+        public override Task<TKey> ExecuteScalarAsync<TKey>(string commandText)
         {
-            return ExecuteScalar<TKey>(commandText, new Dictionary<string, object>());
+            return ExecuteScalarAsync<TKey>(commandText, new Dictionary<string, object>());
         }
 
-        public override TKey ExecuteScalar<TKey>(string commandText, IDictionary<string, object> parameters)
+        public override async Task<TKey> ExecuteScalarAsync<TKey>(string commandText, IDictionary<string, object> parameters)
         {
-            using (var connection = _connectionProvider.GetOpenConnection())
-            using (var command = connection.CreateCommand())
+            using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+            using (var command = (SqliteCommand)connection.CreateCommand() )
             {
-                command.CommandType = CommandType.Text;
-                EnableForeignKeys(command);
-                command.CommandText = commandText;
-                parameters.ForEach(parameter => command.Parameters.Add(new SqliteParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                    command.CommandType = CommandType.Text;
+                    EnableForeignKeys(command);
+                    command.CommandText = commandText;
+                    parameters.ForEach(
+                        parameter =>
+                            command.Parameters.Add(new SqliteParameter(parameter.Key,
+                                parameter.Value ?? DBNull.Value)));
 
-                var result = command.ExecuteScalar();
+                    var result = await command.ExecuteScalarAsync().ConfigureAwait(false);
 
-                if (typeof(TKey) == typeof(Guid))
-                {
-                    return (TKey)(object)new Guid((byte[])result);
-                }
-
-                if (typeof(TKey) == typeof(int))
-                {
-                    if (result == null)
+                    if (typeof(TKey) == typeof(Guid))
                     {
-                        return (TKey)(object)0;
+                        return (TKey) (object) new Guid((byte[]) result);
                     }
-                    int retVal;
-                    if (!int.TryParse(result.ToString(), out retVal))
-                    {
-                        return (TKey)(object)0;
-                    }
-                    return (TKey)(object)retVal;
-                }
 
-                if (typeof(TKey) == typeof(DateTime))
-                {
-                    DateTime retval;
-                    if (!DateTime.TryParse(result.ToString(), out retval))
+                    if (typeof(TKey) == typeof(int))
                     {
-                        return (TKey)(object)DateTimeHelper.MinSqlValue;
+                        if (result == null)
+                        {
+                            return (TKey) (object) 0;
+                        }
+                        int retVal;
+                        if (!int.TryParse(result.ToString(), out retVal))
+                        {
+                            return (TKey) (object) 0;
+                        }
+                        return (TKey) (object) retVal;
                     }
-                    return (TKey)(object)retval;
-                }
 
-                return (TKey)result;
+                    if (typeof(TKey) == typeof(DateTime))
+                    {
+                        DateTime retval;
+                        if (!DateTime.TryParse(result.ToString(), out retval))
+                        {
+                            return (TKey) (object) DateTimeHelper.MinSqlValue;
+                        }
+                        return (TKey) (object) retval;
+                    }
+
+                    return (TKey) result;
             }
         }
 

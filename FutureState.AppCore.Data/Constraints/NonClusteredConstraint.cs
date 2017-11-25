@@ -1,5 +1,3 @@
-using System;
-
 namespace FutureState.AppCore.Data.Constraints
 {
     public class NonClusteredConstraint : IConstraint

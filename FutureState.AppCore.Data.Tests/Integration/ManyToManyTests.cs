@@ -10,7 +10,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
     [TestFixture]
     public class ManyToManyTests : IntegrationTestBase
     {
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Create_Records_With_ManyToMany_Relationships(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -33,7 +33,8 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Assert
             var actualAuthor = db.Query<AuthorModel>()
                                  .Where(a => a.Email == expectedAuthor.Email)
-                                 .Select().SingleOrDefault();
+                                 .Select()
+                                 .Single();
             
             actualAuthor.Should().NotBeNull();
 
@@ -47,7 +48,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             
         }
 
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Add_Records_To_ManyToMany_Relationship(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -71,7 +72,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Assert
             var actualAuthor = db.Query<AuthorModel>()
                                  .Where(a => a.Email == expectedAuthor.Email)
-                                 .Select().SingleOrDefault();
+                                 .Select().Single();
 
             actualAuthor.Should().NotBeNull();
 
@@ -84,7 +85,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualAuthor.ShouldBeEquivalentTo(expectedAuthor, options => options.Excluding(a => a.PropertyPath.Contains("Publisher")));
         }
 
-        [Test, TestCaseSource("DbProviders")]
+        [Test, TestCaseSource(nameof(DbProviders))]
         public void Should_Remove_Records_From_ManyToMany_Relationship(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -109,7 +110,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Assert
             var actualAuthor = db.Query<AuthorModel>()
                                  .Where(a => a.Email == expectedAuthor.Email)
-                                 .Select().SingleOrDefault();
+                                 .Select().Single();
 
             actualAuthor.Should().NotBeNull();
 

@@ -15,10 +15,7 @@ namespace FutureState.AppCore.Data
             _strings = new StringBuilder();
         }
 
-        public String OrderByExpression
-        {
-            get { return _strings.ToString().Trim(); }
-        }
+        public string OrderByExpression => _strings.ToString().Trim();
 
         public OrderByExpressionVisitor Visit(Expression orderByExpression)
         {

@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D3491400-F646-4FA9-9B33-46F4FC3A9789}</ProjectGuid>
-    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>FutureState.AppCore.Data.Sqlite.Touch</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
@@ -41,9 +41,6 @@
     <Compile Include="..\FutureState.AppCore.Data.Sqlite\DbReader.cs">
       <Link>DbReader.cs</Link>
     </Compile>
-    <Compile Include="..\FutureState.AppCore.Data.Sqlite\IDbConnectionProvider.cs">
-      <Link>IDbConnectionProvider.cs</Link>
-    </Compile>
     <Compile Include="..\FutureState.AppCore.Data.Sqlite\SqliteSettings.cs">
       <Link>SqliteSettings.cs</Link>
     </Compile>
@@ -65,7 +62,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="monotouch" />
+    <Reference Include="Xamarin.iOS" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

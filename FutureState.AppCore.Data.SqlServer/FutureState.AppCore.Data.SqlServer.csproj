@@ -50,7 +50,6 @@
     <Compile Include="DbConnectionProvider.cs" />
     <Compile Include="DbReader.cs" />
     <Compile Include="SqlServerDialect.cs" />
-    <Compile Include="IDbConnectionProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -13,21 +13,15 @@ namespace FutureState.AppCore.Data
         private IList<PropertyInfo> _manyToOneProperties;
         private List<string> _fieldNames;
 
-        private IEnumerable<PropertyInfo> ManyToOneProperties
-        {
-            get
-            {
-                return _manyToOneProperties ?? (_manyToOneProperties = typeof(TModel)
-                           .GetRuntimeProperties()
-                           .Where(property => property.GetCustomAttributes( true).Any(a=>a.GetType().Name== nameof(ManyToOneAttribute)))
-                           .ToList());
-            }
-        }
+        private IEnumerable<PropertyInfo> ManyToOneProperties => _manyToOneProperties ?? (_manyToOneProperties = typeof(TModel)
+                                                                     .GetRuntimeProperties()
+                                                                     .Where(property => property.GetCustomAttributes( true).Any(a => a.GetType().Name == nameof(ManyToOneAttribute)))
+                                                                     .ToList());
 
         private IEnumerable<PropertyInfo> Properties
         {
             get
-            {
+            { 
                 return _properties ?? (_properties = (from property in typeof(TModel).GetRuntimeProperties().OrderBy(p => p.Name)
                            let ignore = property.GetCustomAttributes(true).Any(
                                a =>
@@ -92,7 +86,10 @@ namespace FutureState.AppCore.Data
                 var manyToOneObject = propertyInfo.GetValue(model);
                 if (manyToOneObject == null)
                 {
-                    dictionary.Add(dbColumnName, null);
+                    if (!dictionary.ContainsKey(dbColumnName))
+                    {
+                        dictionary.Add(dbColumnName, null);
+                    }
                     return;
                 }
 
@@ -121,8 +118,8 @@ namespace FutureState.AppCore.Data
                         idValue = null;
                     }
                 }
-
-                dictionary.Add(dbColumnName, idValue);
+                if(!dictionary.ContainsKey(dbColumnName))
+                    dictionary.Add(dbColumnName, idValue);
             });
         }
 

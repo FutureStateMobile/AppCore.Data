@@ -5,9 +5,9 @@ namespace FutureState.AppCore.Data
 {
     public class Database
     {
+        public readonly IList<string> Indices;
         public readonly string Name;
         public readonly IList<Table> Tables;
-        public readonly IList<string> Indices; 
         private readonly IDialect _dialect;
 
         public Database(string databaseName, IDialect dialect)
@@ -18,6 +18,15 @@ namespace FutureState.AppCore.Data
             Indices = new List<string>();
         }
 
+        public void AddIndex(string tableName, params string[] columnNames)
+        {
+            var listOfColumnNames = string.Join(",", columnNames);
+            var columnNamesForIndexName = string.Join("_", columnNames);
+            var indexName = $"IX_{tableName}_{columnNamesForIndexName}";
+
+            Indices.Add(string.Format(_dialect.CreateIndex, indexName, tableName, listOfColumnNames));
+        }
+
         public Table AddTable(string tableName)
         {
             var table = new Table(tableName, _dialect, false);
@@ -25,32 +34,21 @@ namespace FutureState.AppCore.Data
             return table;
         }
 
-        public void AddIndex(string tableName, params string[] columnNames)
+        public override string ToString()
         {
-            var listOfColumnNames = String.Join(",", columnNames);
-            var columnNamesForIndexName = String.Join("_", columnNames);
-            var indexName = String.Format("IX_{0}_{1}", tableName, columnNamesForIndexName);
+            var ddl = string.Join("", Tables);
 
-            Indices.Add(String.Format(_dialect.CreateIndex, indexName, tableName, listOfColumnNames));
+            if (Indices.Count > 0)
+                ddl += Environment.NewLine + string.Join(" ", Indices);
+
+            return ddl;
         }
 
         public Table UpdateTable(string tableName)
         {
-            var table = new Table( tableName, _dialect, true );
-            Tables.Add( table );
+            var table = new Table(tableName, _dialect, true);
+            Tables.Add(table);
             return table;
-        }
-        
-        public override string ToString()
-        {
-            var ddl = String.Join("", Tables);
-
-            if (Indices.Count > 0)
-            {
-                ddl += Environment.NewLine + String.Join(" ", Indices);
-            }
-            
-            return ddl;
         }
     }
 }

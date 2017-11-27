@@ -16,6 +16,7 @@ namespace FutureState.AppCore.Data
         string DropDatabase { get; }
 
         string InsertInto { get; }
+        string CreateOrUpdate { get; }
         string SelectFrom { get; }
         string SelectCountFrom { get; }
         string SelectMaxFrom { get; }
@@ -35,7 +36,11 @@ namespace FutureState.AppCore.Data
         string JoinParameters { get; }
         string InnerJoin { get; }
         string LeftJoin { get; }
+        [Obsolete]
         string OldManyToManyJoin { get; }
+        /// <summary>
+        /// Returns a string similar to "INNER JOIN [{2}] ON [{2}].[{3}] = [{0}].[{1}] INNER JOIN [{4}] ON [{2}].[{5}] = [{4}].[{1}]"
+        /// </summary>
         string ManyToManyJoin { get; }
         string SkipTake { get; }
 

@@ -8,7 +8,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
     [TestFixture]
     public class DbQueryTests : DbQueryTestBase
     {
-        [Test,TestCaseSource("Repositories")]
+        [Test,TestCaseSource(nameof(Repositories))]
         public void ShouldStripGenericMetaFromClassNameWhenBuildingQuery(IDbProvider dbProvider)
         {
             // setup
@@ -22,7 +22,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         }
 
         // NOTE: These tests have no way of working against a DELETE command.
-        [Test, TestCaseSource( "Repositories" )]
+        [Test, TestCaseSource( nameof(Repositories) )]
         public void ShouldBuildQueryForUsersGettingCount ( IDbProvider dbProvider )
         {
             // setup
@@ -37,7 +37,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual( expectedQuery, actualQuery );
         }
 
-        [Test, TestCaseSource("Repositories")]
+        [Test, TestCaseSource(nameof(Repositories))]
         public void ShouldBuildQueryForUsersAndUtilizeSkipTake(IDbProvider dbProvider)
         {
             // setup
@@ -66,7 +66,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual(expectedQuery, actualQuery);
         }
 
-        [Test, TestCaseSource("Repositories")]
+        [Test, TestCaseSource(nameof(Repositories))]
         public void ShouldBuildQueryForUsersById(IDbProvider dbProvider)
         {
             // setup
@@ -82,7 +82,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual(expectedQuery, actualQuery);
         }
 
-        [Test, TestCaseSource("Repositories")]
+        [Test, TestCaseSource(nameof(Repositories))]
         public void ShouldBuildQueryForUsersByNameAndNotName(IDbProvider dbProvider)
         {
             // setup
@@ -98,7 +98,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual(expectedQuery, actualQuery);
         }
 
-        [Test, TestCaseSource( "Repositories" )]
+        [Test, TestCaseSource( nameof(Repositories) )]
         public void ShouldBuildQueryForUsersByNameAndNotNameWithBrackets ( IDbProvider dbProvider )
         {
             // setup
@@ -115,7 +115,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual( expectedQuery, actualQuery );
         }
 
-        [Test, TestCaseSource( "Repositories" )]
+        [Test, TestCaseSource( nameof(Repositories) )]
         public void ShouldBuildQueryForUsersByNameNotNull ( IDbProvider dbProvider )
         {
             // setup
@@ -131,7 +131,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         }
 
 
-        [Test, TestCaseSource("Repositories")]
+        [Test, TestCaseSource(nameof(Repositories))]
         public void ShouldBuildQueryWithOrderByAscClause(IDbProvider dbProvider)
         {
             // setup
@@ -148,7 +148,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
             Assert.AreEqual(expectedQuery, actualQuery);
         }
 
-        [Test, TestCaseSource("Repositories")]
+        [Test, TestCaseSource(nameof(Repositories))]
         public void ShouldBuildQueryWithOrderByDescClause(IDbProvider dbProvider)
         {
             // setup
@@ -166,7 +166,7 @@ namespace FutureState.AppCore.Data.Tests.Unit
         }
 
 
-        [Test, TestCaseSource("Repositories")]
+        [Test, TestCaseSource(nameof(Repositories))]
         public void ShouldBuildQueryWithManyToOneRelationship(IDbProvider dbProvider)
         {
             // setup

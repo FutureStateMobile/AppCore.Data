@@ -34,7 +34,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualAuthor.ShouldBeEquivalentTo(expectedAuthor);
 
             // Delete
-            db.Delete<AuthorModel>( x => x.Id == actualAuthor.Id);
+            db.Delete<AuthorModel>( x => x.Id == expectedAuthor.Id);
 
             // Assert Delete
             actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).SingleOrDefault();
@@ -42,7 +42,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
         }
 
         [Test, TestCaseSource(nameof(DbProviders))]
-        public void Should_Update_With_Different_Primary_Key(IDbProvider db)
+        public void Should_Do_Crud_On_Simple_Model_Object_With_Different_Primary_Key(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
 
@@ -64,6 +64,13 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualCar = db.Query<AutomobileModel>().Where(c => c.Vin == car.Vin).Single();
             actualCar.Should().NotBeNull();
             actualCar.ShouldBeEquivalentTo(actualCar);
+
+            // delete
+            db.Delete<AutomobileModel>(c => c.Vin == car.Vin);
+
+            // assert delete
+            actualCar = db.Query<AutomobileModel>().Where(c => c.Vin == car.Vin).SingleOrDefault();
+            actualCar.Should().BeNull();
         }
 
         [Test, TestCaseSource(nameof(DbProviders))]
@@ -89,6 +96,13 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualMotorcycle.Should().NotBeNull();
             actualMotorcycle.ShouldBeEquivalentTo(actualMotorcycle);
             actualMotorcycle.VehicleType.Should().Be(motorcycle.VehicleType);
+
+            // delete
+            db.Delete<AutomobileModel>(c => c.Vin == motorcycle.Vin);
+
+            // assert delete
+            actualMotorcycle = db.Query<AutomobileModel>().Where(c => c.Vin == motorcycle.Vin).SingleOrDefault();
+            actualMotorcycle.Should().BeNull();
         }
     }
 }

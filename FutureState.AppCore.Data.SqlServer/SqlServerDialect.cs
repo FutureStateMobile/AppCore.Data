@@ -24,7 +24,18 @@ namespace FutureState.AppCore.Data.SqlServer
 
         public string DropDatabase => "ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [{0}];";
 
-        public string InsertInto => "INSERT INTO [{0}] ({1}) VALUES ({2})";
+        public string InsertInto => "INSERT INTO [{0}] ({1}) VALUES ({2});";
+
+        // 0 == tablename
+        // 1 = set
+        // 2 = where
+        // 3 = fields
+        // 4 = parameters
+        public string CreateOrUpdate => @"UPDATE [{0}] SET {1} {2};
+IF @@ROWCOUNT = 0
+BEGIN;
+    INSERT INTO [{0}] ({3}) VALUES ({4});
+END;";
 
         public string SelectFrom => "SELECT [{0}].* FROM [{0}] {1}";
 

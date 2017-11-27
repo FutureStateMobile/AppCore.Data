@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using FutureState.AppCore.Data.Config;
 using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
 
@@ -22,6 +24,36 @@ namespace FutureState.AppCore.Data.SqlServer
             DatabaseName = databaseName;
             _connectionProvider = connectionProvider;
             _useStatement = string.Format(Dialect.UseDatabase, databaseName);
+        }
+
+        public DbProvider(IDbConnectionProvider connectionProvider, string databaseName, Action<DbConfiguration> dbConfig):base(dbConfig)
+        {
+            DatabaseName = databaseName;
+            _connectionProvider = connectionProvider;
+            _useStatement = string.Format(Dialect.UseDatabase, databaseName);
+        }
+
+        public override async Task CreateOrUpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper)
+        {
+            var modelType = typeof(TModel);
+            var tableName = typeof(TModel).GetTypeInfo().Name.BuildTableName();
+            var fieldNameList = dbMapper.FieldNames;
+            var commandParams = dbMapper.BuildDbParametersFrom(model);
+
+            var insertParams = "@" + string.Join(",@", fieldNameList);
+            var insertFields = string.Join(",", fieldNameList);
+            var updateFields = string.Join(",", fieldNameList.Select(field => string.Format("[{0}] = @{0}", field)).ToList());
+            var whereClause = string.Format(Dialect.Where, string.Format("{0} = @{0}", GetPrimaryKeyName(modelType)));
+
+            var commandText = string.Format(Dialect.CreateOrUpdate, 
+                tableName,
+                updateFields,
+                whereClause,
+                insertFields,
+                insertParams);
+
+            await ExecuteNonQueryAsync(commandText, commandParams).ConfigureAwait(false);
+            await UpdateManyToManyRelationsAsync(model, tableName, dbMapper).ConfigureAwait(false);
         }
 
         public sealed override IDialect Dialect => _dialect ?? (_dialect = new SqlServerDialect());

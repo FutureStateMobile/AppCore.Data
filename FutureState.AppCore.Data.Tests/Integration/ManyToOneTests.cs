@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using FluentAssertions;
 using FutureState.AppCore.Data.Tests.Helpers.Fixtures;
 using FutureState.AppCore.Data.Tests.Helpers.Models;
@@ -17,24 +16,25 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             // Setup
             var publisher = PublisherFixture.GetFirstPublisher();
-            db.Create(publisher);
-
             var firstBook = BookFixture.GetFirstBook(publisher);
             var secondBook = BookFixture.GetSecondBook(publisher);
 
-            // Execute
+            db.Create(publisher);
             db.Create(firstBook);
             db.Create(secondBook);
 
-            // Assert
-            var actualBooks = db.Query<BookModel>()
+            // Execute
+            var query = db.Query<BookModel>()
                                 .Join<PublisherModel>().On((b, p) => b.Publisher.Id == p.Id)
-                                .Where((b, p) => p.Id == publisher.Id)
-                                .Select().ToList();
+                                .Where((b, p) => p.Id == publisher.Id);
+            var actualBooks = query.ToList();
             
+            // Assert
             actualBooks.Should().HaveCount(2);
             actualBooks[0].Publisher.Id.Should().Be(publisher.Id);
+            //actualBooks[0].Publisher.Name.Should().Be(publisher.Name);
             actualBooks[1].Publisher.Id.Should().Be(publisher.Id);
+            //actualBooks[1].Publisher.Name.Should().Be(publisher.Name);
         }
 
         [Test, TestCaseSource(nameof(DbProviders))]
@@ -48,17 +48,16 @@ namespace FutureState.AppCore.Data.Tests.Integration
 
             var thirdBook = BookFixture.GetThirdBook(publisher);
             var fourthBook = BookFixture.GetFourthBook(publisher);
-
-            // Execute
             db.Create(thirdBook);
             db.Create(fourthBook);
 
-            // Assert
-            var publishers = db.Query<PublisherModel>()
-                               .Join<BookModel>().On((p, b) => b.Publisher.Id == p.Id)
-                               .Where((p, b) => b.Name == fourthBook.Name)
-                               .Select().ToList();
+            // Execute
+            var query = db.Query<PublisherModel>()
+                .Join<BookModel>().On((p, b) => b.Publisher.Id == p.Id)
+                .Where((p, b) => b.Name == fourthBook.Name);
+            var publishers = query.ToList();
 
+            // Assert
             publishers.Should().HaveCount(1);
             publishers[0].ShouldBeEquivalentTo(publisher);
         }
@@ -80,9 +79,9 @@ namespace FutureState.AppCore.Data.Tests.Integration
             db.Create(fourthBook);
 
             // Assert
-            var actualBooks = db.Query<BookModel>()
-                               .Where(b => b.Publisher.Id == publisher.Id)
-                               .Select().ToList();
+            var query = db.Query<BookModel>()
+                               .Where(b => b.Publisher.Id == publisher.Id);
+            var actualBooks = query.ToList();
 
             actualBooks.Should().HaveCount(2);
             actualBooks[0].Publisher.Id.Should().Be(publisher.Id);

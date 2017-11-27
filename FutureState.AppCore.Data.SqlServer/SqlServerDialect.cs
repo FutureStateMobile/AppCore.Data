@@ -1,4 +1,6 @@
-﻿namespace FutureState.AppCore.Data.SqlServer
+﻿using System;
+
+namespace FutureState.AppCore.Data.SqlServer
 {
     public class SqlServerDialect : IDialect
     {
@@ -22,7 +24,18 @@
 
         public string DropDatabase => "ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [{0}];";
 
-        public string InsertInto => "INSERT INTO [{0}] ({1}) VALUES ({2})";
+        public string InsertInto => "INSERT INTO [{0}] ({1}) VALUES ({2});";
+
+        // 0 == tablename
+        // 1 = set
+        // 2 = where
+        // 3 = fields
+        // 4 = parameters
+        public string CreateOrUpdate => @"UPDATE [{0}] SET {1} {2};
+IF @@ROWCOUNT = 0
+BEGIN;
+    INSERT INTO [{0}] ({3}) VALUES ({4});
+END;";
 
         public string SelectFrom => "SELECT [{0}].* FROM [{0}] {1}";
 
@@ -62,8 +75,9 @@
 
         public string LeftJoin => "LEFT OUTER JOIN [{0}] ON {1}";
 
+        [Obsolete]
         public string OldManyToManyJoin => "INNER JOIN [{0}] ON [{0}].[{1}Id] = [{2}].[Id] INNER JOIN [{3}] ON [{0}].[{4}Id] = [{3}].[Id]";
-
+        
         public string ManyToManyJoin => "INNER JOIN [{2}] ON [{2}].[{3}] = [{0}].[{1}] INNER JOIN [{4}] ON [{2}].[{5}] = [{4}].[{1}]";
 
         public string SkipTake => "OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY";

@@ -107,38 +107,38 @@ namespace FutureState.AppCore.Data.Helpers
 
         private static void AddUncountable ( string word )
         {
-            Uncountables.Add( word.ToLower() );
+            _uncountables.Add( word.ToLower() );
         }
 
         private static void AddPlural ( string rule, string replacement )
         {
-            Plurals.Add( new Rule( rule, replacement ) );
+            _plurals.Add( new Rule( rule, replacement ) );
         }
 
         private static void AddSingular ( string rule, string replacement )
         {
-            Singulars.Add( new Rule( rule, replacement ) );
+            _singulars.Add( new Rule( rule, replacement ) );
         }
 
-        private static readonly List<Rule> Plurals = new List<Rule>();
-        private static readonly List<Rule> Singulars = new List<Rule>();
-        private static readonly List<string> Uncountables = new List<string>();
+        private static readonly List<Rule> _plurals = new List<Rule>();
+        private static readonly List<Rule> _singulars = new List<Rule>();
+        private static readonly List<string> _uncountables = new List<string>();
 
         public static string Pluralize ( this string word )
         {
-            return ApplyRules( Plurals, word );
+            return ApplyRules( _plurals, word );
         }
 
         public static string Singularize ( this string word )
         {
-            return ApplyRules( Singulars, word );
+            return ApplyRules( _singulars, word );
         }
 
         private static string ApplyRules ( IList<Rule> rules, string word )
         {
             var result = word;
 
-            if ( !Uncountables.Contains( word.ToLower() ) )
+            if ( !_uncountables.Contains( word.ToLower() ) )
             {
                 for ( var i = rules.Count - 1; i >= 0; i-- )
                 {

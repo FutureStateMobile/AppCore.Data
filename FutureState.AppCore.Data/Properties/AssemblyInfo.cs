@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -28,3 +29,9 @@ using System.Resources;
 
 [assembly: AssemblyVersion("0.1.1")]
 [assembly: AssemblyFileVersion("0.1.1.1")]
+
+[assembly: InternalsVisibleTo("FutureState.AppCore.Data.Sqlite")]
+[assembly: InternalsVisibleTo("FutureState.AppCore.Data.Sqlite.Android")]
+[assembly: InternalsVisibleTo("FutureState.AppCore.Data.Sqlite.Touch")]
+[assembly: InternalsVisibleTo("FutureState.AppCore.Data.Sqlite.Windows")]
+[assembly: InternalsVisibleTo("FutureState.AppCore.Data.SqlServer")]

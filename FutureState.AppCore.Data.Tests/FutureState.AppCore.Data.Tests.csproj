@@ -96,10 +96,13 @@
   <ItemGroup>
     <Compile Include="Helpers\CustomTypes\CustomDialect.cs" />
     <Compile Include="Helpers\CustomTypes\LatLong.cs" />
+    <Compile Include="Helpers\Fixtures\AutomobileFixture.cs" />
     <Compile Include="Helpers\Fixtures\GenericFixture.cs" />
     <Compile Include="Helpers\Fixtures\GooseFixture.cs" />
     <Compile Include="Helpers\Migrations\Migration002.cs" />
     <Compile Include="Helpers\Migrations\Migration001.cs" />
+    <Compile Include="Helpers\Migrations\Migration003.cs" />
+    <Compile Include="Helpers\Models\AutomobileModel.cs" />
     <Compile Include="Helpers\Models\GooseModel.cs" />
     <Compile Include="Helpers\Models\ModelBase.cs" />
     <Compile Include="Helpers\Models\PublisherModel.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="Integration\InflectionTests.cs" />
     <Compile Include="Integration\ManyToManyTests.cs" />
     <Compile Include="Integration\ManyToOneTests.cs" />
+    <Compile Include="Integration\QueryHelperTests.cs" />
     <Compile Include="Integration\SimpleCrudTests.cs" />
     <Compile Include="Unit\InflectionTests.cs" />
     <Compile Include="Unit\JoinExpressionVisitorTests.cs" />

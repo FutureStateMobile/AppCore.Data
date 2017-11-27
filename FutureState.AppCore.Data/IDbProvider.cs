@@ -7,9 +7,8 @@ namespace FutureState.AppCore.Data
 {
     public interface IDbProvider
     {
-        // Database specific stuff
+        string DatabaseName { get; }
         IDialect Dialect { get; }
-        string DatabaseName { get; set; }
         bool CheckIfDatabaseExists();
         Task<bool> CheckIfDatabaseExistsAsync();
         bool CheckIfTableColumnExists(string tableName, string columnName);
@@ -20,10 +19,16 @@ namespace FutureState.AppCore.Data
         void Create<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+
+        void CreateOrUpdate<TModel>(TModel model) where TModel : class, new();
+        void CreateOrUpdate<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+        Task CreateOrUpdateAsync<TModel>(TModel model) where TModel : class, new();
+        Task CreateOrUpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+
         void CreateDatabase();
         Task CreateDatabaseAsync();
-        void Delete<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new();
-        Task DeleteAsync<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new();
+        void Delete<TModel>(Expression<Func<TModel, bool>> expression) where TModel : class, new();
+        Task DeleteAsync<TModel>(Expression<Func<TModel, bool>> expression) where TModel : class, new();
         void DropDatabase();
         Task DropDatabaseAsync();
         void ExecuteNonQuery(string commandText);

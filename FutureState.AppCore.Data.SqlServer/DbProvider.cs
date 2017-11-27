@@ -120,16 +120,28 @@ namespace FutureState.AppCore.Data.SqlServer
         private async Task<TResult> ExecuteReader<TResult>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters, Func<IDbReader, TResult> readerMapper)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+            using(var transaction = connection.BeginTransaction())
             using (var command = connection.CreateCommand())
             {
-                command.CommandType = CommandType.Text;
-                command.CommandText = useStatement + commandText;
-                parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
-
-                using (var reader = command.ExecuteReader())
+                command.Transaction = transaction;
+                try
                 {
-                    var r = new DbReader(reader);
-                    return readerMapper(r);
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = useStatement + commandText;
+                    parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                    TResult result;
+                    using (var reader = command.ExecuteReader())
+                    {
+                        var r = new DbReader(reader);
+                        result =  readerMapper(r);
+                    }
+                    transaction.Commit();
+                    return result;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
                 }
             }
         }
@@ -155,16 +167,36 @@ namespace FutureState.AppCore.Data.SqlServer
 
         private async Task ExecuteNonQueryAsync(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
+            var useTransaction = !commandText.ToUpper().Contains("DATABASE"); // Database operations cannot be within a transaction
+            IDbTransaction transaction = null;
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
             using (var command = connection.CreateCommand())
             {
-                command.CommandType = CommandType.Text;
-                command.CommandText = useStatement + commandText;
-                parameters.ForEach(
-                    parameter =>
-                        command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                if (useTransaction)
+                {
+                    transaction = connection.BeginTransaction();
+                    command.Transaction = transaction;
+                }
+                try
+                {
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = useStatement + commandText;
+                    parameters.ForEach(
+                        parameter =>
+                            command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
                     command.ExecuteNonQuery();
+                    transaction?.Commit();
+                }
+                catch
+                {
+                    transaction?.Rollback();
+                    throw;
+                }
+                finally
+                {
+                    transaction?.Dispose();
+                }
             }
         }
 
@@ -190,30 +222,41 @@ namespace FutureState.AppCore.Data.SqlServer
         private async Task<TKey> ExecuteScalarAsync<TKey>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+            using(var transaction = connection.BeginTransaction())
             using (var command = connection.CreateCommand())
             {
-                command.CommandType = CommandType.Text;
-                command.CommandText = useStatement + commandText;
-                parameters.ForEach(
-                    parameter =>
+                command.Transaction = transaction;
+                try
+                {
+                    command.CommandType = CommandType.Text;
+                    command.CommandText = useStatement + commandText;
+                    parameters.ForEach(
+                        parameter =>
                             command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                var result = command.ExecuteScalar();
-                if (typeof(TKey) == typeof(int))
-                    return (TKey)(result ?? 0);
+                    var result = command.ExecuteScalar();
+                    transaction.Commit();
+                    if (typeof(TKey) == typeof(int))
+                        return (TKey)(result ?? 0);
 
-                if (typeof(TKey) == typeof(DateTime))
-                {
-                    DateTime retval;
-                    if (!DateTime.TryParse(result.ToString(), out retval))
+                    if (typeof(TKey) == typeof(DateTime))
                     {
-                        return (TKey)(object)DateTimeHelper.MinSqlValue;
+                        DateTime retval;
+                        if (!DateTime.TryParse(result.ToString(), out retval))
+                        {
+                            return (TKey)(object)DateTimeHelper.MinSqlValue;
+                        }
+
+                        return (TKey)(object)retval;
                     }
 
-                    return (TKey)(object)retval;
+                    return (TKey)result;
                 }
-
-                return (TKey)result;
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 

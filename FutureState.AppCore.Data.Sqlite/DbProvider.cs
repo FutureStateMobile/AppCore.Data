@@ -93,20 +93,31 @@ namespace FutureState.AppCore.Data.Sqlite
         public override async Task<TResult> ExecuteReaderAsync<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-            using (var command = (SqliteCommand) connection.CreateCommand())
+            using(var transaction = connection.BeginTransaction())
+            using (var command = (SqliteCommand)connection.CreateCommand())
             {
-                command.CommandType = CommandType.Text;
-                EnableForeignKeys(command);
-                command.CommandText = commandText;
-                parameters.ForEach(
-                    parameter =>
-                        command.Parameters.Add(new SqliteParameter(parameter.Key,
-                            parameter.Value ?? DBNull.Value)));
-
-                using (var reader = await command.ExecuteReaderAsync())
-                using (var r = new DbReader(reader))
+                command.Transaction = (SqliteTransaction)transaction;
+                try
                 {
-                    return readerMapper(r);
+                    command.CommandType = CommandType.Text;
+                    EnableForeignKeys(command);
+                    command.CommandText = commandText;
+                    parameters.ForEach(
+                        parameter =>
+                            command.Parameters.Add(new SqliteParameter(parameter.Key,
+                                parameter.Value ?? DBNull.Value)));
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    using (var r = new DbReader(reader))
+                    {
+                        transaction.Commit();
+                        return readerMapper(r);
+                    }
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
                 }
             }
         }
@@ -123,12 +134,12 @@ namespace FutureState.AppCore.Data.Sqlite
         public override async Task ExecuteNonQueryAsync(string commandText, IDictionary<string, object> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-           // using (var transaction = (SqliteTransaction)connection.BeginTransaction())
+            using (var transaction = connection.BeginTransaction())
             using (var command = (SqliteCommand)connection.CreateCommand())
             {
-               // try
-               // {
-                  //  command.Transaction = transaction;
+                command.Transaction = (SqliteTransaction)transaction;
+                try
+                {
                     command.CommandType = CommandType.Text;
                     EnableForeignKeys(command);
                     command.CommandText = commandText;
@@ -138,13 +149,13 @@ namespace FutureState.AppCore.Data.Sqlite
                                 parameter.Value ?? DBNull.Value)));
 
                     await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                 //   transaction.Commit();
-               // }
-               // catch
-               // {
-                //    transaction.Rollback();
-                //    throw;
-               // }
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 
@@ -160,8 +171,12 @@ namespace FutureState.AppCore.Data.Sqlite
         public override async Task<TKey> ExecuteScalarAsync<TKey>(string commandText, IDictionary<string, object> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-            using (var command = (SqliteCommand)connection.CreateCommand() )
+            using(var transaction = connection.BeginTransaction())
+            using (var command = (SqliteCommand)connection.CreateCommand())
             {
+                command.Transaction = (SqliteTransaction) transaction;
+                try
+                {
                     command.CommandType = CommandType.Text;
                     EnableForeignKeys(command);
                     command.CommandText = commandText;
@@ -171,7 +186,7 @@ namespace FutureState.AppCore.Data.Sqlite
                                 parameter.Value ?? DBNull.Value)));
 
                     var result = await command.ExecuteScalarAsync().ConfigureAwait(false);
-
+                    transaction.Commit();
                     if (typeof(TKey) == typeof(Guid))
                     {
                         return (TKey) (object) new Guid((byte[]) result);
@@ -202,6 +217,12 @@ namespace FutureState.AppCore.Data.Sqlite
                     }
 
                     return (TKey) result;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 

@@ -19,6 +19,12 @@ namespace FutureState.AppCore.Data
         void Create<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+
+        void CreateOrUpdate<TModel>(TModel model) where TModel : class, new();
+        void CreateOrUpdate<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+        Task CreateOrUpdateAsync<TModel>(TModel model) where TModel : class, new();
+        Task CreateOrUpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+
         void CreateDatabase();
         Task CreateDatabaseAsync();
         void Delete<TModel>(Expression<Func<TModel, bool>> expression) where TModel : class, new();

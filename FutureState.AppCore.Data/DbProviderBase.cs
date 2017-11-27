@@ -289,6 +289,51 @@ namespace FutureState.AppCore.Data
 
 
 
+
+        /// <summary>
+        ///     Update the record if it doesn't exist, otherwise create a new one.
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="model">Model Object to create or update</param>
+        public void CreateOrUpdate<TModel>(TModel model) where TModel : class, new()
+        {
+            CreateOrUpdateAsync(model, new AutoDbMapper<TModel>()).Wait();
+        }
+
+
+        /// <summary>
+        ///     Update the record if it doesn't exist, otherwise create a new one.
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="model">Model Object to create or update</param>
+        /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
+        public void CreateOrUpdate<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new()
+        {
+            CreateOrUpdateAsync(model, dbMapper).Wait();
+        }
+
+
+        /// <summary>
+        ///     Update the record if it doesn't exist, otherwise create a new one.
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="model">Model Object to create or update</param>
+        public Task CreateOrUpdateAsync<TModel>(TModel model) where TModel : class, new()
+        {
+            return CreateOrUpdateAsync(model, new AutoDbMapper<TModel>());
+        }
+
+
+        /// <summary>
+        ///     Update the record if it doesn't exist, otherwise create a new one.
+        /// </summary>
+        /// <typeparam name="TModel">Model type</typeparam>
+        /// <param name="model">Model Object to create or update</param>
+        /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
+        public abstract Task CreateOrUpdateAsync<TModel>(TModel model,
+            IDbMapper<TModel> dbMapper)
+            where TModel : class, new();
+
         //private static bool IsGenericList(Type type)
         //{
         //        .Any(i => i.GetGenericTypeDefinition() == typeof(ICollection<>));
@@ -310,7 +355,7 @@ namespace FutureState.AppCore.Data
 
         #endregion
 
-        private string GetPrimaryKeyName(Type modelType)
+        protected string GetPrimaryKeyName(Type modelType)
         {
             string identifierName;
             if (PrimaryKeys.ContainsKey(modelType)) identifierName = PrimaryKeys[modelType];
@@ -339,7 +384,7 @@ namespace FutureState.AppCore.Data
         /// <param name="model">Actual object model</param>
         /// <param name="tableName">The name of the table</param>
         /// <param name="dbMapper">Used to map the data in the model object to parameters to be used in database calls</param>
-        private async Task UpdateManyToManyRelationsAsync<TModel>(TModel model,
+        protected async Task UpdateManyToManyRelationsAsync<TModel>(TModel model,
             string tableName, IDbMapper<TModel> dbMapper) where TModel : class, new()
         {
             var primaryKey = GetPrimaryKeyName(model.GetType());

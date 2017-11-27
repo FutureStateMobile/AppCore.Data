@@ -42,7 +42,6 @@ namespace FutureState.AppCore.Data.Tests.Integration
         }
 
         [Test, TestCaseSource(nameof(DbProviders))]
-
         public void Should_Update_With_Different_Primary_Key(IDbProvider db)
         {
             Trace.WriteLine(TraceObjectGraphInfo(db));
@@ -65,6 +64,31 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualCar = db.Query<AutomobileModel>().Where(c => c.Vin == car.Vin).Single();
             actualCar.Should().NotBeNull();
             actualCar.ShouldBeEquivalentTo(actualCar);
+        }
+
+        [Test, TestCaseSource(nameof(DbProviders))]
+        public void Should_Create_Or_Update_With_Different_Primary_Key(IDbProvider db)
+        {
+            Trace.WriteLine(TraceObjectGraphInfo(db));
+
+            // create
+            var motorcycle = AutomobileFixture.GetMotorcycle();
+            db.CreateOrUpdate(motorcycle);
+
+            // assert create
+            var actualMotorcycle = db.Query<AutomobileModel>().Where(c => c.Vin == motorcycle.Vin).Single();
+            actualMotorcycle.Should().NotBeNull();
+            actualMotorcycle.ShouldBeEquivalentTo(motorcycle);
+
+            // upsert
+            motorcycle.VehicleType = "Scooter";
+            db.CreateOrUpdate(motorcycle);
+
+            // assert update
+            actualMotorcycle = db.Query<AutomobileModel>().Where(c => c.Vin == motorcycle.Vin).Single();
+            actualMotorcycle.Should().NotBeNull();
+            actualMotorcycle.ShouldBeEquivalentTo(actualMotorcycle);
+            actualMotorcycle.VehicleType.Should().Be(motorcycle.VehicleType);
         }
     }
 }

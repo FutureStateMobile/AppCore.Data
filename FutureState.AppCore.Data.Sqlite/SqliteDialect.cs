@@ -24,6 +24,8 @@
 
         public string InsertInto => "INSERT INTO [{0}] ({1}) VALUES ({2})";
 
+        public string CreateOrUpdate => "INSERT OR REPLACE INTO [{0}] ({1}) VALUES ({2})";
+
         public string SelectFrom => "SELECT [{0}].* FROM [{0}] {1}";
 
         public string SelectCountFrom => "SELECT COUNT([{0}].*) FROM [{0}] {1}";

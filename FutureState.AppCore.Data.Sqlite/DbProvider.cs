@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
+using FutureState.AppCore.Data.Config;
 using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
 using Mono.Data.Sqlite;
@@ -14,6 +15,21 @@ namespace FutureState.AppCore.Data.Sqlite
         private readonly IDbConnectionProvider _connectionProvider;
         private readonly bool _enforceForeignKeys = true;
         private readonly string _sqliteDatabasePath;
+
+        public DbProvider(string databaseName, Action<DbConfiguration> config):base(config)
+        {
+            DatabaseName = databaseName;
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
+            _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath);
+        }
+
+        public DbProvider(string databaseName, SqliteSettings settings, Action<DbConfiguration> config) : base(config)
+        {
+            DatabaseName = databaseName;
+            _enforceForeignKeys = settings.EnforceForeignKeys;
+            _sqliteDatabasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), databaseName);
+            _connectionProvider = new DbConnectionProvider(_sqliteDatabasePath, settings);
+        }
 
         public DbProvider(string databaseName)
         {

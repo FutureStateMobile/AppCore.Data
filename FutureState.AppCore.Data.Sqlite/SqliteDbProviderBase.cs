@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using FutureState.AppCore.Data.Config;
 
 namespace FutureState.AppCore.Data.Sqlite
 {
@@ -8,6 +10,10 @@ namespace FutureState.AppCore.Data.Sqlite
     {
         protected const string RootSqlScriptPath = "FutureState.AppCore.Data.Sqlite.SqlScripts.";
         private IDialect _dialect;
+
+        protected SqliteDbProviderBase() { }
+
+        protected SqliteDbProviderBase(Action<DbConfiguration> config) : base(config) { }
 
         public sealed override IDialect Dialect => _dialect ?? (_dialect = new SqliteDialect());
 

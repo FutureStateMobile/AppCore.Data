@@ -21,7 +21,7 @@ namespace FutureState.AppCore.Data
         private IEnumerable<PropertyInfo> Properties
         {
             get
-            {
+            { 
                 return _properties ?? (_properties = (from property in typeof(TModel).GetRuntimeProperties().OrderBy(p => p.Name)
                            let ignore = property.GetCustomAttributes(true).Any(
                                a =>

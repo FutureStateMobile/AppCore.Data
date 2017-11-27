@@ -12,7 +12,8 @@ namespace FutureState.AppCore.Data
 {
     public abstract class DbProviderBase : IDbProvider
     {
-        private static readonly Dictionary<Type, string> _primaryKeys = new Dictionary<Type, string>();
+        internal static readonly Dictionary<Type, string> PrimaryKeys = new Dictionary<Type, string>();
+        private const string _defaultPrimaryKeyName = "Id";
 
         protected DbProviderBase()
         {
@@ -301,10 +302,10 @@ namespace FutureState.AppCore.Data
 
         internal void AddOrUpdatePrimaryKey(Type type, string key)
         {
-            if (_primaryKeys.ContainsKey(type))
-                _primaryKeys[type] = key;
+            if (PrimaryKeys.ContainsKey(type))
+                PrimaryKeys[type] = key;
             else
-                _primaryKeys.Add(type, key);
+                PrimaryKeys.Add(type, key);
         }
 
         #endregion
@@ -312,13 +313,13 @@ namespace FutureState.AppCore.Data
         private string GetPrimaryKeyName(Type modelType)
         {
             string identifierName;
-            if (_primaryKeys.ContainsKey(modelType)) identifierName = _primaryKeys[modelType];
+            if (PrimaryKeys.ContainsKey(modelType)) identifierName = PrimaryKeys[modelType];
             else
             {
                 identifierName = modelType.GetRuntimeProperties()
                                      .FirstOrDefault(property => property.GetCustomAttributes(true).Any(a => a.GetType().Name == nameof(PrimaryKeyAttribute)))
-                                     ?.Name ?? "Id";
-                _primaryKeys[modelType] = identifierName;
+                                     ?.Name ?? _defaultPrimaryKeyName;
+                PrimaryKeys[modelType] = identifierName;
             }
 
             return identifierName;
@@ -341,8 +342,9 @@ namespace FutureState.AppCore.Data
         private async Task UpdateManyToManyRelationsAsync<TModel>(TModel model,
             string tableName, IDbMapper<TModel> dbMapper) where TModel : class, new()
         {
-            var leftModel = dbMapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == "Id");
-            var leftKey = typeof(TModel).Name.Replace("Model", string.Empty) + "Id";
+            var primaryKey = GetPrimaryKeyName(model.GetType());
+            var leftModel = dbMapper.BuildDbParametersFrom(model).FirstOrDefault(k => k.Key == primaryKey);
+            var leftKey = typeof(TModel).Name.Replace("Model", string.Empty) + primaryKey;
             var parameters = new Dictionary<string, object> {{"@" + leftKey, leftModel.Value}};
             var manyToManyFields =
                 typeof(TModel).GetRuntimeProperties()
@@ -374,7 +376,7 @@ namespace FutureState.AppCore.Data
                     foreach (var rightProperty in rightProperties)
                     {
                         var rightPropertyName = rightProperty.Name;
-                        if (rightPropertyName != "Id")
+                        if (rightPropertyName != primaryKey)
                             continue; // short circuit the loop if we're not dealing with the primary key.
                         var rightKey = manyToManyCollectionName + rightPropertyName;
                         var rightValue = rightProperty.GetValue(value, null);

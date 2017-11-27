@@ -44,7 +44,7 @@
     <Compile Include="Attributes\OneToManyAttribute.cs" />
     <Compile Include="Attributes\PrimaryKeyAttribute.cs" />
     <Compile Include="AutoModelMapper{TMapTo, TMapFrom}.cs" />
-    <Compile Include="Config\TableOptions.cs" />
+    <Compile Include="Config\TableOptions{TModel}.cs" />
     <Compile Include="DbQuery{TModel, TJoinTo}.cs" />
     <Compile Include="ClusterType.cs" />
     <Compile Include="Column.cs" />

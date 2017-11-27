@@ -21,8 +21,8 @@ namespace FutureState.AppCore.Data
         Task CreateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         void CreateDatabase();
         Task CreateDatabaseAsync();
-        void Delete<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new();
-        Task DeleteAsync<TModel>(Expression<Func<TModel, object>> expression) where TModel : class, new();
+        void Delete<TModel>(Expression<Func<TModel, bool>> expression) where TModel : class, new();
+        Task DeleteAsync<TModel>(Expression<Func<TModel, bool>> expression) where TModel : class, new();
         void DropDatabase();
         Task DropDatabaseAsync();
         void ExecuteNonQuery(string commandText);
@@ -41,13 +41,9 @@ namespace FutureState.AppCore.Data
         Task<string> LoadSqlFileAsync<TDbProvider>(string fileName);
         IDbQuery<TModel> Query<TModel>() where TModel : class, new();
         IDbScalar<TModel, TReturnType> Scalar<TModel, TReturnType>(Expression<Func<TModel, TReturnType>> propertyExpression) where TModel : class, new();
-        void Update<TModel>(TModel model, string identifierName = "Id") where TModel : class, new();
-        void Update<TModel>(TModel model, Expression<Func<TModel, object>> identifier) where TModel : class, new();
-        void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper, string identifierName = "Id") where TModel : class, new();
-        void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper, Expression<Func<TModel, object>> identifier) where TModel : class, new();
-        Task UpdateAsync<TModel>(TModel model, Expression<Func<TModel, object>> identifier) where TModel : class, new();
-        Task UpdateAsync<TModel>(TModel model, string identifierName = "Id") where TModel : class, new();
-        Task UpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper, string identifierName = "Id") where TModel : class, new();
-        Task UpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper, Expression<Func<TModel, object>> identifier) where TModel : class, new();
+        void Update<TModel>(TModel model) where TModel : class, new();
+        void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
+        Task UpdateAsync<TModel>(TModel model) where TModel : class, new();
+        Task UpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
     }
 }

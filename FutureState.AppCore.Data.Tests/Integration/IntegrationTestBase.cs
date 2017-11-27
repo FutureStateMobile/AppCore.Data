@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using FutureState.AppCore.Data.Config;
 using FutureState.AppCore.Data.Tests.Helpers.Migrations;
+using FutureState.AppCore.Data.Tests.Helpers.Models;
 using NUnit.Framework;
 using SqlDbConnectionProvider = FutureState.AppCore.Data.SqlServer.DbConnectionProvider;
 using SqlDbProvider = FutureState.AppCore.Data.SqlServer.DbProvider;
@@ -18,11 +20,8 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 sqlServerConnection.ConnectionString,
                 sqlServerConnection.ProviderName);
 
-            IDbProvider sqlDbProvider = new SqlDbProvider(sqlDbConnectionProvider, testDbName);
-            IDbProvider sqliteDbProvider = new SqliteDbProvider(testDbName + ".sqlite3");
-
-            yield return sqlDbProvider;
-            yield return sqliteDbProvider;
+            yield return new SqlDbProvider(sqlDbConnectionProvider, testDbName,SetConfig);
+            yield return new SqliteDbProvider(testDbName + ".sqlite3", SetConfig);
         }
 
         [TestFixtureSetUp]
@@ -36,7 +35,8 @@ namespace FutureState.AppCore.Data.Tests.Integration
                 migrationRunner.RunAll(SystemRole.Server, new List<AppCoreMigration>
                 {
                     new Migration001(),
-                    new Migration002()
+                    new Migration002(),
+                    new Migration003()
                 });
             }
         }
@@ -59,6 +59,11 @@ namespace FutureState.AppCore.Data.Tests.Integration
                                                    .Replace(".", "' ");
 
             return "Tested against the " + dbProviderFriendlyName;
+        }
+
+        private static void SetConfig(DbConfiguration cfg)
+        {
+            cfg.Configure<AutomobileModel>(opts => opts.SetPrimaryKey(a => a.Vin));
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using FutureState.AppCore.Data.Config;
 using FutureState.AppCore.Data.Extensions;
 using FutureState.AppCore.Data.Helpers;
 
@@ -18,6 +19,13 @@ namespace FutureState.AppCore.Data.SqlServer
         private IDialect _dialect;
 
         public DbProvider(IDbConnectionProvider connectionProvider, string databaseName)
+        {
+            DatabaseName = databaseName;
+            _connectionProvider = connectionProvider;
+            _useStatement = string.Format(Dialect.UseDatabase, databaseName);
+        }
+
+        public DbProvider(IDbConnectionProvider connectionProvider, string databaseName, Action<DbConfiguration> dbConfig):base(dbConfig)
         {
             DatabaseName = databaseName;
             _connectionProvider = connectionProvider;

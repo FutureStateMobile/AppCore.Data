@@ -27,7 +27,7 @@ namespace FutureState.AppCore.Data.Tests.Integration
             // Update
             expectedAuthor.FirstName = "Bob";
             expectedAuthor.LastName = "Jones";
-            db.Update(expectedAuthor, a => a.Id);
+            db.Update(expectedAuthor);
 
             // Assert Update
             actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).Single();
@@ -41,5 +41,31 @@ namespace FutureState.AppCore.Data.Tests.Integration
             actualAuthor = db.Query<AuthorModel>().Where(a => a.Email == expectedAuthor.Email).Select().SingleOrDefault();
             actualAuthor.Should().BeNull();
         }
-   }
+
+        [Test, TestCaseSource(nameof(DbProviders))]
+
+        public void Should_Update_With_Different_Primary_Key(IDbProvider db)
+        {
+            Trace.WriteLine(TraceObjectGraphInfo(db));
+
+            // create
+            var car = AutomobileFixture.GetCar();
+            db.Create(car);
+
+            // assert create
+            var actualCar = db.Query<AutomobileModel>().Where(c => c.Vin == car.Vin).SingleOrDefault();
+            actualCar.Should().NotBeNull();
+            actualCar.ShouldBeEquivalentTo(car);
+
+            // update
+            car.WheelCount = 6;
+            car.VehicleType = "Argo";
+            db.Update(car);
+
+            // assert update
+            actualCar = db.Query<AutomobileModel>().Where(c => c.Vin == car.Vin).SingleOrDefault();
+            actualCar.Should().NotBeNull();
+            actualCar.ShouldBeEquivalentTo(actualCar);
+        }
+    }
 }

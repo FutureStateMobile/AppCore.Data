@@ -42,7 +42,9 @@
     <Compile Include="Attributes\ManyToManyAttribute.cs" />
     <Compile Include="Attributes\ManyToOneAttribute.cs" />
     <Compile Include="Attributes\OneToManyAttribute.cs" />
+    <Compile Include="Attributes\PrimaryKeyAttribute.cs" />
     <Compile Include="AutoModelMapper{TMapTo, TMapFrom}.cs" />
+    <Compile Include="Config\TableOptions.cs" />
     <Compile Include="DbQuery{TModel, TJoinTo}.cs" />
     <Compile Include="ClusterType.cs" />
     <Compile Include="Column.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Inflector.cs" />
+    <Compile Include="Config\DbConfiguration.cs" />
     <Compile Include="IDbConnectionProvider.cs" />
     <Compile Include="IDbScalar{TModel, TType}.cs" />
     <Compile Include="IModelMapper{TMapTo, TMapFrom}.cs" />

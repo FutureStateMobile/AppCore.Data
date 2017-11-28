@@ -20,7 +20,7 @@ namespace FutureState.AppCore.Data.SqlServer
 
             var insertParams = "@" + string.Join(",@", fieldNameList);
             var insertFields = string.Join(",", fieldNameList);
-            var updateFields = string.Join(",", fieldNameList.Select(field => string.Format((string) "[{0}] = @{0}", (object) field)).ToList());
+            var updateFields = string.Join(",", fieldNameList.Select(field => string.Format("[{0}] = @{0}", field)).ToList());
             var whereClause = string.Format(Dialect.Where, string.Format("{0} = @{0}", modelType.GetPrimaryKeyName()));
 
             var commandText = string.Format(Dialect.CreateOrUpdate,
@@ -31,6 +31,7 @@ namespace FutureState.AppCore.Data.SqlServer
                 insertParams);
 
             Commands.Add(new TransactionCommand(commandText, commandParams));
+            UpdateManyToManyRelationsAsync(model, tableName, dbMapper);
         }
     }
 }

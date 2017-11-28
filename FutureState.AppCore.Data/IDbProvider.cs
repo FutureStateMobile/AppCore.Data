@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FutureState.AppCore.Data
 {
-    public interface IDbProvider
+    public interface IDbProvider : IDbChange
     {
         string DatabaseName { get; }
         IDialect Dialect { get; }
@@ -15,24 +15,15 @@ namespace FutureState.AppCore.Data
         Task<bool> CheckIfTableColumnExistsAsync(string tableName, string columnName);
         bool CheckIfTableExists(string tableName);
         Task<bool> CheckIfTableExistsAsync(string tableName);
-        void Create<TModel>(TModel model) where TModel : class, new();
-        void Create<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model) where TModel : class, new();
         Task CreateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
-
-        void CreateOrUpdate<TModel>(TModel model) where TModel : class, new();
-        void CreateOrUpdate<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
-        Task CreateOrUpdateAsync<TModel>(TModel model) where TModel : class, new();
-        Task CreateOrUpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
-
         void CreateDatabase();
         Task CreateDatabaseAsync();
-        void Delete<TModel>(Expression<Func<TModel, bool>> expression) where TModel : class, new();
+        Task CreateOrUpdateAsync<TModel>(TModel model) where TModel : class, new();
+        Task CreateOrUpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         Task DeleteAsync<TModel>(Expression<Func<TModel, bool>> expression) where TModel : class, new();
         void DropDatabase();
         Task DropDatabaseAsync();
-        void ExecuteNonQuery(string commandText);
-        void ExecuteNonQuery(string commandText, IDictionary<string, object> parameters);
         Task ExecuteNonQueryAsync(string commandText);
         Task ExecuteNonQueryAsync(string commandText, IDictionary<string, object> parameters);
         TResult ExecuteReader<TResult>(string commandText, Func<IDbReader, TResult> readerMapper);
@@ -46,9 +37,10 @@ namespace FutureState.AppCore.Data
         string LoadSqlFile<TDbProvider>(string fileName);
         Task<string> LoadSqlFileAsync<TDbProvider>(string fileName);
         IDbQuery<TModel> Query<TModel>() where TModel : class, new();
+        void RunInTransaction(Action<IDbChange> transaction);
+        Task RunInTransactionAsync(Action<IDbChange> dbChange);
         IDbScalar<TModel, TReturnType> Scalar<TModel, TReturnType>(Expression<Func<TModel, TReturnType>> propertyExpression) where TModel : class, new();
         void Update<TModel>(TModel model) where TModel : class, new();
-        void Update<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
         Task UpdateAsync<TModel>(TModel model) where TModel : class, new();
         Task UpdateAsync<TModel>(TModel model, IDbMapper<TModel> dbMapper) where TModel : class, new();
     }

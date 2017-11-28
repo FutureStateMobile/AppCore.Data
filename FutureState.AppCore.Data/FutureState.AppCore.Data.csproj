@@ -69,8 +69,10 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Helpers\Inflector.cs" />
     <Compile Include="Config\DbConfiguration.cs" />
+    <Compile Include="IDbChange.cs" />
     <Compile Include="IDbConnectionProvider.cs" />
     <Compile Include="IDbScalar{TModel, TType}.cs" />
     <Compile Include="IModelMapper{TMapTo, TMapFrom}.cs" />
@@ -80,6 +82,8 @@
     <Compile Include="MigrationStep.cs" />
     <Compile Include="OrderByExpressionVisitor.cs" />
     <Compile Include="OrderDirection.cs" />
+    <Compile Include="Transactions\TransactionBuilder.cs" />
+    <Compile Include="Transactions\TransactionCommand.cs" />
     <Compile Include="WhereExpressionVisitor.cs" />
     <Compile Include="IDbProvider.cs" />
     <Compile Include="IDbQuery{TModel}.cs" />

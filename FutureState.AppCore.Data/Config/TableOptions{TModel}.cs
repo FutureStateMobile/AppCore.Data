@@ -1,17 +1,11 @@
 using System;
 using System.Linq.Expressions;
+using FutureState.AppCore.Data.Extensions;
 
 namespace FutureState.AppCore.Data.Config
 {
     public class TableOptions<TModel> where TModel : class, new()
     {
-        private readonly DbProviderBase _dbProvider;
-
-        public TableOptions(IDbProvider dbProvider)
-        {
-            _dbProvider = (DbProviderBase) dbProvider;
-        }
-
         /// <summary>
         ///     Tells the DbProvider what the PrimaryKey is for <see cref="TModel" />
         /// </summary>
@@ -23,7 +17,8 @@ namespace FutureState.AppCore.Data.Config
                 var ubody = (UnaryExpression) func.Body;
                 body = (MemberExpression)ubody.Operand;
             }
-            _dbProvider.AddOrUpdatePrimaryKey(typeof(TModel), body.Member.Name);
+            var modelType = typeof(TModel);
+            modelType.AddOrUpdatePrimaryKey(body.Member.Name);
             return this;
         }
     }

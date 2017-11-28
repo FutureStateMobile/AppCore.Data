@@ -13,7 +13,7 @@ namespace FutureState.AppCore.Data.Config
 
         public void Configure<TModel>(Action<TableOptions<TModel>> func) where TModel : class, new()
         {
-            var tableOptions = new TableOptions<TModel>(_provider);
+            var tableOptions = new TableOptions<TModel>();
             func(tableOptions);
         }
     }

@@ -43,7 +43,7 @@ namespace FutureState.AppCore.Data.SqlServer
             var insertParams = "@" + string.Join(",@", fieldNameList);
             var insertFields = string.Join(",", fieldNameList);
             var updateFields = string.Join(",", fieldNameList.Select(field => string.Format("[{0}] = @{0}", field)).ToList());
-            var whereClause = string.Format(Dialect.Where, string.Format("{0} = @{0}", GetPrimaryKeyName(modelType)));
+            var whereClause = string.Format(Dialect.Where, string.Format("{0} = @{0}", modelType.GetPrimaryKeyName()));
 
             var commandText = string.Format(Dialect.CreateOrUpdate, 
                 tableName,
@@ -73,76 +73,68 @@ namespace FutureState.AppCore.Data.SqlServer
             return sqlStatement;
         }
 
-        public override async Task<bool> CheckIfDatabaseExistsAsync()
+        public override async Task RunInTransactionAsync(Action<IDbChange> dbChange)
         {
-            return await ExecuteScalarAsync<int>("", string.Format(Dialect.CheckDatabaseExists, DatabaseName)).ConfigureAwait(false) == 1;
-            //return ExecuteScalarAsync<int>("USE master;", string.Format(Dialect.CheckDatabaseExists, DatabaseName)) == 1;
+            var transaction = new SqlServerTransactionBuilder(Dialect) ;
+            dbChange(transaction);
+            using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
+            using(var trans = connection.BeginTransaction())
+            using (var command = connection.CreateCommand())
+            {
+                command.Transaction = trans;
+                try
+                {
+                    command.CommandType = CommandType.Text;
+                    foreach (var cmd in transaction.Commands)
+                    {
+                        command.CommandText = _useStatement + cmd.CommandText;
+                        cmd.CommandParameters.ForEach(parameter =>
+                        {
+                            command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value));
+                        });
+
+                        command.ExecuteNonQuery();
+                        command.Parameters.Clear();
+                    }
+                    trans.Commit();
+                }
+                catch
+                {
+                    trans?.Rollback();
+                    throw;
+                }
+            }
         }
 
-        public override Task CreateDatabaseAsync()
-        {
-            return ExecuteNonQueryAsync("", string.Format(Dialect.CreateDatabase, DatabaseName));
-            //ExecuteNonQueryAsync("USE master; ", string.Format(Dialect.CreateDatabaseAsync, DatabaseName));
-        }
+        public override async Task<bool> CheckIfDatabaseExistsAsync() => await ExecuteScalarAsync<int>("", string.Format(Dialect.CheckDatabaseExists, DatabaseName)).ConfigureAwait(false) == 1;
 
-        public override Task DropDatabaseAsync()
-        {
-            return ExecuteNonQueryAsync("", string.Format(Dialect.DropDatabase, DatabaseName));
-            //ExecuteNonQueryAsync("USE master; ", string.Format(Dialect.DropDatabaseAsync, DatabaseName));
-        }
+        public override Task CreateDatabaseAsync() => ExecuteNonQueryAsync("", string.Format(Dialect.CreateDatabase, DatabaseName));
 
-        public override async Task<bool> CheckIfTableExistsAsync(string tableName)
-        {
-            return await ExecuteScalarAsync<int>(string.Format(Dialect.CheckTableExists, tableName)).ConfigureAwait(false) == 1;
-        }
+        public override Task DropDatabaseAsync() => ExecuteNonQueryAsync("", string.Format(Dialect.DropDatabase, DatabaseName));
 
-        public override async Task<bool> CheckIfTableColumnExistsAsync(string tableName, string columnName)
-        {
-            return await ExecuteScalarAsync<int>(string.Format(Dialect.CheckTableColumnExists, tableName, columnName)).ConfigureAwait(false) == 1;
-        }
+        public override async Task<bool> CheckIfTableExistsAsync(string tableName) => await ExecuteScalarAsync<int>(string.Format(Dialect.CheckTableExists, tableName)).ConfigureAwait(false) == 1;
+
+        public override async Task<bool> CheckIfTableColumnExistsAsync(string tableName, string columnName) => await ExecuteScalarAsync<int>(string.Format(Dialect.CheckTableColumnExists, tableName, columnName)).ConfigureAwait(false) == 1;
 
         #region ExecuteReaderAsync
-        public override Task<TResult> ExecuteReaderAsync<TResult>(string commandText, Func<IDbReader, TResult> readerMapper)
-        {
-            return ExecuteReader(_useStatement, commandText, readerMapper);
-        }
 
-        public override Task<TResult> ExecuteReaderAsync<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper)
-        {
-            return ExecuteReader(_useStatement, commandText, parameters, readerMapper);
-        }
-
-        private Task<TResult> ExecuteReader<TResult>(string useStatement, string commandText, Func<IDbReader, TResult> readerMapper)
-        {
-            return ExecuteReader(useStatement, commandText, new Dictionary<string, object>(), readerMapper);
-        }
+        public override Task<TResult> ExecuteReaderAsync<TResult>(string commandText, IDictionary<string, object> parameters, Func<IDbReader, TResult> readerMapper) => ExecuteReader(_useStatement, commandText, parameters, readerMapper);
 
         private async Task<TResult> ExecuteReader<TResult>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters, Func<IDbReader, TResult> readerMapper)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-            using(var transaction = connection.BeginTransaction())
             using (var command = connection.CreateCommand())
             {
-                command.Transaction = transaction;
-                try
+                command.CommandType = CommandType.Text;
+                command.CommandText = useStatement + commandText;
+                parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                TResult result;
+                using (var reader = command.ExecuteReader())
                 {
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = useStatement + commandText;
-                    parameters.ForEach(parameter => command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
-                    TResult result;
-                    using (var reader = command.ExecuteReader())
-                    {
-                        var r = new DbReader(reader);
-                        result =  readerMapper(r);
-                    }
-                    transaction.Commit();
-                    return result;
+                    var r = new DbReader(reader);
+                    result =  readerMapper(r);
                 }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+                return result;
             }
         }
 
@@ -150,53 +142,22 @@ namespace FutureState.AppCore.Data.SqlServer
 
         #region ExecuteNonQueryAsync
 
-        public override Task ExecuteNonQueryAsync(string commandText)
-        {
-            return ExecuteNonQueryAsync(commandText, new Dictionary<string, object>());
-        }
+        public override Task ExecuteNonQueryAsync(string commandText, IDictionary<string, object> parameters) => ExecuteNonQueryAsync(_useStatement, commandText, parameters);
 
-        public override Task ExecuteNonQueryAsync(string commandText, IDictionary<string, object> parameters)
-        {
-            return ExecuteNonQueryAsync(_useStatement, commandText, parameters);
-        }
-
-        private Task ExecuteNonQueryAsync(string useStatement, string commandText)
-        {
-            return ExecuteNonQueryAsync(useStatement, commandText, new Dictionary<string, object>());
-        }
+        private Task ExecuteNonQueryAsync(string useStatement, string commandText) => ExecuteNonQueryAsync(useStatement, commandText, new Dictionary<string, object>());
 
         private async Task ExecuteNonQueryAsync(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            var useTransaction = !commandText.ToUpper().Contains("DATABASE"); // Database operations cannot be within a transaction
-            IDbTransaction transaction = null;
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
             using (var command = connection.CreateCommand())
             {
-                if (useTransaction)
-                {
-                    transaction = connection.BeginTransaction();
-                    command.Transaction = transaction;
-                }
-                try
-                {
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = useStatement + commandText;
-                    parameters.ForEach(
-                        parameter =>
-                            command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+                command.CommandType = CommandType.Text;
+                command.CommandText = useStatement + commandText;
+                parameters.ForEach(
+                    parameter =>
+                        command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
 
-                    command.ExecuteNonQuery();
-                    transaction?.Commit();
-                }
-                catch
-                {
-                    transaction?.Rollback();
-                    throw;
-                }
-                finally
-                {
-                    transaction?.Dispose();
-                }
+                command.ExecuteNonQuery();
             }
         }
 
@@ -204,59 +165,37 @@ namespace FutureState.AppCore.Data.SqlServer
 
         #region ExecuteScalarAsync
 
-        public override Task<TKey> ExecuteScalarAsync<TKey>(string commandText)
-        {
-            return ExecuteScalarAsync<TKey>(commandText, new Dictionary<string, object>());
-        }
+        public override Task<TKey> ExecuteScalarAsync<TKey>(string commandText, IDictionary<string, object> parameters) => ExecuteScalarAsync<TKey>(_useStatement, commandText, parameters);
 
-        public override Task<TKey> ExecuteScalarAsync<TKey>(string commandText, IDictionary<string, object> parameters)
-        {
-            return ExecuteScalarAsync<TKey>(_useStatement, commandText, parameters);
-        }
-
-        private Task<TKey> ExecuteScalarAsync<TKey>(string useStatement, string commandText)
-        {
-            return ExecuteScalarAsync<TKey>(useStatement, commandText, new Dictionary<string, object>());
-        }
+        private Task<TKey> ExecuteScalarAsync<TKey>(string useStatement, string commandText) => ExecuteScalarAsync<TKey>(useStatement, commandText, new Dictionary<string, object>());
 
         private async Task<TKey> ExecuteScalarAsync<TKey>(string useStatement, string commandText, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             using (var connection = await _connectionProvider.GetOpenConnectionAsync().ConfigureAwait(false))
-            using(var transaction = connection.BeginTransaction())
             using (var command = connection.CreateCommand())
             {
-                command.Transaction = transaction;
-                try
+                command.CommandType = CommandType.Text;
+                command.CommandText = useStatement + commandText;
+                parameters.ForEach(
+                    parameter =>
+                        command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
+
+                var result = command.ExecuteScalar();
+                if (typeof(TKey) == typeof(int))
+                    return (TKey)(result ?? 0);
+
+                if (typeof(TKey) == typeof(DateTime))
                 {
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = useStatement + commandText;
-                    parameters.ForEach(
-                        parameter =>
-                            command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value)));
-
-                    var result = command.ExecuteScalar();
-                    transaction.Commit();
-                    if (typeof(TKey) == typeof(int))
-                        return (TKey)(result ?? 0);
-
-                    if (typeof(TKey) == typeof(DateTime))
+                    DateTime retval;
+                    if (!DateTime.TryParse(result.ToString(), out retval))
                     {
-                        DateTime retval;
-                        if (!DateTime.TryParse(result.ToString(), out retval))
-                        {
-                            return (TKey)(object)DateTimeHelper.MinSqlValue;
-                        }
-
-                        return (TKey)(object)retval;
+                        return (TKey)(object)DateTimeHelper.MinSqlValue;
                     }
 
-                    return (TKey)result;
+                    return (TKey)(object)retval;
                 }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+
+                return (TKey)result;
             }
         }
 

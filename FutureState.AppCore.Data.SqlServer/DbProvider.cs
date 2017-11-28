@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -92,7 +93,6 @@ namespace FutureState.AppCore.Data.SqlServer
                         {
                             command.Parameters.Add(new SqlParameter(parameter.Key, parameter.Value ?? DBNull.Value));
                         });
-
                         command.ExecuteNonQuery();
                         command.Parameters.Clear();
                     }

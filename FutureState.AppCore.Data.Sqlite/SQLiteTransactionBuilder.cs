@@ -19,6 +19,7 @@ namespace FutureState.AppCore.Data.Sqlite
             var fields = string.Join(",", fieldNameList);
             var commandText = string.Format(Dialect.CreateOrUpdate, tableName, fields, parameters);
             Commands.Add(new TransactionCommand(commandText, commandParams));
+            UpdateManyToManyRelationsAsync(model, tableName, dbMapper);
         }
     }
 }
